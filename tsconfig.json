@@ -1,0 +1,25 @@
+{
+	"extends": "astro/tsconfigs/strictest",
+	"include": [
+		// ! Hanya akan di-generate setelah sync/build
+		".astro/types.d.ts",
+		"**/*"
+	],
+	"exclude": [
+		"dist"
+	],
+	"compilerOptions": {
+		// bundler mode
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+		// react integration
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		// shortcut paths
+		"paths": {
+			"@styles/*": [
+				"./src/styles/*"
+			]
+		}
+	}
+}
