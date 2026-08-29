@@ -18,4 +18,4 @@ jobs:
 
             - name: Lint project
               continue-on-error: true
-              run: bun run build
+              run: bun run lint
