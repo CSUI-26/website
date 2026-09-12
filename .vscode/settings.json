@@ -12,11 +12,6 @@
 		"https://biomejs.dev/schemas/": true
 	},
 	"js/ts.preferences.quoteStyle": "double",
-	"tailwindCSS.classFunctions": [
-		"cva",
-		"cx",
-		"cn"
-	],
 	// prevent workspace conflict
 	"js/ts.tsdk.promptToUseWorkspaceVersion": true,
 	// show text limit
