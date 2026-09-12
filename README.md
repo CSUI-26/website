@@ -9,7 +9,6 @@ Proyek ini menggunakan:
 * Bun, package manager dan runtime
 * Astro, generator
 * React, UI framework
-* Tailwind, styling library
 * Biome, linting (`bun lint`) dan formatting (`bun format`)
 
 ### Local development
