@@ -15,7 +15,7 @@ export default defineConfig({
 				csso: false
 			},
 		}),
-		compressor()
+		// compressor()
 	],
 
 	vite: {
