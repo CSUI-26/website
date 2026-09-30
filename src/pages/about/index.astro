@@ -1,0 +1,11 @@
+---
+import "@styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Strings } from "../../strings";
+
+const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
+---
+
+<BaseLayout title={title}>
+	<h1>{Strings.SlugTitles.About}</h1>
+</BaseLayout>
