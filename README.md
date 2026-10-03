@@ -1,6 +1,6 @@
-# <div align="center">CSUI 2026</div>
+# <div align="center">Zenith</div>
 
-Repositori ini menyimpan source code dari website CSUI angkatan 2026.
+Repositori ini menyimpan source code dari website Zenith CSUI (angkatan 2026).
 
 ## Developing
 

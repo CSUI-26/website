@@ -1,5 +1,5 @@
 export const Strings = {
-	SiteTitle: "CSUI26",
+	SiteTitle: "Zenith",
 	SlugTitles: {
 		Home: "Home",
 		About: "About",
