@@ -18,7 +18,6 @@
 		"@types/react-dom": "^19.3.0",
 		"astro": "^7.3.5",
 		"astro-compress": "^2.4.3",
-		"astro-compressor": "^2.0.1",
 		"react": "19.3.0",
 		"react-dom": "19.3.0",
 		"terser": "^5.51.2"
