@@ -1,0 +1,28 @@
+:root {
+	--blur-radius: 7.35px;
+}
+
+html,
+body {
+	padding: 0
+}
+
+*,
+*::after,
+*::before {
+	margin: 0;
+	box-sizing: border-box
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		interpolate-size: allow-keywords;
+	}
+}
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}

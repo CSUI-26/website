@@ -1,0 +1,9 @@
+:root {
+	--font-base: var(--fontface-inter);
+	--font-base-size-normal: 24px;
+	--font-base-size-heading: 80px;
+	--font-base-letterspacing: -0.05em;
+	--font-base-weight-normal: 400;
+	--font-base-weight-heavy: 850;
+	--font-base-weight-black: 1000;
+}

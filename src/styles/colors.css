@@ -1,0 +1,9 @@
+:root {
+	--blue-accent: #0011FF;
+	--red-accent: #FF0000;
+
+	--bg-grad-overlay-start: rgba(0, 0, 0, 0.25);
+	--bg-grad-overlay-end: #000000;
+
+	--bg-boardwall: #FFF697;
+}
