@@ -1,4 +1,5 @@
 export const Strings = {
+	FleetingCode: "CSUI26",
 	SiteTitle: "Zenith",
 	SlugTitles: {
 		Home: "Home",

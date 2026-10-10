@@ -1,0 +1,29 @@
+---
+import styles from "./index.module.css";
+import { RootRoutes, type RootRoutesValues } from "@/routes";
+import { Strings } from "@/strings";
+
+interface Props {
+	activeTab: RootRoutesValues;
+}
+
+const { activeTab } = Astro.props;
+---
+
+<header class={styles.header}>
+	<ul class={styles.header_links}>
+		{
+			Array.from(RootRoutes).map(([title, path]) => (
+				<li
+					title={title}
+					class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
+				>
+					<a href={path}>{title.toLowerCase()}</a>
+				</li>
+			))
+		}
+	</ul>
+	<div class={styles.header_title}>
+		<a href={RootRoutes.get("Home")} class={styles.header_title_text}>{Strings.FleetingCode}</a>
+	</div>
+</header>

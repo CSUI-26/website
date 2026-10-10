@@ -1,11 +1,12 @@
 ---
 import "@styles/global.css";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { Strings } from "../../strings";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Strings } from "@/strings";
+import { RootRoutes } from "@/routes";
 
 const title = `${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
 ---
 
-<BaseLayout title={title}>
+<BaseLayout title={title} activeTab={RootRoutes.get("Academic")!}>
 	<h1>{Strings.SlugTitles.Academic}</h1>
 </BaseLayout>
