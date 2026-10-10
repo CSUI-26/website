@@ -17,9 +17,18 @@
 		"jsxImportSource": "react",
 		// shortcut paths
 		"paths": {
+			"@/*": [
+				"./src/*"
+			],
 			"@styles/*": [
 				"./src/styles/*"
-			]
+			],
+			"@components/*": [
+				"./src/components/*"
+			],
+			"@layouts/*": [
+				"./src/layouts/*"
+			],
 		}
 	}
 }

@@ -12,7 +12,10 @@ export default defineConfig({
 		{
 			provider: fontProviders.fontsource(),
 			name: "Inter",
+			display: "swap",
+			weights: [ "100 900" ],
 			cssVariable: "--fontface-inter",
+			fallbacks: [ "sans-serif" ]
 		}
 	],
 

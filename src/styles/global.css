@@ -1,17 +1,41 @@
+@import url("./colors.css");
+@import url("./geometry.css");
+@import url("./typography.css");
+
 :root {
 	--blur-radius: 7.35px;
+	font-family: var(--fontface-inter);
+	font-size: var(--font-base-size-normal);
+	font-weight: var(--font-base-weight-normal);
+	color: white;
 }
 
 html,
 body {
-	padding: 0
+	padding: 0;
+	min-height: 100vh;
+}
+
+body {
+	background:
+		linear-gradient(to bottom, var(--bg-grad-overlay-start), var(--bg-grad-overlay-end)),
+		radial-gradient(circle at bottom left, var(--accent-red), transparent 75%),
+		radial-gradient(circle at bottom right, var(--accent-blue), transparent 75%),
+		black;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-attachment: fixed;
 }
 
 *,
 *::after,
 *::before {
 	margin: 0;
-	box-sizing: border-box
+	box-sizing: border-box;
+
+	&:focus, &:target {
+		outline: 1px solid white;
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {

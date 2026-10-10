@@ -1,9 +1,12 @@
 :root {
-	--blue-accent: #0011FF;
-	--red-accent: #FF0000;
+	--accent-blue: #0011FF;
+	--accent-red: #FF0000;
 
-	--bg-grad-overlay-start: rgba(0, 0, 0, 0.25);
-	--bg-grad-overlay-end: #000000;
+	--accent-blue-lighter: color-mix(in oklch, var(--accent-blue), white 25%);
+	--accent-red-lighter: color-mix(in oklch, var(--accent-red), white 25%);
+
+	--bg-grad-overlay-start: black;
+	--bg-grad-overlay-end: rgba(0, 0, 0, 0.25);
 
 	--bg-boardwall: #FFF697;
 }
