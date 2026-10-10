@@ -27,7 +27,7 @@
 }
 
 .header_links_items__active {
-	font-weight: var(--font-base-weight-heavy);
+	font-weight: var(--font-base-weight-semibold);
 	border-block-end: 1px solid whitesmoke;
 }
 
