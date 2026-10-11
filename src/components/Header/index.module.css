@@ -7,6 +7,9 @@
 	left: 50%;
 	translate: -50%;
 	z-index: 9;
+	backdrop-filter: blur(var(--blur-radius));
+	padding-inline: 1em;
+	border-radius: var(--border-radius-4);
 }
 
 .header_links {
@@ -45,4 +48,13 @@
 	background-clip: text;
 	-webkit-background-clip: text;
 	background-image: linear-gradient(to right, var(--accent-blue-lighter), white, var(--accent-red-lighter));
+
+	&::before {
+		display: block;
+		position: absolute;
+		font-size: var(--font-base-size-heading);
+		z-index: -1;
+		content: attr(data-text);
+		text-shadow: 0 0 8px black;
+	}
 }

@@ -1,0 +1,42 @@
+.section {
+	height: 100vh;
+}
+
+.section_hero {
+	display: flex;
+	justify-items: end;
+	align-items: end;
+}
+
+.h1 {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -60%;
+	user-select: none;
+	font-size: 32vw;
+	letter-spacing: var(--font-base-letterspacing);
+	font-style: italic;
+	background-clip: text;
+	color: transparent;
+	font-weight: var(--font-base-weight-black);
+	background-image: linear-gradient(to right, transparent, white, transparent);
+}
+
+.text_columns {
+	height: fit-content;
+	display: grid;
+	gap: 25vw;
+	margin-inline: 1rem;
+	margin-block-end: 10vh;
+	grid-template-columns: 1fr 1fr;
+	z-index: 1;
+}
+
+.hero_img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -50%;
+	filter: drop-shadow(0 0 25px rgba(0 0 0 / .75));
+}

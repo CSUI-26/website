@@ -24,6 +24,12 @@ const { activeTab } = Astro.props;
 		}
 	</ul>
 	<div class={styles.header_title}>
-		<a href={RootRoutes.get("Home")} class={styles.header_title_text}>{Strings.FleetingCode}</a>
+		<a
+			data-text={Strings.FleetingCode}
+			href={RootRoutes.get("Home")}
+			class={styles.header_title_text}
+		>
+			{Strings.FleetingCode}
+		</a>
 	</div>
 </header>

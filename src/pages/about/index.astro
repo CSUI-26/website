@@ -1,0 +1,31 @@
+---
+import Styles from "./index.module.css";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Strings } from "@/strings";
+import { RootRoutes } from "@/routes";
+import { Image } from "astro:assets";
+import Hero from "@images/hero.png";
+
+const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
+---
+
+<BaseLayout title={title} activeTab={RootRoutes.get("Home")!}>
+	<section class={`${Styles.section_hero} ${Styles.section}`}>
+		<h1 class={Styles.h1}>{Strings.FleetingCode}</h1>
+		<Image src={Hero} alt="" layout="constrained" priority class={Styles.hero_img} draggable={false} />
+		<div class={Styles.text_columns}>
+			<div>
+				Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+				Architecto, consequuntur tempore eligendi aut odit sint est
+				odio, eaque cumque dicta reiciendis illo repellendus veritatis
+				unde quisquam, libero assumenda tempora aspernatur.
+			</div>
+			<div>
+				Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo
+				quisquam perferendis laborum temporibus explicabo rem quis fuga
+				ea sint repudiandae, enim vel dignissimos, quos reiciendis
+				aliquid quibusdam inventore consequuntur porro?
+			</div>
+		</div>
+	</section>
+</BaseLayout>
