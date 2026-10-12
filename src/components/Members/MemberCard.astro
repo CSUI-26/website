@@ -1,5 +1,6 @@
 ---
 import type { Member } from "@/types/member";
+import { getMajorCode, getMemberSlug } from "@/util";
 import styles from "./MemberCard.module.css";
 
 interface Props {
@@ -14,27 +15,13 @@ const badge = member.niche
 	? member.niche.split(/[,/]/)[0]!.trim() || "Member"
 	: "Member";
 
-// Major short code mapping
-function getMajorCode(major: string): string {
-	switch (major) {
-		case "Ilmu Komputer":
-			return "CS";
-		case "Ilmu Komputer KKI":
-			return "CS KKI";
-		case "Sistem Informasi":
-			return "SI";
-		case "Kecerdasan Artifisial":
-			return "AI";
-		default:
-			return major;
-	}
-}
-
 const majorCode = getMajorCode(member.major);
 const displayName = member.nama_panggilan || member.name;
+const profileUrl = `/members/${getMemberSlug(member)}`;
 ---
 
-<article
+<a
+	href={profileUrl}
 	class={styles.card}
 	data-member-card
 	data-npm={member.npm}
@@ -60,4 +47,4 @@ const displayName = member.nama_panggilan || member.name;
 		<h2 class={styles.info_name} title={member.name}>{displayName}</h2>
 		<span class={styles.info_major}>{majorCode}</span>
 	</div>
-</article>
+</a>

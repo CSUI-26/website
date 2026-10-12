@@ -30,7 +30,17 @@ export default defineConfig({
 		sitemap()
 	],
 
+	server: {
+		host: true,
+	},
+
 	vite: {
+		server: {
+			allowedHosts: [".ts.net"],
+			hmr: {
+				clientPort: 8449,
+			},
+		},
 		build: {
 			minify: 'terser',
 		}
