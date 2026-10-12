@@ -1,0 +1,63 @@
+---
+import type { Member } from "@/types/member";
+import styles from "./MemberCard.module.css";
+
+interface Props {
+	member: Member;
+	hidden?: boolean;
+}
+
+const { member, hidden = false } = Astro.props;
+
+// Determine badge: take first niche keyword or fall back to "Developer"
+const badge = member.niche
+	? member.niche.split(/[,/]/)[0]!.trim() || "Member"
+	: "Member";
+
+// Major short code mapping
+function getMajorCode(major: string): string {
+	switch (major) {
+		case "Ilmu Komputer":
+			return "CS";
+		case "Ilmu Komputer KKI":
+			return "CS KKI";
+		case "Sistem Informasi":
+			return "SI";
+		case "Kecerdasan Artifisial":
+			return "AI";
+		default:
+			return major;
+	}
+}
+
+const majorCode = getMajorCode(member.major);
+const displayName = member.nama_panggilan || member.name;
+---
+
+<article
+	class={styles.card}
+	data-member-card
+	data-npm={member.npm}
+	data-name={member.name}
+	data-nickname={member.nama_panggilan}
+	data-major={member.major}
+	data-niche={member.niche}
+	style={hidden ? "display: none;" : undefined}
+>
+	<div class={styles.picture}>
+		<img
+			src={member.foto.url}
+			alt={member.name}
+			class={styles.picture_image}
+			loading="lazy"
+			decoding="async"
+		/>
+		<div class={styles.picture_badge}>
+			<span>{badge}</span>
+		</div>
+	</div>
+	<div class={styles.info}>
+		<h2 class={styles.info_name} title={member.name}>{displayName}</h2>
+		<span class={styles.info_major}>{majorCode}</span>
+	</div>
+</article>
