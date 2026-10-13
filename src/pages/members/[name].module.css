@@ -61,7 +61,7 @@
 	border-radius: 25px;
 	overflow: hidden;
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 
 	.photo {
 		width: 100%;
@@ -179,26 +179,78 @@
 	width: 100%;
 	max-width: 1200px;
 
+	.similar_header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-block-end: 1.5rem;
+	}
+
 	.similar_title {
 		font-size: 28px;
 		font-weight: var(--font-base-weight-heavy);
 		letter-spacing: var(--font-base-letterspacing);
 		color: white;
-		margin-block-end: 2rem;
+		margin: 0;
 	}
 
-	.similar_grid {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		gap: 20px;
+	.scroll_controls {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
 
-		@media (max-width: 1100px) {
-			grid-template-columns: repeat(3, 1fr);
+	.scroll_btn {
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: rgba(255, 255, 255, 0.08);
+		color: white;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		transition:
+			background 0.2s,
+			transform 0.2s,
+			border-color 0.2s;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.2);
+			border-color: rgba(255, 255, 255, 0.4);
+			transform: scale(1.05);
 		}
 
-		@media (max-width: 600px) {
-			grid-template-columns: repeat(2, 1fr);
+		&:active {
+			transform: scale(0.96);
 		}
+	}
+
+	.similar_carousel {
+		display: flex;
+		gap: 24px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+		padding-block: 8px;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	.similar_photo_box {
+		width: 100%;
+		aspect-ratio: 1 / 1;
+		border-radius: 50%;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.05);
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+		margin-block-end: 0.85rem;
 	}
 
 	.similar_photo {
@@ -210,6 +262,9 @@
 	}
 
 	.similar_card {
+		flex: 0 0 170px;
+		max-width: 170px;
+		scroll-snap-align: start;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -224,16 +279,6 @@
 				transform: scale(1.05);
 			}
 		}
-	}
-
-	.similar_photo_box {
-		width: 100%;
-		aspect-ratio: 1 / 1;
-		border-radius: 50%;
-		overflow: hidden;
-		background: rgba(255, 255, 255, 0.05);
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-		margin-block-end: 0.85rem;
 	}
 
 	.similar_name {

@@ -4,6 +4,7 @@ import rawData from "../../../data.json";
 import type { Member } from "@/types/member";
 import { getMemberSlug, getMajorCode, shuffle } from "@/util";
 import ArrowLeftIcon from "@/icons/arrow-left.svg";
+import ArrowRightIcon from "@/icons/arrow-right.svg";
 import InstagramIcon from "@/icons/instagram.svg";
 import LinkedinIcon from "@/icons/linkedin.svg";
 import GithubIcon from "@/icons/github.svg";
@@ -24,8 +25,12 @@ export async function getStaticPaths() {
 		const shuffledSame = shuffle([...sameMajor]);
 		const shuffledOther = shuffle([...otherMajor]);
 
-		// Pick 6 peers: prioritize same major, then fill with other majors if needed
-		const similar = [...shuffledSame, ...shuffledOther].slice(0, 6);
+		// Pick 10 peers from the same prodi and 4 from other prodi so current prodi stays dominant
+		const dominantSame = shuffledSame.slice(0, 10);
+		const mixedOther = shuffledOther.slice(0, 4);
+
+		// Interleave / shuffle the combined 14 peers
+		const similar = shuffle([...dominantSame, ...mixedOther]);
 
 		return {
 			params: { name: getMemberSlug(member) },
@@ -174,8 +179,28 @@ const nicheTags = member.niche
 		<!-- Bottom: See Similar People Section -->
 		{similar.length > 0 && (
 			<section class={styles.similar_section}>
-				<h2 class={styles.similar_title}>See similar people</h2>
-				<div class={styles.similar_grid}>
+				<div class={styles.similar_header}>
+					<h2 class={styles.similar_title}>See similar people</h2>
+					<div class={styles.scroll_controls}>
+						<button
+							type="button"
+							id="scroll-left-btn"
+							class={styles.scroll_btn}
+							aria-label="Scroll left"
+						>
+							<ArrowLeftIcon width={20} height={20} />
+						</button>
+						<button
+							type="button"
+							id="scroll-right-btn"
+							class={styles.scroll_btn}
+							aria-label="Scroll right"
+						>
+							<ArrowRightIcon width={20} height={20} />
+						</button>
+					</div>
+				</div>
+				<div class={styles.similar_carousel} id="similar-carousel">
 					{similar.map((s) => (
 						<a
 							href={`/members/${getMemberSlug(s)}`}
@@ -203,3 +228,17 @@ const nicheTags = member.niche
 		)}
 	</main>
 </BaseLayout>
+
+<script>
+	const carousel = document.getElementById("similar-carousel");
+	const leftBtn = document.getElementById("scroll-left-btn");
+	const rightBtn = document.getElementById("scroll-right-btn");
+
+	leftBtn?.addEventListener("click", () => {
+		carousel?.scrollBy({ left: -360, behavior: "smooth" });
+	});
+
+	rightBtn?.addEventListener("click", () => {
+		carousel?.scrollBy({ left: 360, behavior: "smooth" });
+	});
+</script>
