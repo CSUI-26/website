@@ -1,0 +1,32 @@
+---
+// note: maybe used for a common UI component in the future
+import type { HTMLAttributes } from "astro/types";
+import styles from "./Pill.module.css";
+
+export type PillVariant = "filter" | "tag" | "badge" | "solid";
+
+interface Props extends Omit<HTMLAttributes<"span">, "class"> {
+	as?: "span" | "button" | "div";
+	variant?: PillVariant;
+	active?: boolean;
+	class?: string | undefined | null;
+}
+
+const {
+	as: Tag = "span",
+	variant = "tag",
+	active = false,
+	class: className = "",
+	...rest
+} = Astro.props;
+
+const variantClass = styles[`pill__${variant}`];
+const activeClass = active ? styles.pill__active : "";
+---
+
+<Tag
+	class:list={[styles.pill, variantClass, activeClass, className]}
+	{...rest}
+>
+	<slot />
+</Tag>

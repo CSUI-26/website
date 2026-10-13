@@ -1,0 +1,31 @@
+.surface {
+	background: rgba(0, 0, 0, 0.44);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	backdrop-filter: blur(var(--blur-radius));
+	-webkit-backdrop-filter: blur(var(--blur-radius));
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.surface__card {
+	border-radius: 31px;
+	padding: 2.5rem;
+}
+
+.surface__bar {
+	border-radius: var(--border-radius-pill);
+	padding-inline: 28px;
+}
+
+.surface__button {
+	border-radius: var(--border-radius-4);
+	padding: 14px 44px;
+	background: rgba(0, 0, 0, 0.5);
+	border-color: rgba(255, 255, 255, 0.25);
+}
+
+.surface__subtle {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(var(--blur-radius));
+	-webkit-backdrop-filter: blur(var(--blur-radius));
+}

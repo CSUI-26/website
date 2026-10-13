@@ -1,6 +1,7 @@
 ---
 import type { Member } from "@/types/member";
 import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
+import Pill from "@/components/Members/Pill.astro";
 import styles from "./MemberCard.module.css";
 
 interface Props {
@@ -40,9 +41,9 @@ const photoUrl = getMemberPhotoUrl(member);
 			loading="lazy"
 			decoding="async"
 		/>
-		<div class={styles.picture_badge}>
-			<span>{badge}</span>
-		</div>
+		<Pill variant="badge" class={styles.picture_badge}>
+			{badge}
+		</Pill>
 	</div>
 	<div class={styles.info}>
 		<h2 class={styles.info_name} title={member.name}>{displayName}</h2>

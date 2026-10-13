@@ -46,25 +46,10 @@
 		position: absolute;
 		bottom: 12px;
 		left: 12px;
-		background: rgba(0, 0, 0, 0.44);
-		backdrop-filter: blur(30px);
-		-webkit-backdrop-filter: blur(30px);
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		border-radius: var(--border-radius-4);
-		padding: 6px 18px;
 		max-width: calc(100% - 24px);
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-
-		span {
-			font-size: 16px;
-			font-weight: var(--font-base-weight-normal);
-			color: white;
-			letter-spacing: var(--font-base-letterspacing);
-			text-transform: capitalize;
-		}
 	}
 }
 

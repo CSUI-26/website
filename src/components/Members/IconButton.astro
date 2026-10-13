@@ -1,0 +1,40 @@
+---
+// note: maybe used for a common UI component in the future
+import type { HTMLAttributes } from "astro/types";
+import styles from "./IconButton.module.css";
+
+interface Props extends Omit<HTMLAttributes<"button">, "class"> {
+	as?: "button" | "a";
+	href?: string;
+	target?: string;
+	rel?: string;
+	ariaLabel?: string;
+	size?: "sm" | "md";
+	class?: string | undefined | null;
+}
+
+const {
+	as = Astro.props.href ? "a" : "button",
+	href,
+	target,
+	rel,
+	ariaLabel,
+	size = "sm",
+	class: className = "",
+	...rest
+} = Astro.props;
+
+const Tag = as;
+const sizeClass = size === "md" ? styles.icon_button__md : "";
+---
+
+<Tag
+	href={href}
+	target={target}
+	rel={rel}
+	aria-label={ariaLabel}
+	class:list={[styles.icon_button, sizeClass, className]}
+	{...rest}
+>
+	<slot />
+</Tag>
