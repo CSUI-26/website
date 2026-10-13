@@ -14,8 +14,10 @@ Proyek ini menggunakan:
 ### Local development
 
 1. Clone repositori
-2. Install dependencies (`bun i`)
-3. Run `bun run sync` untuk melakukan pre-generasi type dan definisi khusus Astro (lihat baris 4 [tsconfig.json](tsconfig.json))
+1. Install dependencies (`bun i`)
+1. Run `bun run sync` untuk melakukan pre-generasi type dan definisi khusus Astro (lihat baris 4 [tsconfig.json](tsconfig.json))
+1. Run `bun run sync:photos` untuk mendownload foto-foto profil angkatan 2026 (lihat [scripts/sync-photos.md](./scripts/sync-photos.md))
+1. Run `bun run dev` untuk menjalankan server development lokal
 
 ### Kontribusi
 

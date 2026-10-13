@@ -1,6 +1,6 @@
 ---
 import type { Member } from "@/types/member";
-import { getMajorCode, getMemberSlug } from "@/util";
+import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
 import styles from "./MemberCard.module.css";
 
 interface Props {
@@ -18,6 +18,7 @@ const badge = member.niche
 const majorCode = getMajorCode(member.major);
 const displayName = member.nama_panggilan || member.name;
 const profileUrl = `/members/${getMemberSlug(member)}`;
+const photoUrl = getMemberPhotoUrl(member);
 ---
 
 <a
@@ -33,7 +34,7 @@ const profileUrl = `/members/${getMemberSlug(member)}`;
 >
 	<div class={styles.picture}>
 		<img
-			src={member.foto.url}
+			src={photoUrl}
 			alt={member.name}
 			class={styles.picture_image}
 			loading="lazy"

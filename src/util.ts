@@ -1,6 +1,52 @@
 import type { Member } from "@/types/member";
+import fs from "node:fs";
+import path from "node:path";
 
 declare type RecordValues<T extends Record<PropertyKey, any>> = T[keyof T];
+
+let localPhotosSet: Set<string> | null = null;
+
+/**
+ * Returns a Set of cached photo filenames under public/photos/.
+ * Memoized across calls during the build / SSG phase.
+ */
+function getCachedPhotosSet(): Set<string> {
+	if (localPhotosSet !== null) {
+		return localPhotosSet;
+	}
+	localPhotosSet = new Set<string>();
+	try {
+		const dir = path.resolve(process.cwd(), "public/photos");
+		if (fs.existsSync(dir)) {
+			for (const file of fs.readdirSync(dir)) {
+				localPhotosSet.add(file);
+			}
+		}
+	} catch {
+		// Fallback safely if directory is not accessible
+	}
+	return localPhotosSet;
+}
+
+/**
+ * Resolves the member's photo URL:
+ * Returns the local cached asset `/photos/<npm>.<ext>` if present in `public/photos/`,
+ * otherwise falls back to the original remote URL.
+ */
+export function getMemberPhotoUrl(
+	member: Pick<Member, "npm" | "foto">,
+): string {
+	const fallbackUrl = member.foto?.url || "";
+	if (!member.npm) return fallbackUrl;
+
+	const cached = getCachedPhotosSet();
+	if (cached.has(`${member.npm}.jpg`)) return `/photos/${member.npm}.jpg`;
+	if (cached.has(`${member.npm}.png`)) return `/photos/${member.npm}.png`;
+	if (cached.has(`${member.npm}.webp`)) return `/photos/${member.npm}.webp`;
+	if (cached.has(`${member.npm}.jpeg`)) return `/photos/${member.npm}.jpeg`;
+
+	return fallbackUrl;
+}
 
 /**
  * Creates a URL-friendly slug from a string.

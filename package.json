@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
+		"sync:photos": "bun ./scripts/sync-photos.ts",
 		"sync": "astro sync",
 		"preview": "astro preview",
 		"astro": "astro",

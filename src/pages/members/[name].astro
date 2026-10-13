@@ -2,7 +2,12 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import rawData from "@/data.json";
 import type { Member } from "@/types/member";
-import { getMemberSlug, getMajorCode, shuffle } from "@/util";
+import {
+	getMajorCode,
+	getMemberPhotoUrl,
+	getMemberSlug,
+	shuffle,
+} from "@/util";
 import ArrowLeftIcon from "@/icons/arrow-left.svg";
 import ArrowRightIcon from "@/icons/arrow-right.svg";
 import InstagramIcon from "@/icons/instagram.svg";
@@ -96,7 +101,7 @@ const nicheTags = member.niche
 			<!-- Left: Avatar Photo -->
 			<div class={styles.photo_box}>
 				<img
-					src={member.foto.url}
+					src={getMemberPhotoUrl(member)}
 					alt={member.name}
 					class={styles.photo}
 					loading="eager"
@@ -208,7 +213,7 @@ const nicheTags = member.niche
 						>
 							<div class={styles.similar_photo_box}>
 								<img
-									src={s.foto.url}
+									src={getMemberPhotoUrl(s)}
 									alt={s.name}
 									class={styles.similar_photo}
 									loading="lazy"

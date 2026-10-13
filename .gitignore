@@ -6,6 +6,9 @@ dist/
 # dependencies
 node_modules/
 
+# downloaded member photos cache
+public/photos/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
