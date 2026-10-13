@@ -1,10 +1,9 @@
 // @ts-check
-import { defineConfig, fontProviders } from 'astro/config'
 
-import react from '@astrojs/react'
-import compress from 'astro-compress'
-
-import sitemap from '@astrojs/sitemap'
+import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
+import { defineConfig, fontProviders } from "astro/config";
+import compress from "astro-compress";
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,10 +12,10 @@ export default defineConfig({
 			provider: fontProviders.fontsource(),
 			name: "Inter",
 			display: "swap",
-			weights: [ "100 900" ],
+			weights: ["100 900"],
 			cssVariable: "--fontface-inter",
-			fallbacks: [ "sans-serif" ]
-		}
+			fallbacks: ["sans-serif"],
+		},
 	],
 
 	integrations: [
@@ -24,10 +23,15 @@ export default defineConfig({
 		compress({
 			CSS: {
 				lightningcss: true,
-				csso: false
+				csso: false,
+			},
+			HTML: {
+				"html-minifier-terser": {
+					minifyCSS: false,
+				},
 			},
 		}),
-		sitemap()
+		sitemap(),
 	],
 
 	server: {
@@ -42,7 +46,7 @@ export default defineConfig({
 			},
 		},
 		build: {
-			minify: 'terser',
-		}
+			minify: "terser",
+		},
 	},
-})
+});
