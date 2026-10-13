@@ -56,7 +56,6 @@
 	border-radius: var(--border-radius-pill);
 	background: rgba(0, 0, 0, 0.44);
 	backdrop-filter: blur(var(--blur-radius));
-	-webkit-backdrop-filter: blur(var(--blur-radius));
 	border: 1px solid rgba(255, 255, 255, 0.18);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 
@@ -187,7 +186,6 @@
 	letter-spacing: var(--font-base-letterspacing);
 	cursor: pointer;
 	backdrop-filter: blur(var(--blur-radius));
-	-webkit-backdrop-filter: blur(var(--blur-radius));
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 	transition:
 		background 0.2s,
@@ -224,7 +222,6 @@
 	border-radius: var(--border-radius-4);
 	background: rgba(0, 0, 0, 0.5);
 	backdrop-filter: blur(var(--blur-radius));
-	-webkit-backdrop-filter: blur(var(--blur-radius));
 	border: 1px solid rgba(255, 255, 255, 0.25);
 	text-decoration: none;
 	color: white;
