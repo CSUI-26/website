@@ -47,7 +47,12 @@
 	color: transparent;
 	background-clip: text;
 	-webkit-background-clip: text;
-	background-image: linear-gradient(to right, var(--accent-blue-lighter), white, var(--accent-red-lighter));
+	background-image: linear-gradient(
+		to right,
+		var(--accent-blue-lighter),
+		white,
+		var(--accent-red-lighter)
+	);
 
 	&::before {
 		display: block;

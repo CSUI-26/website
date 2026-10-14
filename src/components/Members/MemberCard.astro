@@ -1,0 +1,52 @@
+---
+import type { Member } from "@/types/member";
+import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
+import Pill from "@/components/Members/Pill.astro";
+import styles from "./MemberCard.module.css";
+
+interface Props {
+	member: Member;
+	hidden?: boolean;
+}
+
+const { member, hidden = false } = Astro.props;
+
+// Determine badge: take first niche keyword or fall back to "Developer"
+const badge = member.niche
+	? member.niche.split(/[,/]/)[0]!.trim() || "Member"
+	: "Member";
+
+const majorCode = getMajorCode(member.major);
+const displayName = member.nama_panggilan || member.name;
+const profileUrl = `/members/${getMemberSlug(member)}`;
+const photoUrl = getMemberPhotoUrl(member);
+---
+
+<a
+	href={profileUrl}
+	class={styles.card}
+	data-member-card
+	data-npm={member.npm}
+	data-name={member.name}
+	data-nickname={member.nama_panggilan}
+	data-major={member.major}
+	data-niche={member.niche}
+	style={hidden ? "display: none;" : undefined}
+>
+	<div class={styles.picture}>
+		<img
+			src={photoUrl}
+			alt={member.name}
+			class={styles.picture_image}
+			loading="lazy"
+			decoding="async"
+		/>
+		<Pill variant="badge" class={styles.picture_badge}>
+			{badge}
+		</Pill>
+	</div>
+	<div class={styles.info}>
+		<h2 class={styles.info_name} title={member.name}>{displayName}</h2>
+		<span class={styles.info_major}>{majorCode}</span>
+	</div>
+</a>

@@ -1,0 +1,186 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import rawData from "@/data.json";
+import type { Member } from "@/types/member";
+import {
+	getMajorCode,
+	getMemberPhotoUrl,
+	getMemberSlug,
+	shuffle,
+} from "@/util";
+import ArrowLeftIcon from "@/icons/arrow-left.svg";
+import InstagramIcon from "@/icons/instagram.svg";
+import LinkedinIcon from "@/icons/linkedin.svg";
+import GithubIcon from "@/icons/github.svg";
+import LineIcon from "@/icons/line.svg";
+import IconButton from "@/components/Members/IconButton.astro";
+import Pill from "@/components/Members/Pill.astro";
+import Surface from "@/components/Members/Surface.astro";
+import PeerCarousel from "@/components/Members/PeerCarousel.astro";
+import styles from "./[name].module.css";
+
+export async function getStaticPaths() {
+	const allMembers = rawData as Member[];
+	return allMembers.map((member) => {
+		const sameMajor = allMembers.filter(
+			(m) => m.npm !== member.npm && m.major === member.major,
+		);
+		const otherMajor = allMembers.filter(
+			(m) => m.npm !== member.npm && m.major !== member.major,
+		);
+
+		// Shuffle candidates using Math.random()
+		const shuffledSame = shuffle([...sameMajor]);
+		const shuffledOther = shuffle([...otherMajor]);
+
+		// Pick 10 peers from the same prodi and 4 from other prodi so current prodi stays dominant
+		const dominantSame = shuffledSame.slice(0, 10);
+		const mixedOther = shuffledOther.slice(0, 4);
+
+		// Interleave / shuffle the combined 14 peers
+		const similar = shuffle([...dominantSame, ...mixedOther]);
+
+		return {
+			params: { name: getMemberSlug(member) },
+			props: { member, similar },
+		};
+	});
+}
+
+export interface Props {
+	member: Member;
+	similar: Member[];
+}
+
+const { member, similar } = Astro.props;
+
+const title = `${member.name} - Members - Zenith`;
+const majorCode = getMajorCode(member.major);
+const displayName = member.nama_panggilan || member.name;
+
+const instagramUrl = member.instagram
+	? `https://instagram.com/${member.instagram.replace(/^@/, "")}`
+	: null;
+
+const linkedinUrl =
+	member.linkedin && member.linkedin.trim() !== "-"
+		? member.linkedin.startsWith("http")
+			? member.linkedin
+			: `https://${member.linkedin}`
+		: null;
+
+const githubUrl =
+	member.github && member.github.trim() !== "-"
+		? member.github.startsWith("http")
+			? member.github
+			: `https://github.com/${member.github}`
+		: null;
+
+const lineUrl =
+	member.line && member.line.trim() !== "-"
+		? `https://line.me/ti/p/~${member.line}`
+		: null;
+
+const nicheTags = member.niche
+	? member.niche
+			.split(/[,/]/)
+			.map((tag) => tag.trim())
+			.filter(Boolean)
+	: [];
+---
+
+<BaseLayout title={title} activeTab="/members">
+	<main class={styles.container}>
+		<!-- Back Button -->
+		<nav class={styles.back_nav} aria-label="Breadcrumb">
+			<Surface as="a" href="/members" variant="subtle" class={styles.back_button}>
+				<ArrowLeftIcon width={20} height={20} />
+				<span>Back to members</span>
+			</Surface>
+		</nav>
+
+		<!-- Main Member Profile Card Section -->
+		<section class={styles.card_section}>
+			<!-- Left: Avatar Photo -->
+			<div class={styles.photo_box}>
+				<img
+					src={getMemberPhotoUrl(member)}
+					alt={member.name}
+					class={styles.photo}
+					loading="eager"
+					decoding="async"
+				/>
+			</div>
+
+			<!-- Right: Member Details -->
+			<Surface variant="card" class={styles.details_box}>
+				<!-- Social Media Links -->
+				<div class={styles.social_row}>
+					{instagramUrl && (
+						<IconButton
+							href={instagramUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							ariaLabel="Instagram"
+						>
+							<InstagramIcon width={22} height={22} />
+						</IconButton>
+					)}
+					{linkedinUrl && (
+						<IconButton
+							href={linkedinUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							ariaLabel="LinkedIn"
+						>
+							<LinkedinIcon width={22} height={22} />
+						</IconButton>
+					)}
+					{githubUrl && (
+						<IconButton
+							href={githubUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							ariaLabel="GitHub"
+						>
+							<GithubIcon width={22} height={22} />
+						</IconButton>
+					)}
+					{lineUrl && (
+						<IconButton
+							href={lineUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							ariaLabel="LINE"
+						>
+							<LineIcon width={22} height={22} />
+						</IconButton>
+					)}
+				</div>
+
+				<!-- Name & Major Badge -->
+				<div class={styles.header_row}>
+					<h1 class={styles.name}>{displayName}</h1>
+					<Pill variant="solid">{majorCode}</Pill>
+				</div>
+
+				<!-- Bio / Description -->
+				<p class={styles.bio}>
+					{member.deskripsi || "No description provided."}
+				</p>
+
+				<!-- Niche Domain Tags -->
+				{nicheTags.length > 0 && (
+					<div class={styles.niche_tags}>
+						{nicheTags.map((tag) => (
+							<Pill variant="tag">{tag}</Pill>
+						))}
+					</div>
+				)}
+			</Surface>
+		</section>
+
+		<!-- Bottom: See Similar People Section -->
+		{similar.length > 0 && <PeerCarousel similar={similar} />}
+	</main>
+</BaseLayout>

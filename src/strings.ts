@@ -8,6 +8,6 @@ export const Strings = {
 		Member: "Member",
 		Boardwall: "Boardwall",
 		Gallery: "Gallery",
-		Academic: "Academic"
-	}
-} as const
+		Academic: "Academic",
+	},
+} as const;

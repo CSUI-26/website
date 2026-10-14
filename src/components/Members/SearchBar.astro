@@ -1,0 +1,26 @@
+---
+import SearchIcon from "@/icons/search.svg";
+import Surface from "./Surface.astro";
+import styles from "./SearchBar.module.css";
+
+interface Props {
+	id?: string;
+	placeholder?: string;
+}
+
+const {
+	id = "member-search",
+	placeholder = "Search by name, nickname, or niche...",
+} = Astro.props;
+---
+
+<Surface variant="bar" class={styles.search_bar}>
+	<SearchIcon class={styles.search_icon} width={22} height={22} />
+	<input
+		type="search"
+		id={id}
+		placeholder={placeholder}
+		class={styles.search_input}
+		autocomplete="off"
+	/>
+</Surface>
