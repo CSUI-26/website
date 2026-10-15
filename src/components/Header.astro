@@ -1,5 +1,5 @@
 ---
-import styles from "./index.module.css";
+import styles from "./Header.module.css";
 import { RootRoutes, type RootRoutesValues } from "@/routes";
 import { Strings } from "@/strings";
 
@@ -25,11 +25,11 @@ const { activeTab } = Astro.props;
 	</ul>
 	<div class={styles.header_title}>
 		<a
-			data-text={Strings.FleetingCode}
+			data-text={Strings.SiteTitle.toUpperCase()}
 			href={RootRoutes.get("Home")}
 			class={styles.header_title_text}
 		>
-			{Strings.FleetingCode}
+			{Strings.SiteTitle.toUpperCase()}
 		</a>
 	</div>
 </header>

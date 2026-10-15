@@ -1,0 +1,40 @@
+---
+import Styles from "./TableOfContents.module.css";
+
+const tocListSelector = "toc-list";
+---
+
+<aside class={Styles.toc} aria-label="Table of Contents">
+	<ul id={tocListSelector}></ul>
+</aside>
+
+<script>
+	const tocListSelector = "toc-list";
+	const headingTocLevelAttr = "data-toc-level";
+	const tocList = document.getElementById(tocListSelector) as HTMLDivElement;
+	const headings = document.querySelectorAll<HTMLHeadingElement>(
+		`[${headingTocLevelAttr}]`,
+	)!;
+
+	headings.forEach((heading) => {
+		if (!heading.id)
+			heading.id =
+				heading.textContent
+					?.toLowerCase()
+					.trim()
+					.replace(/[^a-z0-0\s-]/g, "")
+					.replace(/\s+/g, "-") || "";
+
+		const level = heading.getAttribute(headingTocLevelAttr) || "1";
+
+		const li = document.createElement("li");
+		li.className = `toc-item depth-${level}`;
+
+		const a = document.createElement("a");
+		a.href = `#${heading.id}`;
+		a.textContent = heading.textContent;
+
+		li.appendChild(a);
+		tocList.appendChild(li);
+	});
+</script>
