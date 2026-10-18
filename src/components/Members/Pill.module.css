@@ -26,13 +26,13 @@
 
 	&:hover {
 		background: rgba(255, 255, 255, 0.15);
-		color: white;
+		color: var(--fg-text-normal);
 	}
 
 	&.pill__active {
 		background: rgba(0, 17, 255, 0.35);
 		border-color: rgba(0, 17, 255, 0.8);
-		color: white;
+		color: var(--fg-text-normal);
 	}
 }
 
@@ -41,7 +41,7 @@
 	border-radius: 31px;
 	background: rgba(255, 255, 255, 0.08);
 	border-color: rgba(255, 255, 255, 0.15);
-	color: white;
+	color: var(--fg-text-normal);
 	font-size: 17px;
 	font-weight: var(--font-base-weight-normal);
 	backdrop-filter: blur(var(--blur-radius));
@@ -52,7 +52,7 @@
 	border-radius: var(--border-radius-4);
 	background: rgba(0, 0, 0, 0.44);
 	border-color: rgba(255, 255, 255, 0.2);
-	color: white;
+	color: var(--fg-text-normal);
 	font-size: 16px;
 	font-weight: var(--font-base-weight-normal);
 	text-transform: capitalize;
@@ -64,7 +64,7 @@
 	padding: 6px 18px;
 	border-radius: 46px;
 	background: rgba(72, 136, 255, 1);
-	color: white;
+	color: var(--fg-text-normal);
 	font-size: 18px;
 	font-weight: var(--font-base-weight-heavy);
 	letter-spacing: 0;

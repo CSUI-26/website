@@ -7,6 +7,9 @@ import compress from "astro-compress";
 
 // https://astro.build/config
 export default defineConfig({
+	prefetch: {
+		defaultStrategy: 'viewport'
+	},
 	fonts: [
 		{
 			provider: fontProviders.fontsource(),
@@ -34,17 +37,7 @@ export default defineConfig({
 		sitemap(),
 	],
 
-	server: {
-		host: true,
-	},
-
 	vite: {
-		server: {
-			allowedHosts: [".ts.net"],
-			hmr: {
-				clientPort: 8449,
-			},
-		},
 		build: {
 			minify: "terser",
 		},

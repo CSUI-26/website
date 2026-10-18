@@ -1,31 +1,117 @@
 ---
 import Styles from "./index.module.css";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import TableOfContents from "@components/TableOfContents.astro";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
 import { Image } from "astro:assets";
 import Hero from "@images/hero.png";
+import Racoon1 from "@images/Racoon1.png";
+// import Racoon2 from "@images/Racoon2.png"
+import Heading from "@/components/Heading.astro";
+import {
+	SiGmail,
+	SiInstagram,
+	SiX,
+	SiYoutube,
+} from "@icons-pack/react-simple-icons";
+
 
 const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Home")!}>
-	<section class={`${Styles.section_hero} ${Styles.section}`}>
-		<h1 class={Styles.h1}>{Strings.FleetingCode}</h1>
-		<Image src={Hero} alt="" layout="constrained" priority class={Styles.hero_img} draggable={false} />
+	<TableOfContents />
+	<section class={`${Styles.section} ${Styles.section_hero}`}>
+		<h1 class={Styles.h1}>{Strings.SiteTitle.toUpperCase()}</h1>
+		<Image
+			width={1100}
+			src={Hero}
+			alt=""
+			layout="constrained"
+			priority
+			class={Styles.hero_img}
+			draggable={false}
+		/>
 		<div class={Styles.text_columns}>
-			<div>
+			<p>
 				Lorem ipsum dolor sit amet consectetur, adipisicing elit.
 				Architecto, consequuntur tempore eligendi aut odit sint est
 				odio, eaque cumque dicta reiciendis illo repellendus veritatis
 				unde quisquam, libero assumenda tempora aspernatur.
-			</div>
-			<div>
+			</p>
+			<p>
 				Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo
 				quisquam perferendis laborum temporibus explicabo rem quis fuga
 				ea sint repudiandae, enim vel dignissimos, quos reiciendis
 				aliquid quibusdam inventore consequuntur porro?
+			</p>
+		</div>
+	</section>
+	<section
+		class={`${Styles.section} ${Styles.content_section} ${Styles.section_greetings}`}
+	>
+		<Image
+			class=`${Styles.greetings_image} ${Styles.image}`
+			src={Racoon1}
+			width={400}
+			alt="Photo of Zenith"
+			layout="constrained"
+		/>
+		<div class={Styles.greetings_content}>
+			<Heading level={2} class={Styles.subheadings}>Greetings</Heading>
+			<p>
+				Lorem ipsum dolor sit amet consectetur adipisicing elit.
+				Explicabo nemo molestias cum nesciunt minima, tempore doloremque
+				porro adipisci. Officiis aut aliquam in ratione maxime, alias
+				dolorem beatae consectetur cumque ducimus? Magnam saepe incidunt
+				quia suscipit perspiciatis ipsam doloribus aliquid maiores. Cum,
+				cumque expedita ipsum commodi voluptatum culpa tempore quis
+				laudantium doloremque sit, deleniti eligendi earum ullam
+				aspernatur laboriosam ab. Quia. Fuga corrupti quas labore
+				debitis aut veniam, libero, laborum, autem assumenda neque
+				consequuntur exercitationem error mollitia commodi delectus
+				ratione! Amet reprehenderit corrupti quasi consequuntur optio
+				ullam incidunt at harum alias?
+			</p>
+			<div class={Styles.icon_set}>
+				<SiGmail size={50} />
+				<SiX size={50} />
+				<SiInstagram size={50} />
+				<SiYoutube size={50} />
 			</div>
 		</div>
+	</section>
+	<section
+		class={`${Styles.section} ${Styles.content_section} ${Styles.section_highlight}`}
+	>
+		<Heading level={2} class={Styles.subheadings}>Our Highlight</Heading>
+		<p>Coming soon.</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora
+			omnis, saepe, mollitia aperiam suscipit optio molestias, sed fugiat
+			id dolorem ad exercitationem quaerat animi eligendi soluta nemo
+			recusandae aliquid. Tenetur!
+		</p>
+	</section>
+	<section
+		class={`${Styles.section} ${Styles.content_section} ${Styles.section_activities}`}
+	>
+		<Heading level={2} class={Styles.subheadings}>Our Activities</Heading>
+		<p>Coming soon.</p>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti
+			nesciunt soluta voluptate dolor ad eveniet quis qui perspiciatis
+			explicabo error consequatur quaerat molestiae nihil blanditiis
+			obcaecati odit totam, inventore rerum!
+		</p>
+	</section>
+	<section
+		class={`${Styles.section} ${Styles.content_section} ${Styles.section_peeps}`}
+	>
+		<Heading level={2} class={Styles.subheadings}>Our Peeps</Heading>
+		<p>
+			<a href="/members">See our members!</a>
+		</p>
 	</section>
 </BaseLayout>

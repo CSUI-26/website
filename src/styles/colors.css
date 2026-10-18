@@ -5,6 +5,8 @@
 	--accent-blue-lighter: color-mix(in oklch, var(--accent-blue), white 25%);
 	--accent-red-lighter: color-mix(in oklch, var(--accent-red), white 25%);
 
+	--fg-text-normal: white;
+
 	--bg-grad-overlay-start: black;
 	--bg-grad-overlay-end: rgba(0, 0, 0, 0.25);
 
