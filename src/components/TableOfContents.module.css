@@ -1,7 +1,38 @@
 .toc {
 	position: fixed;
-	right: 0;
+	right: 2rem;
 	top: 50%;
 	translate: 0 -50%;
 	z-index: 10;
+	padding: 1rem;
+	border-radius: var(--border-radius-4) 0 0 var(--border-radius-4);
+	border-inline-end: 4px solid rgba(255 255 255 / 0.5);
+	opacity: 0.25;
+	transition-property: opacity, backdrop-filter;
+	transition-duration: 250ms;
+	transition-timing-function: ease-out;
+
+	&:is(:hover, :focus, :focus-within, :active) {
+		opacity: 1;
+		backdrop-filter: blur(var(--blur-radius));
+	}
+
+	ul {
+		list-style-type: none;
+		padding: 0;
+
+		li {
+			a {
+				font-size: var(--font-base-size-large);
+				font-style: italic;
+				color: var(--fg-text-normal);
+				text-decoration: none;
+				transition: font-weight 100ms ease-out;
+
+				&:hover {
+					font-weight: bold;
+				}
+			}
+		}
+	}
 }
