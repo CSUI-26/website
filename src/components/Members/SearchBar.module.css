@@ -16,7 +16,7 @@
 		background: transparent;
 		border: none;
 		outline: none;
-		color: white;
+		color: var(--fg-text-normal);
 		font-size: 18px;
 		letter-spacing: var(--font-base-letterspacing);
 

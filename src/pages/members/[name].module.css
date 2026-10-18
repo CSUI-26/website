@@ -6,7 +6,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	color: white;
+	color: var(--fg-text-normal);
 }
 
 .back_nav {
@@ -18,7 +18,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		color: white;
+		color: var(--fg-text-normal);
 		text-decoration: none;
 		font-size: 18px;
 		font-weight: var(--font-base-weight-semibold);
@@ -98,7 +98,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--fg-text-normal);
 		text-decoration: none;
 		transition:
 			background 0.2s,
@@ -125,7 +125,7 @@
 		font-weight: var(--font-base-weight-heavy);
 		letter-spacing: var(--font-base-letterspacing);
 		line-height: 1.1;
-		color: white;
+		color: var(--fg-text-normal);
 	}
 
 	.major_pill {
@@ -135,7 +135,7 @@
 		padding: 6px 18px;
 		border-radius: 46px;
 		background: rgba(72, 136, 255, 1);
-		color: white;
+		color: var(--fg-text-normal);
 		font-size: 18px;
 		font-weight: var(--font-base-weight-heavy);
 		letter-spacing: 0;
@@ -164,7 +164,7 @@
 		border-radius: 31px;
 		background: rgba(255, 255, 255, 0.08);
 		border: 1px solid rgba(255, 255, 255, 0.15);
-		color: white;
+		color: var(--fg-text-normal);
 		font-size: 17px;
 		font-weight: var(--font-base-weight-normal);
 		letter-spacing: var(--font-base-letterspacing);
@@ -187,7 +187,7 @@
 		font-size: 28px;
 		font-weight: var(--font-base-weight-heavy);
 		letter-spacing: var(--font-base-letterspacing);
-		color: white;
+		color: var(--fg-text-normal);
 		margin: 0;
 	}
 
@@ -203,7 +203,7 @@
 		border-radius: 50%;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		background: rgba(255, 255, 255, 0.08);
-		color: white;
+		color: var(--fg-text-normal);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -277,7 +277,7 @@
 		font-size: 18px;
 		font-weight: var(--font-base-weight-semibold);
 		letter-spacing: var(--font-base-letterspacing);
-		color: white;
+		color: var(--fg-text-normal);
 		text-align: center;
 		white-space: nowrap;
 		overflow: hidden;

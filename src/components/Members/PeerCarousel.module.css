@@ -14,7 +14,7 @@
 	font-size: 28px;
 	font-weight: var(--font-base-weight-heavy);
 	letter-spacing: var(--font-base-letterspacing);
-	color: white;
+	color: var(--fg-text-normal);
 	margin: 0;
 }
 
@@ -81,7 +81,7 @@
 	font-size: 18px;
 	font-weight: var(--font-base-weight-semibold);
 	letter-spacing: var(--font-base-letterspacing);
-	color: white;
+	color: var(--fg-text-normal);
 	text-align: center;
 	white-space: nowrap;
 	overflow: hidden;

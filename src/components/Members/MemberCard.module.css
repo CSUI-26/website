@@ -65,7 +65,7 @@
 		font-size: 20px;
 		font-weight: var(--font-base-weight-semibold);
 		letter-spacing: var(--font-base-letterspacing);
-		color: white;
+		color: var(--fg-text-normal);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
