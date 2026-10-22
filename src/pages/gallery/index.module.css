@@ -23,6 +23,11 @@
     .title {
         line-height: 1;
     }
+
+    .heroImg {
+        width: 80%;
+        height: 80%;
+    }
 }
 
 /* Tablet and up */
@@ -36,6 +41,11 @@
 
     .title {
         display: block;
+    }
+
+    .heroImg {
+        width: 90%;
+        height: 90%;
     }
 }
 
@@ -63,7 +73,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-    border: solid 2px white;
+    /* border: solid 2px white; */
 }
 
 .hero {
@@ -122,8 +132,6 @@
 
 .heroImg {
     border: 2px solid darkorange;
-    width: 80%;
-    height: 80%;
     border-radius: 20px;
     object-fit: cover;
 }
