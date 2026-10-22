@@ -2,6 +2,13 @@
 	min-height: 100vh;
 	position: relative;
 	overflow: hidden;
+
+	a {
+		color: white;
+		text-decoration: underline;
+		text-underline-offset: .2rem;
+		text-decoration-thickness: .1px;
+	}
 }
 
 .section_hero {
