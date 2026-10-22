@@ -1,11 +1,15 @@
 .section {
-	height: 100vh;
+	min-height: 100vh;
+	position: relative;
+	overflow: hidden;
 }
 
 .section_hero {
 	display: flex;
+	justify-content: flex-end;
 	justify-items: end;
 	align-items: end;
+	min-height: 100vh;
 	margin-block-end: 20vh;
 }
 
