@@ -1,8 +1,65 @@
+/* phone and up */
+@media (min-width: 0px) {
+    .main {
+        margin-top: 120px;
+    }
+
+    .title {
+        display: none;
+    }
+
+    .bottom {
+        flex-direction: column-reverse;
+    }
+
+    .left {
+        width: 100%;
+    }
+
+    .right {
+        width: 100%;
+    }
+
+    .title {
+        line-height: 1;
+    }
+}
+
+/* Tablet and up */
+@media (min-width: 580px) {
+    .main {
+        margin-top: 60px;
+        padding-block-start: 120px;
+        padding-block-end: 120px;
+        padding-inline: max(2rem, 5vw);
+    }
+
+    .title {
+        display: block;
+    }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+    .main {
+        margin-top: 0px;
+    }
+
+    .bottom {
+        flex-direction: row;
+    }
+
+    .left {
+        width: 50%;
+    }
+
+    .right {
+        width: 50%;
+    }
+}
+
 .main {
 	min-height: 100vh;
-	padding-block-start: 120px;
-	padding-block-end: 120px;
-	padding-inline: max(2rem, 5vw);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -33,10 +90,10 @@
 .title {
 	position: relative;
 	z-index: 1;
-	font-size: min(7vw, 100px);
+	font-size: min(10vw, 100px);
 	font-weight: var(--font-base-weight-heavy);
 	font-style: italic;
-	white-space: nowrap;
+	word-break: break-word;
 	letter-spacing: var(--font-base-letterspacing);
 	text-align: center;
 	margin-block-end: 0;
@@ -44,22 +101,8 @@
 	color: var(--fg-text-normal);
 }
 
-.heroP {
-    /* border: 2px solid darkorange; */
-    width: 80%;
-    height: 80%;
-}
-
-.heroImg {
-    border: 2px solid darkorange;
-    width: 80%;
-    height: 80%;
-    border-radius: 20px;
-}
-
 .left {
     /* border: solid 2px pink; */
-    width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,8 +110,21 @@
 
 .right {
     /* border: solid 2px salmon; */
-    width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+.heroP {
+    /* border: 2px solid darkorange; */
+    padding: 2rem;
+}
+
+.heroImg {
+    border: 2px solid darkorange;
+    width: 80%;
+    height: 80%;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
