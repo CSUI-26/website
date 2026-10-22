@@ -24,18 +24,24 @@ body {
 }
 
 body {
-	background:
-		linear-gradient(
-			to bottom,
-			var(--bg-grad-overlay-start),
-			var(--bg-grad-overlay-end)
-		),
-		radial-gradient(circle at bottom left, var(--accent-red), transparent 75%),
-		radial-gradient(circle at bottom right, var(--accent-blue), transparent 75%),
-		black;
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-attachment: fixed;
+	&::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		will-change: transform;
+
+		background:
+			linear-gradient(to bottom,
+				var(--bg-grad-overlay-start),
+				var(--bg-grad-overlay-end)),
+			radial-gradient(circle at bottom left, var(--accent-red), transparent 75%),
+			radial-gradient(circle at bottom right, var(--accent-blue), transparent 75%),
+			black;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
 }
 
 *,
@@ -58,7 +64,14 @@ body {
 }
 
 @media (prefers-contrast: more) {
-	header, p, h2, h3, h4, h5, h6 {
+
+	header,
+	p,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
 		outline: 1px solid;
 	}
 }
