@@ -123,6 +123,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
+    /* border-radius: 20px; */
 }
 
 .heroP {
@@ -131,8 +133,71 @@
 }
 
 .heroImg {
-    border: 2px solid darkorange;
+    /* border: 2px solid darkorange; */
     border-radius: 20px;
     object-fit: cover;
 }
 
+/* Carousel */
+.carousel {
+	position: relative;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	border-radius: 20px;
+}
+
+.track {
+	display: flex;
+	height: 100%;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+}
+.track::-webkit-scrollbar {
+	display: none;
+}
+
+.heroImg {
+	flex: 0 0 100%;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	scroll-snap-align: center;
+}
+
+.nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 2.5rem;
+	height: 2.5rem;
+	border: 0;
+	border-radius: 50%;
+	background: rgb(0 0 0 / 0.45);
+	color: #fff;
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+.prev { left: 0.5rem; }
+.next { right: 0.5rem; }
+
+.dots {
+	position: absolute;
+	bottom: 0.75rem;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 0.5rem;
+}
+.dot {
+	width: 0.6rem;
+	height: 0.6rem;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgb(255 255 255 / 0.5);
+	cursor: pointer;
+}
+.dot[data-active] {
+	background: #fff;
+}
