@@ -83,6 +83,8 @@
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	translate: -50% -50%;
+	translate: -50% -45%;
 	filter: drop-shadow(0 0 25px rgba(0 0 0 / 0.75));
+	width: clamp(500px, 100vw, 1100px);
+	height: auto;
 }
