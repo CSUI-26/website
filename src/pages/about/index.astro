@@ -15,6 +15,8 @@ import {
 	SiX,
 	SiYoutube,
 } from "@icons-pack/react-simple-icons";
+import { Picture } from "astro:assets";
+import HighlightCarousel from "@/components/About/HighlightCarousel.astro";
 
 const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 ---
@@ -50,12 +52,14 @@ const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 	<section
 		class={`${Styles.section} ${Styles.content_section} ${Styles.section_greetings}`}
 	>
-		<Image
+		<Picture
 			class=`${Styles.greetings_image} ${Styles.image}`
 			src={Racoon1}
 			width={400}
 			alt="Photo of Zenith"
 			layout="constrained"
+			loading={"lazy"}
+			decoding={"async"}
 		/>
 		<div class={Styles.greetings_content}>
 			<Heading level={2} class={Styles.subheadings}>Greetings</Heading>
@@ -85,13 +89,8 @@ const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 		class={`${Styles.section} ${Styles.content_section} ${Styles.section_highlight}`}
 	>
 		<Heading level={2} class={Styles.subheadings}>Our Highlight</Heading>
-		<p>Coming soon.</p>
-		<p>
-			Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora
-			omnis, saepe, mollitia aperiam suscipit optio molestias, sed fugiat
-			id dolorem ad exercitationem quaerat animi eligendi soluta nemo
-			recusandae aliquid. Tenetur!
-		</p>
+		<p class={Styles.highlight_content}>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sapiente eveniet doloribus, dolore exercitationem dicta iure labore placeat repudiandae dolorum ea eos mollitia sunt velit eaque distinctio iste, saepe necessitatibus nostrum.</p>
+		<HighlightCarousel />
 	</section>
 	<section
 		class={`${Styles.section} ${Styles.content_section} ${Styles.section_activities}`}

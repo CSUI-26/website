@@ -1,0 +1,53 @@
+---
+import Styles from "./HighlightCarousel.module.css";
+import Highlight1 from "@images/about/highlight1.png";
+import Highlight2 from "@images/about/highlight2.png";
+import Picture from "astro/components/Picture.astro";
+
+const carouselImages: [ImageMetadata, string][] = [
+	[Highlight1, "Lorem"],
+	[Highlight2, "Ipsum"],
+	[Highlight1, "Lorem"],
+	[Highlight2, "Ipsum"],
+	[Highlight1, "Lorem"],
+	[Highlight2, "Ipsum"],
+	[Highlight1, "Lorem"],
+	[Highlight2, "Ipsum"],
+	[Highlight1, "Lorem"],
+	[Highlight2, "Ipsum"],
+];
+---
+
+<div
+	class={Styles.carousel_container}
+	id="carouselContainer"
+	data-anim-class={Styles.carousel_paused}
+>
+	{
+		carouselImages.map((data) => (
+			<Picture
+				class={Styles.carousel_image}
+				src={data[0]}
+				alt={data[1]}
+				loading={"lazy"}
+				decoding={"async"}
+			/>
+		))
+	}
+</div>
+
+<script>
+	const carouselContainerId = "carouselContainer";
+	const carouselContainer = document.getElementById(
+		carouselContainerId,
+	) as HTMLDivElement;
+	const carouselPausedClass = carouselContainer.dataset.animClass!;
+
+	carouselContainer.addEventListener("mouseenter", () => {
+		carouselContainer.classList.add(carouselPausedClass);
+	});
+
+	carouselContainer.addEventListener("mouseleave", () => {
+		carouselContainer.classList.remove(carouselPausedClass);
+	});
+</script>
