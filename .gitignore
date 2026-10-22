@@ -9,6 +9,9 @@ node_modules/
 # downloaded member photos cache
 public/photos/
 
+# downloaded gallery photos
+src/images/gallery/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
