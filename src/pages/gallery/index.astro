@@ -1,6 +1,7 @@
 ---
 import "@styles/global.css";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import ImageRibbon from "@/components/Gallery/ImageRibbon.astro";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
 import { Image } from "astro:assets";
@@ -59,6 +60,9 @@ const slides = Object.entries(modules)
 			</div>
 		</section>
 	</main>
+	<div class={styles.darkbg}>
+		<ImageRibbon images={slides} speed={40} height={180} />
+	</div>
 </BaseLayout>
 
 <script>
