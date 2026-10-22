@@ -1,8 +1,8 @@
 ---
 import "@styles/global.css";
-import Footer from "@/components/Footer/index.astro"
+import Footer from "@components/Footer.astro"
 
-import Header from "@/components/Header.astro";
+import Header from "@components/Header.astro";
 import type { RootRoutesValues } from "@/routes";
 import { Font } from "astro:assets";
 
@@ -35,6 +35,5 @@ const { title, activeTab } = Astro.props;
 
 		<Footer activeTab={activeTab} />
 	</body>
-		
-</html>
 
+</html>
