@@ -3,11 +3,35 @@ import "@styles/global.css";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
+import { Image } from "astro:assets";
+import styles from "./index.module.css";
+import Hero from "@images/hero.png";
 
 const title = `${Strings.SlugTitles.Gallery} - ${Strings.SiteTitle}`;
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Gallery")!}>
-	<h1>{Strings.SlugTitles.Gallery}</h1>
-	<p>Coming soon...</p>
+	<main class={styles.main}>
+		<section class={styles.hero}>
+			<div class={styles.top}>
+				<h1 class={styles.title}>Capturing moment,</h1>
+				<h1 class={styles.title}>Sharing stories</h1>
+			</div>
+
+			<div class={styles.bottom}>
+				<div class={styles.left}>
+					<p class={styles.heroP}>
+						Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+						Architecto, consequuntur tempore eligendi aut odit sint est
+						odio, eaque cumque dicta reiciendis illo repellendus veritatis
+						unde quisquam, libero assumenda tempora aspernatur.
+					</p>
+				</div>
+
+				<div class={styles.right}>
+					<Image src={Hero} alt="" class={styles.heroImg}/>
+				</div>
+			</div>
+		</section>
+	</main>
 </BaseLayout>
