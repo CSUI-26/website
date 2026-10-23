@@ -1,10 +1,9 @@
-// @ts-expect-error
-import Header from "./Header.astro"
-import "./Header.module.css"
+import Header from "./Header.astro";
+import "./Header.module.css";
 
 export default {
 	title: "Components/Header",
-	component: Header
-}
+	component: Header,
+};
 
-export const Default = {}
+export const Default = {};
