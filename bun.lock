@@ -22,7 +22,7 @@
         "@astrojs/ts-plugin": "^1.10.12",
         "@biomejs/biome": "2.5.15",
         "@storybook-astro/framework": "^1.12.0",
-        "@storybook/builder-vite": "^10.6.1",
+        "@storybook/builder-vite": "^10.6.3",
         "@storybook/react": "^10.6.1",
         "@vitejs/plugin-react": "^6.1.2",
         "storybook": "^10.6.1",
@@ -442,7 +442,7 @@
 
     "@storybook-astro/renderer": ["@storybook-astro/renderer@1.12.0", "", { "dependencies": { "@types/node": "^20.19.0" }, "peerDependencies": { "@storybook/react": "^10.0.0", "astro": "^5.5.3 || ^6.0.0 || ^7.0.0", "storybook": "^10.0.0" }, "optionalPeers": ["@storybook/react"] }, "sha512-h95yYKafOumxqOrg1aKCf8mVFWIOfiqsZJqFOIXZiQ9wUv1r6A/QUpMCl3lToXsO0IlTllh5ssGi2nodK0Qe6g=="],
 
-    "@storybook/builder-vite": ["@storybook/builder-vite@10.6.1", "", { "dependencies": { "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^10.6.1", "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0" } }, "sha512-kUMRRRS4MpJdxOLhrlQX3cpMYi2vVB3tIIRXyqWmAjVM6xT7OZ1SCQEMFPP+S3ToRqaYWZQb8aBqrJucbbYufA=="],
+    "@storybook/builder-vite": ["@storybook/builder-vite@10.6.3", "", { "dependencies": { "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^10.6.3", "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0" } }, "sha512-1+WCZZg/fPxxyHDB5sFKniFt9/4RFUIzoNqMujv+BLRROM+gQeyUHvdvoyZOZ51+P8ee+/PgnNKHjsTupV+nOA=="],
 
     "@storybook/global": ["@storybook/global@5.0.0", "", {}, "sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ=="],
 
