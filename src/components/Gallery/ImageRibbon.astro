@@ -1,70 +1,38 @@
 ---
+import Styles from "./ImageRibbon.module.css";
 interface Props {
-  images: { src: string; alt?: string }[];
-  speed?: number; // seconds for one full loop (higher = slower)
-  height?: number; // image height in px
-  gap?: number; // gap between images in px
+	images: { src: string; alt?: string }[];
+	speed?: number; // seconds for one full loop (higher = slower)
+	height?: number; // image height in px
+	gap?: number; // gap between images in px
 }
 
 const { images, speed = 30, height = 160, gap = 16 } = Astro.props;
 ---
 
 <div
-  class="ribbon"
-  style={`--speed: ${speed}s; --height: ${height}px; --gap: ${gap}px;`}
+	class={Styles.ribbon}
+	style={`--speed: ${speed}s; --height: ${height}px; --gap: ${gap}px;`}
 >
-  <div class="track">
-    {[0, 1].map((copy) => (
-      <ul class="group" aria-hidden={copy === 1 ? "true" : undefined}>
-        {images.map((img) => (
-          <li>
-            <img src={img.src} alt={img.alt ?? ""} loading="lazy" draggable="false" />
-          </li>
-        ))}
-      </ul>
-    ))}
-  </div>
+	<div class={Styles.track}>
+		{
+			[0, 1].map((copy) => (
+				<ul
+					class={Styles.group}
+					aria-hidden={copy === 1 ? "true" : undefined}
+				>
+					{images.map((img) => (
+						<li>
+							<img
+								src={img.src}
+								alt={img.alt ?? ""}
+								loading="lazy"
+								draggable="false"
+							/>
+						</li>
+					))}
+				</ul>
+			))
+		}
+	</div>
 </div>
-
-<style>
-  .ribbon {
-    overflow: hidden;
-    width: 100%;
-    /* optional soft fade on both edges */
-    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  }
-
-  .track {
-    display: flex;
-    width: max-content;
-    animation: scroll-left var(--speed) linear infinite;
-  }
-
-  .ribbon:hover .track {
-    animation-play-state: paused; /* remove if you don't want pause-on-hover */
-  }
-
-  .group {
-    display: flex;
-    gap: var(--gap);
-    padding-right: var(--gap); /* keeps spacing identical at the loop seam */
-    margin: 0;
-    list-style: none;
-  }
-
-  img {
-    height: var(--height);
-    width: auto;
-    display: block;
-    border-radius: 8px;
-  }
-
-  @keyframes scroll-left {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .track { animation: none; }
-  }
-</style>

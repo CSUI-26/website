@@ -1,5 +1,4 @@
 ---
-import "@styles/global.css";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import ImageRibbon from "@/components/Gallery/ImageRibbon.astro";
 import Carousel from "@/components/Gallery/Carousel.astro";
@@ -8,15 +7,16 @@ import { RootRoutes } from "@/routes";
 import { Image } from "astro:assets";
 import styles from "./index.module.css";
 import lastImage from "@images/gallery/last.jpg";
+import Heading from "@/components/Heading.astro";
 
 const getGallery = import.meta.glob<{ default: ImageMetadata }>(
 	"@images/gallery/*.{jpg,jpeg,png,webp,avif}",
-	{ eager: true }
+	{ eager: true },
 );
 
 const getHeroes = import.meta.glob<{ default: ImageMetadata }>(
 	"@images/gallery/heroes/*.{jpg,jpeg,png,webp,avif}",
-	{ eager: true }
+	{ eager: true },
 );
 
 const title = `${Strings.SlugTitles.Gallery} - ${Strings.SiteTitle}`;
@@ -33,18 +33,20 @@ const heroes = Object.entries(getHeroes)
 		<section class={styles.hero}>
 			<!-- title -->
 			<div class={styles.top}>
-				<h1 class={styles.title}>Capturing moment,</h1>
-				<h1 class={styles.title}>Sharing stories</h1>
+				<Heading level={1} class={styles.title}
+					>Capturing moments,<br />sharing stories</Heading
+				>
 			</div>
 
 			<!-- introduction -->
 			<div class={styles.bottom}>
 				<div class={styles.left}>
 					<p class={styles.heroP}>
-						Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-						Architecto, consequuntur tempore eligendi aut odit sint est
-						odio, eaque cumque dicta reiciendis illo repellendus veritatis
-						unde quisquam, libero assumenda tempora aspernatur.
+						Lorem ipsum dolor sit amet consectetur, adipisicing
+						elit. Architecto, consequuntur tempore eligendi aut odit
+						sint est odio, eaque cumque dicta reiciendis illo
+						repellendus veritatis unde quisquam, libero assumenda
+						tempora aspernatur.
 					</p>
 				</div>
 
@@ -56,24 +58,39 @@ const heroes = Object.entries(getHeroes)
 			<!-- mid container -->
 			<section class={styles.container}>
 				<div class={styles.hero2}>
-					<Carousel slides={heroes} alts={[""]} interval={6000} aspectRatio={1/1.75}/>
+					<Carousel
+						slides={heroes}
+						alts={[""]}
+						interval={6000}
+						aspectRatio={1 / 1.75}
+					/>
 				</div>
 
 				<div class={styles.hero2}>
-					<h1>Original Character</h1>
-					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, at? Officiis tempora quod, enim quas doloribus nemo laboriosam, sunt sequi architecto asperiores suscipit repudiandae illum, deserunt iusto odit deleniti velit.</p>	
-					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, at? Officiis tempora quod, enim quas doloribus nemo laboriosam, sunt sequi architecto asperiores suscipit repudiandae illum, deserunt iusto odit deleniti velit.</p>	
+					<Heading level={2}>Original Character</Heading>
+					<p>
+						Lorem ipsum dolor sit amet consectetur adipisicing elit.
+						Officia, at? Officiis tempora quod, enim quas doloribus
+						nemo laboriosam, sunt sequi architecto asperiores
+						suscipit repudiandae illum, deserunt iusto odit deleniti
+						velit.
+					</p>
+					<p>
+						Lorem ipsum dolor sit amet consectetur adipisicing elit.
+						Officia, at? Officiis tempora quod, enim quas doloribus
+						nemo laboriosam, sunt sequi architecto asperiores
+						suscipit repudiandae illum, deserunt iusto odit deleniti
+						velit.
+					</p>
 				</div>
 			</section>
 
 			<!-- last image -->
-			 <div class={styles.lastIMGContainer}>
-				<Image src={lastImage} alt="" class={styles.heroImg}/>
-			 </div>
+			<div class={styles.lastIMGContainer}>
+				<Image src={lastImage} alt="" class={styles.heroImg} />
+			</div>
 		</section>
 	</main>
-	
+
 	<ImageRibbon images={gallery} speed={40} height={180} />
 </BaseLayout>
-
-
