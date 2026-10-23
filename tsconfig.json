@@ -5,33 +5,30 @@
 		".astro/types.d.ts",
 		"**/*"
 	],
-	"exclude": [
-		"dist"
-	],
+	"exclude": ["dist"],
 	"compilerOptions": {
 		// bundler mode
 		"noEmit": true,
 		"allowImportingTsExtensions": true,
+
 		// react integration
 		"jsx": "react-jsx",
 		"jsxImportSource": "react",
+
+		// plugin typescript
+		"plugins": [
+			{
+				"name": "@astrojs/ts-plugin"
+			}
+		],
+
 		// shortcut paths
 		"paths": {
-			"@/*": [
-				"./src/*"
-			],
-			"@styles/*": [
-				"./src/styles/*"
-			],
-			"@components/*": [
-				"./src/components/*"
-			],
-			"@layouts/*": [
-				"./src/layouts/*"
-			],
-			"@images/*": [
-				"./src/images/*"
-			]
+			"@/*": ["./src/*"],
+			"@styles/*": ["./src/styles/*"],
+			"@components/*": ["./src/components/*"],
+			"@layouts/*": ["./src/layouts/*"],
+			"@images/*": ["./src/images/*"]
 		}
 	}
 }
