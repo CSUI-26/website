@@ -6,9 +6,6 @@ import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
 import { Image } from "astro:assets";
 import styles from "./index.module.css";
-import Hero from "@images/hero.png";
-import Racoon1 from "@images/Racoon1.png";
-import Racoon2 from "@images/Racoon2.png"
 
 const modules = import.meta.glob<{ default: ImageMetadata }>(
 	"@images/gallery/*.{jpg,jpeg,png,webp,avif}",
