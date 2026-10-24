@@ -1,0 +1,53 @@
+.ribbon {
+	overflow: hidden;
+	width: 100%;
+	/* optional soft fade on both edges */
+	mask-image: linear-gradient(to right,
+			transparent,
+			#000 8%,
+			#000 92%,
+			transparent);
+}
+
+.track {
+	display: flex;
+	width: max-content;
+	animation: scroll-left var(--speed) linear infinite;
+}
+
+.ribbon:hover .track {
+	animation-play-state: paused;
+	/* remove if you don't want pause-on-hover */
+}
+
+.group {
+	display: flex;
+	gap: var(--gap);
+	padding-right: var(--gap);
+	/* keeps spacing identical at the loop seam */
+	margin: 0;
+	list-style: none;
+}
+
+img {
+	height: var(--height);
+	width: auto;
+	display: block;
+	border-radius: 8px;
+}
+
+@keyframes scroll-left {
+	from {
+		transform: translateX(0);
+	}
+
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.track {
+		animation: none;
+	}
+}

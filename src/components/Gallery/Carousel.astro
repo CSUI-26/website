@@ -1,0 +1,122 @@
+---
+import Styles from "./Carousel.module.css"
+import { Image } from "astro:assets";
+
+interface Props {
+	slides: ImageMetadata[];
+	alts?: string[];
+	interval?: number; // autoplay delay in ms
+	aspectRatio?: string | number; // e.g. "16 / 9", "1", 1.5
+}
+
+const {
+	slides,
+	alts = [],
+	interval = 5000,
+	aspectRatio = "4 / 3",
+} = Astro.props;
+---
+
+<div
+	class={Styles.carousel}
+	data-carousel
+	data-interval={interval}
+	style={`--carousel-ratio: ${aspectRatio}`}
+>
+	<div class={Styles.track} data-track>
+		{
+			slides.map((src, i) => (
+				<Image
+					src={src}
+					alt={alts[i] ?? `Slide ${i + 1}`}
+					class={Styles.heroImg}
+					loading={i === 0 ? "eager" : "lazy"}
+				/>
+			))
+		}
+	</div>
+
+	{
+		slides.length > 1 && (
+			<>
+				<button class={`${Styles.nav} ${Styles.prev}`} data-prev aria-label="Previous slide">
+					&#10094;
+				</button>
+				<button class={`${Styles.nav} ${Styles.next}`} data-next aria-label="Next slide">
+					&#10095;
+				</button>
+
+				<div class={Styles.dots}>
+					{slides.map((_, i) => (
+						<button
+							class={Styles.dot}
+							data-dot
+							data-active={i === 0 ? "" : undefined}
+							aria-label={`Go to slide ${i + 1}`}
+						/>
+					))}
+				</div>
+			</>
+		)
+	}
+</div>
+
+<script>
+	document
+		.querySelectorAll<HTMLElement>("[data-carousel]")
+		.forEach((root) => {
+			const track = root.querySelector<HTMLElement>("[data-track]")!;
+			const dots = [...root.querySelectorAll<HTMLElement>("[data-dot]")];
+			const count = track.children.length;
+			const delay = Number(root.dataset.interval) || 5000;
+			let index = 0;
+			let timer: number | undefined;
+
+			const go = (n: number) => {
+				index = (n + count) % count;
+				track.scrollTo({
+					left: index * track.clientWidth,
+					behavior: "smooth",
+				});
+			};
+
+			const stop = () => {
+				clearInterval(timer);
+				timer = undefined;
+			};
+
+			const start = () => {
+				stop(); // avoid stacking multiple intervals
+				if (count < 2) return;
+				if (matchMedia("(prefers-reduced-motion: reduce)").matches)
+					return;
+				timer = window.setInterval(() => go(index + 1), delay);
+			};
+
+			// keep dots in sync with manual swipes/scrolls
+			track.addEventListener(
+				"scroll",
+				() => {
+					index = Math.round(track.scrollLeft / track.clientWidth);
+					dots.forEach((d, i) =>
+						d.toggleAttribute("data-active", i === index),
+					);
+				},
+				{ passive: true },
+			);
+
+			dots.forEach((d, i) => d.addEventListener("click", () => go(i)));
+			root.querySelector("[data-prev]")?.addEventListener("click", () =>
+				go(index - 1),
+			);
+			root.querySelector("[data-next]")?.addEventListener("click", () =>
+				go(index + 1),
+			);
+
+			root.addEventListener("mouseenter", stop);
+			root.addEventListener("mouseleave", start);
+			root.addEventListener("focusin", stop);
+			root.addEventListener("focusout", start);
+			start();
+		});
+</script>
