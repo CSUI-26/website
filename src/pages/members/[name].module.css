@@ -114,10 +114,10 @@
 
 	.header_row {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		gap: 1.25rem;
 		flex-wrap: wrap;
-		margin-block-end: 1.5rem;
+		margin-block-end: 1.25rem;
 	}
 
 	.name {
@@ -140,6 +140,22 @@
 		font-weight: var(--font-base-weight-heavy);
 		letter-spacing: 0;
 		box-shadow: 0 4px 15px rgba(72, 136, 255, 0.3);
+	}
+
+	.quote {
+		margin: 0;
+		margin-block-end: 1.5rem;
+		padding-inline-start: 1.25rem;
+		border-inline-start: 3px solid rgba(72, 136, 255, 0.85);
+
+		p {
+			font-size: 18px;
+			font-style: italic;
+			line-height: 1.5;
+			color: rgba(255, 255, 255, 0.85);
+			letter-spacing: var(--font-base-letterspacing);
+			margin: 0;
+		}
 	}
 
 	.bio {

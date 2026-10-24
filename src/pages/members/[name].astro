@@ -85,6 +85,13 @@ const lineUrl =
 		: null;
 
 const { allTags: nicheTags } = parseMemberNiche(member.niche);
+
+const quote =
+	member.quotes &&
+	member.quotes.trim() !== "-" &&
+	member.quotes.trim() !== "*"
+		? member.quotes.trim()
+		: null;
 ---
 
 <BaseLayout title={title} activeTab="/members">
@@ -161,6 +168,13 @@ const { allTags: nicheTags } = parseMemberNiche(member.niche);
 					<h1 class={styles.name}>{displayName}</h1>
 					<Pill variant="solid">{majorCode}</Pill>
 				</div>
+
+				<!-- Member Quote -->
+				{quote && (
+					<blockquote class={styles.quote}>
+						<p>{quote}</p>
+					</blockquote>
+				)}
 
 				<!-- Bio / Description -->
 				<p class={styles.bio}>

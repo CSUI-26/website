@@ -22,6 +22,7 @@ export interface DirectoryMember {
 	major: string;
 	majorCode: string;
 	niche: string;
+	quote: string;
 	tags: string[];
 	badge: string;
 	slug: string;
@@ -93,6 +94,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 			const nameMatch = m.name?.toLowerCase().includes(query);
 			const nickMatch = m.nama_panggilan?.toLowerCase().includes(query);
 			const nicheMatch = m.niche?.toLowerCase().includes(query);
+			const quoteMatch = m.quote?.toLowerCase().includes(query);
 			const directTagMatch = m.tags.some((t) =>
 				t.toLowerCase().includes(query),
 			);
@@ -106,6 +108,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 				nameMatch ||
 				nickMatch ||
 				nicheMatch ||
+				quoteMatch ||
 				directTagMatch ||
 				canonicalAliasMatch
 			);
