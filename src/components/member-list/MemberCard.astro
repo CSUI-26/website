@@ -1,7 +1,8 @@
 ---
 import type { Member } from "@/types/member";
 import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
-import Pill from "@/components/Members/Pill.astro";
+import { getMemberBadge } from "./tags";
+import Pill from "@/components/member/Pill.astro";
 import styles from "./MemberCard.module.css";
 
 interface Props {
@@ -11,10 +12,7 @@ interface Props {
 
 const { member, hidden = false } = Astro.props;
 
-// Determine badge: take first niche keyword or fall back to "Developer"
-const badge = member.niche
-	? member.niche.split(/[,/]/)[0]!.trim() || "Member"
-	: "Member";
+const badge = getMemberBadge(member.niche);
 
 const majorCode = getMajorCode(member.major);
 const displayName = member.nama_panggilan || member.name;

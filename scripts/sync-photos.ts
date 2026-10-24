@@ -10,7 +10,7 @@ interface MemberItem {
 }
 
 const PUBLIC_PHOTOS_DIR = path.resolve(process.cwd(), "public/photos");
-const DATA_FILE_PATH = path.resolve(process.cwd(), "src/data.json");
+const DATA_FILE_PATH = path.resolve(process.cwd(), "src/data/members.json");
 const MAX_RETRIES = 3;
 const DELAY_BETWEEN_REQUESTS_MS = 100;
 

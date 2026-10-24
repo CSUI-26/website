@@ -1,71 +1,49 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import MemberCard from "@/components/Members/MemberCard.astro";
-import SearchBar from "@/components/Members/SearchBar.astro";
-import Pill from "@/components/Members/Pill.astro";
-import Surface from "@/components/Members/Surface.astro";
+import Surface from "@/components/member/Surface.astro";
+import MembersDirectory from "@/components/member-list/MembersDirectory";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
-import rawData from "@/data.json";
+import rawData from "@/data/members.json";
 import type { Member } from "@/types/member";
-import GridIcon from "@/icons/grid.svg";
-import ChevronDownIcon from "@/icons/chevron-down.svg";
-import pillStyles from "@/components/Members/Pill.module.css";
+import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
+import { parseMemberNiche } from "@/components/member-list/tags";
 import styles from "./index.module.css";
 
-const members = rawData as Member[];
+const rawMembers = rawData as Member[];
 const title = `${Strings.SlugTitles.Member} - ${Strings.SiteTitle}`;
-const INITIAL_PAGE_SIZE = 24;
+
+// Pre-calculate photo URL, slug, major code, and normalized tags on the server
+// so the client-side React island does not require Node.js fs modules
+const directoryMembers = rawMembers.map((member) => {
+	const { allTags } = parseMemberNiche(member.niche);
+	return {
+		npm: member.npm,
+		name: member.name,
+		nama_panggilan: member.nama_panggilan,
+		major: member.major,
+		majorCode: getMajorCode(member.major),
+		niche: member.niche || "",
+		quote:
+			member.quotes &&
+			member.quotes.trim() !== "-" &&
+			member.quotes.trim() !== "*"
+				? member.quotes.trim()
+				: "",
+		tags: allTags,
+		badge: allTags[0] || "Member",
+		slug: getMemberSlug(member),
+		photoUrl: getMemberPhotoUrl(member),
+	};
+});
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Members")!}>
 	<main class={styles.main}>
-		<!-- Hero Section -->
-		<section class={styles.hero}>
-			<h1 class={styles.title}>our members</h1>
+		<h1 class={styles.title}>our members</h1>
 
-			<!-- Search Bar & Filters -->
-			<div class={styles.search_container}>
-				<SearchBar id="member-search" placeholder="Search by name, nickname, or niche..." />
-
-				<div class={styles.filter_pills} data-pill-active-class={pillStyles.pill__active}>
-					<Pill as="button" variant="filter" active data-major="ALL">All</Pill>
-					<Pill as="button" variant="filter" data-major="Ilmu Komputer">Computer Science</Pill>
-					<Pill as="button" variant="filter" data-major="Sistem Informasi">Information System</Pill>
-					<Pill as="button" variant="filter" data-major="Ilmu Komputer KKI">KKI</Pill>
-					<Pill as="button" variant="filter" data-major="Kecerdasan Artifisial">AI</Pill>
-				</div>
-			</div>
-
-			<!-- Status Bar -->
-			<div class={styles.status_bar}>
-				<span id="results-label" class={styles.status_text}>Showing all members</span>
-				<div class={styles.status_meta}>
-					<span id="results-count" class={styles.count_badge}>{members.length}</span>
-					<GridIcon width={20} height={20} />
-				</div>
-			</div>
-		</section>
-
-		<!-- Member Grid -->
-		<section class={styles.grid_container}>
-			<div class={styles.grid} id="members-grid">
-				{members.map((member, index) => (
-					<MemberCard member={member} hidden={index >= INITIAL_PAGE_SIZE} />
-				))}
-			</div>
-			<div id="no-results" class={styles.no_results} style="display: none;">
-				<p>No members found matching your search.</p>
-			</div>
-
-			<!-- Load More Button -->
-			<div class={styles.load_more_wrapper} id="load-more-wrapper">
-				<button type="button" id="load-more-btn" class={styles.load_more_btn}>
-					<span>Load more</span>
-					<ChevronDownIcon width={18} height={18} />
-				</button>
-			</div>
-		</section>
+		<!-- Interactive Members Directory React Island -->
+		<MembersDirectory client:load members={directoryMembers} />
 
 		<!-- Floating BoardWall CTA -->
 		<div class={styles.boardwall_cta_wrapper}>
@@ -75,19 +53,3 @@ const INITIAL_PAGE_SIZE = 24;
 		</div>
 	</main>
 </BaseLayout>
-
-<script>
-	import { initMembersPage } from "@/scripts/members";
-
-	const filterContainer = document.querySelector<HTMLElement>("[data-pill-active-class]");
-	const pillActiveClass = filterContainer?.dataset.pillActiveClass || "pill__active";
-	const PAGE_SIZE = 24;
-
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", () => {
-			initMembersPage(pillActiveClass, PAGE_SIZE);
-		});
-	} else {
-		initMembersPage(pillActiveClass, PAGE_SIZE);
-	}
-</script>
