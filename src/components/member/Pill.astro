@@ -4,10 +4,12 @@ import type { HTMLAttributes } from "astro/types";
 import styles from "./Pill.module.css";
 
 export type PillVariant = "filter" | "tag" | "badge" | "solid";
+export type PillTheme = "cs" | "si" | "kki" | "ai";
 
 interface Props extends Omit<HTMLAttributes<"span">, "class"> {
 	as?: "span" | "button" | "div";
 	variant?: PillVariant;
+	theme?: PillTheme | undefined | null;
 	active?: boolean;
 	class?: string | undefined | null;
 }
@@ -15,17 +17,19 @@ interface Props extends Omit<HTMLAttributes<"span">, "class"> {
 const {
 	as: Tag = "span",
 	variant = "tag",
+	theme,
 	active = false,
 	class: className = "",
 	...rest
 } = Astro.props;
 
 const variantClass = styles[`pill__${variant}`];
+const themeClass = theme ? styles[`pill__theme_${theme}`] : "";
 const activeClass = active ? styles.pill__active : "";
 ---
 
 <Tag
-	class:list={[styles.pill, variantClass, activeClass, className]}
+	class:list={[styles.pill, variantClass, themeClass, activeClass, className]}
 	{...rest}
 >
 	<slot />
