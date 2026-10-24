@@ -19,18 +19,22 @@
 	margin-block-end: 20vh;
 }
 
-.content_section {
-	max-width: min(50rem, 80vw);
-	margin-inline: auto;
-	/* margin-block-end: 5vh; */
+.section_contents {
+	padding-inline: calc((100% - min(50rem, 80vw)) / 2);
+	display: flex;
+	flex-direction: column;
 }
 
 .section_greetings {
 	margin-block-start: 30vh;
 	display: flex;
 
-	>picture {
-		order: 1;
+	.section_contents {
+		flex-direction: row;
+
+		>picture {
+			order: 2
+		}
 	}
 }
 

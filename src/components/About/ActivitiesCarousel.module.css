@@ -1,0 +1,10 @@
+.carousel_container {
+	overflow-x: scroll;
+	scrollbar-width: thin;
+	scrollbar-color: white black;
+	margin-block-start: 3rem;
+	padding-inline-start: 15rem;
+	padding-block-end: 1rem;
+	display: flex;
+	gap: 2rem;
+}
