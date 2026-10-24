@@ -62,10 +62,32 @@
 .pill__solid {
 	padding: 6px 18px;
 	border-radius: 46px;
-	background: rgba(72, 136, 255, 1);
+	background: rgba(0, 102, 255, 1);
 	color: var(--fg-text-normal);
 	font-size: 18px;
 	font-weight: var(--font-base-weight-heavy);
 	letter-spacing: 0;
-	box-shadow: 0 4px 15px rgba(72, 136, 255, 0.3);
+	box-shadow: 0 4px 15px rgba(0, 102, 255, 0.35);
+}
+
+/* Specific Major Themes (CS -> Blue, SI -> Red, CS KKI -> Dark Blue, AI -> Green) */
+.pill__theme_cs {
+	background: rgba(0, 102, 255, 1);
+	box-shadow: 0 4px 15px rgba(0, 102, 255, 0.35);
+}
+
+.pill__theme_si {
+	background: rgba(220, 20, 50, 1);
+	box-shadow: 0 4px 15px rgba(220, 20, 50, 0.35);
+}
+
+.pill__theme_kki {
+	background: rgba(24, 45, 140, 1);
+	border: 1px solid rgba(80, 120, 255, 0.5);
+	box-shadow: 0 4px 15px rgba(15, 30, 100, 0.45);
+}
+
+.pill__theme_ai {
+	background: rgba(16, 160, 72, 1);
+	box-shadow: 0 4px 15px rgba(16, 160, 72, 0.35);
 }

@@ -6,23 +6,49 @@ import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
 import rawData from "@/data/members.json";
 import type { Member } from "@/types/member";
-import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
+import {
+	getMajorCode,
+	getMajorThemeKey,
+	getMemberPhotoUrl,
+	getMemberSlug,
+} from "@/util";
 import { parseMemberNiche } from "@/components/member-list/tags";
 import styles from "./index.module.css";
 
 const rawMembers = rawData as Member[];
 const title = `${Strings.SlugTitles.Member} - ${Strings.SiteTitle}`;
 
-// Pre-calculate photo URL, slug, major code, and normalized tags on the server
+// Pre-calculate photo URL, slug, major code, normalized tags, and socials on the server
 // so the client-side React island does not require Node.js fs modules
 const directoryMembers = rawMembers.map((member) => {
 	const { allTags } = parseMemberNiche(member.niche);
+	const instagram = member.instagram
+		? `https://instagram.com/${member.instagram.replace(/^@/, "")}`
+		: null;
+	const linkedin =
+		member.linkedin && member.linkedin.trim() !== "-"
+			? member.linkedin.startsWith("http")
+				? member.linkedin
+				: `https://${member.linkedin}`
+			: null;
+	const github =
+		member.github && member.github.trim() !== "-"
+			? member.github.startsWith("http")
+				? member.github
+				: `https://github.com/${member.github}`
+			: null;
+	const line =
+		member.line && member.line.trim() !== "-"
+			? `https://line.me/ti/p/~${member.line}`
+			: null;
+
 	return {
 		npm: member.npm,
 		name: member.name,
 		nama_panggilan: member.nama_panggilan,
 		major: member.major,
 		majorCode: getMajorCode(member.major),
+		majorTheme: getMajorThemeKey(member.major),
 		niche: member.niche || "",
 		quote:
 			member.quotes &&
@@ -34,6 +60,7 @@ const directoryMembers = rawMembers.map((member) => {
 		badge: allTags[0] || "Member",
 		slug: getMemberSlug(member),
 		photoUrl: getMemberPhotoUrl(member),
+		socials: { instagram, linkedin, github, line },
 	};
 });
 ---
