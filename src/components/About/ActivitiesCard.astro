@@ -1,0 +1,22 @@
+---
+import { Picture } from "astro:assets";
+import Styles from "./ActivitiesCard.module.css";
+
+interface Props {
+	activityTitle: string;
+	date: string;
+	description: string;
+	picture: ImageMetadata;
+}
+
+const { activityTitle, date, description, picture } = Astro.props;
+---
+
+<div class={Styles.activities_card}>
+	<Picture class={Styles.picture} width={450} alt={activityTitle} src={picture} />
+	<div>
+		<div class={Styles.activity_title}>{activityTitle}</div>
+		<div class={Styles.date}>{date}</div>
+		<div class={Styles.description}>{description}</div>
+	</div>
+</div>
