@@ -24,6 +24,12 @@ const directoryMembers = rawMembers.map((member) => {
 		major: member.major,
 		majorCode: getMajorCode(member.major),
 		niche: member.niche || "",
+		quote:
+			member.quotes &&
+			member.quotes.trim() !== "-" &&
+			member.quotes.trim() !== "*"
+				? member.quotes.trim()
+				: "",
 		tags: allTags,
 		badge: allTags[0] || "Member",
 		slug: getMemberSlug(member),
