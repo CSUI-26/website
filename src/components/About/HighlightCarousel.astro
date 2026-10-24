@@ -20,7 +20,7 @@ const carouselImages: [ImageMetadata, string][] = [
 
 <div
 	class={Styles.carousel_container}
-	id="carouselContainer"
+	id="highlightCarouselContainer"
 	data-anim-class={Styles.carousel_paused}
 >
 	{
@@ -37,7 +37,7 @@ const carouselImages: [ImageMetadata, string][] = [
 </div>
 
 <script>
-	const carouselContainerId = "carouselContainer";
+	const carouselContainerId = "highlightCarouselContainer";
 	const carouselContainer = document.getElementById(
 		carouselContainerId,
 	) as HTMLDivElement;
