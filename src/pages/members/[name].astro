@@ -8,6 +8,7 @@ import {
 	getMemberSlug,
 	shuffle,
 } from "@/util";
+import { parseMemberNiche } from "@/components/member-list/tags";
 import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
 import {
 	SiGithub as GithubIcon,
@@ -83,12 +84,7 @@ const lineUrl =
 		? `https://line.me/ti/p/~${member.line}`
 		: null;
 
-const nicheTags = member.niche
-	? member.niche
-			.split(/[,/]/)
-			.map((tag) => tag.trim())
-			.filter(Boolean)
-	: [];
+const { allTags: nicheTags } = parseMemberNiche(member.niche);
 ---
 
 <BaseLayout title={title} activeTab="/members">
