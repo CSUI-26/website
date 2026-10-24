@@ -1,13 +1,19 @@
 import {
+	ChevronDown,
 	ChevronLeft,
 	ChevronRight,
 	ChevronsLeft,
 	ChevronsRight,
+	ChevronUp,
 	Grid2X2,
 	Search,
+	Tag,
+	X,
 } from "lucide-react";
 import { type ChangeEvent, useMemo, useState } from "react";
 import styles from "./MembersDirectory.module.css";
+import { matchQueryToCanonicalTags } from "./tags";
+import { CANONICAL_TAGS } from "./tags/rules";
 
 export interface DirectoryMember {
 	npm: string;
@@ -16,6 +22,7 @@ export interface DirectoryMember {
 	major: string;
 	majorCode: string;
 	niche: string;
+	tags: string[];
 	badge: string;
 	slug: string;
 	photoUrl: string;
@@ -34,25 +41,76 @@ const MAJORS = [
 	{ label: "AI", value: "Kecerdasan Artifisial" },
 ];
 
+const INITIAL_VISIBLE_TAG_COUNT = 12;
+
 export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedMajor, setSelectedMajor] = useState("ALL");
+	const [selectedTags, setSelectedTags] = useState<string[]>([]);
+	const [showAllTags, setShowAllTags] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 
-	// Filter members based on major category and search text
+	// Compute tag counts across members matching the current major filter
+	const tagCounts = useMemo(() => {
+		const counts = new Map<string, number>();
+		for (const m of members) {
+			if (selectedMajor !== "ALL" && m.major !== selectedMajor) continue;
+			for (const t of m.tags) {
+				counts.set(t, (counts.get(t) || 0) + 1);
+			}
+		}
+		return counts;
+	}, [members, selectedMajor]);
+
+	// Visible canonical tags (top N by default, plus any currently selected tags outside top N)
+	const visibleTags = useMemo(() => {
+		if (showAllTags) return [...CANONICAL_TAGS];
+		const initial = CANONICAL_TAGS.slice(0, INITIAL_VISIBLE_TAG_COUNT);
+		const extraSelected = CANONICAL_TAGS.slice(
+			INITIAL_VISIBLE_TAG_COUNT,
+		).filter((t) => selectedTags.includes(t));
+		return [...initial, ...extraSelected];
+	}, [showAllTags, selectedTags]);
+
+	// Filter members based on major category, selected tag chips, and search text
 	const filteredMembers = useMemo(() => {
 		const query = searchQuery.trim().toLowerCase();
+		const matchedQueryCanonicalTags = query
+			? matchQueryToCanonicalTags(query)
+			: [];
+
 		return members.filter((m) => {
 			const matchesMajor = selectedMajor === "ALL" || m.major === selectedMajor;
 			if (!matchesMajor) return false;
+
+			if (selectedTags.length > 0) {
+				const hasSelectedTag = selectedTags.some((tag) => m.tags.includes(tag));
+				if (!hasSelectedTag) return false;
+			}
+
 			if (!query) return true;
 
 			const nameMatch = m.name?.toLowerCase().includes(query);
 			const nickMatch = m.nama_panggilan?.toLowerCase().includes(query);
 			const nicheMatch = m.niche?.toLowerCase().includes(query);
-			return nameMatch || nickMatch || nicheMatch;
+			const directTagMatch = m.tags.some((t) =>
+				t.toLowerCase().includes(query),
+			);
+			const canonicalAliasMatch =
+				matchedQueryCanonicalTags.length > 0 &&
+				matchedQueryCanonicalTags.some((canonicalTag) =>
+					m.tags.includes(canonicalTag),
+				);
+
+			return (
+				nameMatch ||
+				nickMatch ||
+				nicheMatch ||
+				directTagMatch ||
+				canonicalAliasMatch
+			);
 		});
-	}, [members, selectedMajor, searchQuery]);
+	}, [members, selectedMajor, selectedTags, searchQuery]);
 
 	// Total pages calculation
 	const totalPages = Math.max(1, Math.ceil(filteredMembers.length / pageSize));
@@ -74,16 +132,24 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 		setCurrentPage(1);
 	};
 
+	const handleTagToggle = (tag: string) => {
+		setSelectedTags((prev) =>
+			prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+		);
+		setCurrentPage(1);
+	};
+
+	const handleClearTags = () => {
+		setSelectedTags([]);
+		setCurrentPage(1);
+	};
+
 	const goToPage = (page: number) => {
 		const target = Math.max(1, Math.min(page, totalPages));
 		setCurrentPage(target);
 		// Smooth scroll up towards top of grid on page change
-		if (typeof window !== "undefined") {
-			const gridEl = document.getElementById("members-grid-top");
-			if (gridEl) {
-				gridEl.scrollIntoView({ behavior: "smooth", block: "start" });
-			}
-		}
+		const gridEl = document.getElementById("members-grid-top");
+		gridEl?.scrollIntoView({ behavior: "smooth", block: "start" });
 	};
 
 	// Generate visible page numbers with ellipsis
@@ -119,6 +185,24 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 		return pages;
 	}, [currentPage, totalPages]);
 
+	const hiddenTagCount = CANONICAL_TAGS.length - visibleTags.length;
+
+	const statusSummary = useMemo(() => {
+		const parts: string[] = [];
+		if (searchQuery.trim()) {
+			parts.push(`"${searchQuery.trim()}"`);
+		}
+		if (selectedMajor !== "ALL") {
+			parts.push(selectedMajor);
+		}
+		if (selectedTags.length > 0) {
+			parts.push(selectedTags.join(", "));
+		}
+		return parts.length > 0
+			? `Showing results for: ${parts.join(" • ")}`
+			: "Showing all members";
+	}, [searchQuery, selectedMajor, selectedTags]);
+
 	return (
 		<div className={styles.directory_root}>
 			{/* Search Bar & Filters */}
@@ -130,12 +214,13 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						id="member-search"
 						value={searchQuery}
 						onChange={handleSearchChange}
-						placeholder="Search by name, nickname, or niche..."
+						placeholder="Search by name, nickname, or interest tag..."
 						className={styles.search_input}
 						autoComplete="off"
 					/>
 				</div>
 
+				{/* Study Program (Major) Filter Pills */}
 				<div className={styles.filter_pills}>
 					{MAJORS.map((m) => {
 						const isActive = selectedMajor === m.value;
@@ -151,17 +236,68 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						);
 					})}
 				</div>
+
+				{/* Multi-Tag Interest Selector Chips */}
+				<div className={styles.tag_filter_section}>
+					<div className={styles.tag_filter_header}>
+						<span className={styles.tag_filter_label}>
+							<Tag width={14} height={14} />
+							<span>Filter by interest tags</span>
+						</span>
+						{selectedTags.length > 0 && (
+							<button
+								type="button"
+								onClick={handleClearTags}
+								className={styles.clear_tags_btn}
+							>
+								<X width={13} height={13} />
+								<span>Clear ({selectedTags.length})</span>
+							</button>
+						)}
+					</div>
+
+					<div className={styles.tag_chips}>
+						{visibleTags.map((tag) => {
+							const isSelected = selectedTags.includes(tag);
+							const count = tagCounts.get(tag) || 0;
+							return (
+								<button
+									key={tag}
+									type="button"
+									onClick={() => handleTagToggle(tag)}
+									aria-pressed={isSelected}
+									className={`${styles.tag_chip} ${isSelected ? styles.tag_chip__active : ""}`}
+								>
+									<span>{tag}</span>
+									<span className={styles.tag_chip_count}>{count}</span>
+								</button>
+							);
+						})}
+
+						<button
+							type="button"
+							onClick={() => setShowAllTags((prev) => !prev)}
+							className={styles.tag_toggle_btn}
+						>
+							{showAllTags ? (
+								<>
+									<span>Show fewer</span>
+									<ChevronUp width={14} height={14} />
+								</>
+							) : (
+								<>
+									<span>+{hiddenTagCount} more</span>
+									<ChevronDown width={14} height={14} />
+								</>
+							)}
+						</button>
+					</div>
+				</div>
 			</div>
 
 			{/* Status Bar */}
 			<div className={styles.status_bar} id="members-grid-top">
-				<span className={styles.status_text}>
-					{searchQuery
-						? `Showing results for: "${searchQuery}"`
-						: selectedMajor !== "ALL"
-							? `Showing results for: ${selectedMajor}`
-							: "Showing all members"}
-				</span>
+				<span className={styles.status_text}>{statusSummary}</span>
 				<div className={styles.status_meta}>
 					<span className={styles.count_badge}>{filteredMembers.length}</span>
 					<Grid2X2 width={20} height={20} />
@@ -247,8 +383,10 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 									key={p}
 									type="button"
 									onClick={() => goToPage(p)}
-									className={`${styles.pagination_number_btn} ${isCurrent ? styles.pagination_number_btn__active : ""}`}
 									aria-current={isCurrent ? "page" : undefined}
+									className={`${styles.pagination_number_btn} ${
+										isCurrent ? styles.pagination_number_btn__active : ""
+									}`}
 								>
 									{p}
 								</button>

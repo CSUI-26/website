@@ -55,7 +55,6 @@
 	color: var(--fg-text-normal);
 	font-size: 16px;
 	font-weight: var(--font-base-weight-normal);
-	text-transform: capitalize;
 	backdrop-filter: blur(var(--blur-radius));
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
