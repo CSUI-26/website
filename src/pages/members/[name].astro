@@ -4,6 +4,7 @@ import rawData from "@/data/members.json";
 import type { Member } from "@/types/member";
 import {
 	getMajorCode,
+	getMajorThemeKey,
 	getMemberPhotoUrl,
 	getMemberSlug,
 	shuffle,
@@ -59,6 +60,7 @@ const { member, similar } = Astro.props;
 
 const title = `${member.name} - Members - Zenith`;
 const majorCode = getMajorCode(member.major);
+const majorTheme = getMajorThemeKey(member.major);
 const displayName = member.nama_panggilan || member.name;
 
 const instagramUrl = member.instagram
@@ -166,7 +168,7 @@ const quote =
 				<!-- Name & Major Badge -->
 				<div class={styles.header_row}>
 					<h1 class={styles.name}>{displayName}</h1>
-					<Pill variant="solid">{majorCode}</Pill>
+					<Pill variant="solid" theme={majorTheme}>{majorCode}</Pill>
 				</div>
 
 				<!-- Member Quote -->

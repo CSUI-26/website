@@ -1,4 +1,9 @@
 import {
+	SiGithub as GithubIcon,
+	SiInstagram as InstagramIcon,
+	SiLine as LineIcon,
+} from "@icons-pack/react-simple-icons";
+import {
 	ChevronDown,
 	ChevronLeft,
 	ChevronRight,
@@ -6,14 +11,22 @@ import {
 	ChevronsRight,
 	ChevronUp,
 	Grid2X2,
+	LayoutList,
 	Search,
 	Tag,
 	X,
 } from "lucide-react";
-import { type ChangeEvent, useMemo, useState } from "react";
+import { type ChangeEvent, type MouseEvent, useMemo, useState } from "react";
 import styles from "./MembersDirectory.module.css";
 import { matchQueryToCanonicalTags } from "./tags";
 import { CANONICAL_TAGS } from "./tags/rules";
+
+export interface DirectoryMemberSocials {
+	instagram: string | null;
+	linkedin: string | null;
+	github: string | null;
+	line: string | null;
+}
 
 export interface DirectoryMember {
 	npm: string;
@@ -21,12 +34,14 @@ export interface DirectoryMember {
 	nama_panggilan: string;
 	major: string;
 	majorCode: string;
+	majorTheme?: "cs" | "si" | "kki" | "ai";
 	niche: string;
 	quote: string;
 	tags: string[];
 	badge: string;
 	slug: string;
 	photoUrl: string;
+	socials?: DirectoryMemberSocials;
 }
 
 interface Props {
@@ -35,20 +50,42 @@ interface Props {
 }
 
 const MAJORS = [
-	{ label: "All", value: "ALL" },
-	{ label: "Computer Science", value: "Ilmu Komputer" },
-	{ label: "Information System", value: "Sistem Informasi" },
-	{ label: "KKI", value: "Ilmu Komputer KKI" },
-	{ label: "AI", value: "Kecerdasan Artifisial" },
-];
+	{ label: "All", value: "ALL", theme: "all" },
+	{ label: "Computer Science", value: "Ilmu Komputer", theme: "cs" },
+	{ label: "Information System", value: "Sistem Informasi", theme: "si" },
+	{ label: "KKI", value: "Ilmu Komputer KKI", theme: "kki" },
+	{ label: "AI", value: "Kecerdasan Artifisial", theme: "ai" },
+] as const;
 
 const INITIAL_VISIBLE_TAG_COUNT = 12;
+
+function LinkedInIconSvg({ size = 16 }: { size?: number }) {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width={size}
+			height={size}
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+		>
+			<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+			<rect x="2" y="9" width="4" height="12" />
+			<circle cx="4" cy="4" r="2" />
+		</svg>
+	);
+}
 
 export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedMajor, setSelectedMajor] = useState("ALL");
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [showAllTags, setShowAllTags] = useState(false);
+	const [viewMode, setViewMode] = useState<"grid" | "column">("grid");
 	const [currentPage, setCurrentPage] = useState(1);
 
 	// Compute tag counts across members matching the current major filter
@@ -150,9 +187,14 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 	const goToPage = (page: number) => {
 		const target = Math.max(1, Math.min(page, totalPages));
 		setCurrentPage(target);
-		// Smooth scroll up towards top of grid on page change
+		// Smooth scroll up towards top of grid/table on page change
 		const gridEl = document.getElementById("members-grid-top");
 		gridEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+	};
+
+	// Prevent row navigation when clicking directly on a social media icon
+	const handleSocialClick = (e: MouseEvent) => {
+		e.stopPropagation();
 	};
 
 	// Generate visible page numbers with ellipsis
@@ -232,9 +274,19 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 								key={m.value}
 								type="button"
 								onClick={() => handleMajorSelect(m.value)}
-								className={`${styles.filter_pill} ${isActive ? styles.filter_pill__active : ""}`}
+								className={`${styles.filter_pill} ${
+									styles[`filter_pill__${m.theme}`]
+								} ${isActive ? styles.filter_pill__active : ""}`}
 							>
-								{m.label}
+								{m.theme !== "all" && (
+									<span
+										className={`${styles.filter_pill_dot} ${
+											styles[`filter_pill_dot__${m.theme}`]
+										}`}
+										aria-hidden="true"
+									/>
+								)}
+								<span>{m.label}</span>
 							</button>
 						);
 					})}
@@ -298,22 +350,50 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 				</div>
 			</div>
 
-			{/* Status Bar */}
+			{/* Status Bar with View Switcher */}
 			<div className={styles.status_bar} id="members-grid-top">
 				<span className={styles.status_text}>{statusSummary}</span>
 				<div className={styles.status_meta}>
 					<span className={styles.count_badge}>{filteredMembers.length}</span>
-					<Grid2X2 width={20} height={20} />
+
+					{/* View Switcher Controls (Grid vs Column) */}
+					<div className={styles.view_toggle_group}>
+						<button
+							type="button"
+							onClick={() => setViewMode("grid")}
+							aria-label="Switch to grid view"
+							title="Grid view"
+							aria-pressed={viewMode === "grid"}
+							className={`${styles.view_toggle_btn} ${
+								viewMode === "grid" ? styles.view_toggle_btn__active : ""
+							}`}
+						>
+							<Grid2X2 width={18} height={18} />
+						</button>
+						<button
+							type="button"
+							onClick={() => setViewMode("column")}
+							aria-label="Switch to column view"
+							title="Column view"
+							aria-pressed={viewMode === "column"}
+							className={`${styles.view_toggle_btn} ${
+								viewMode === "column" ? styles.view_toggle_btn__active : ""
+							}`}
+						>
+							<LayoutList width={18} height={18} />
+						</button>
+					</div>
 				</div>
 			</div>
 
-			{/* Member Grid */}
+			{/* Member Results Presentation */}
 			<section className={styles.grid_container}>
 				{filteredMembers.length === 0 ? (
 					<div className={styles.no_results}>
 						<p>No members found matching your search.</p>
 					</div>
-				) : (
+				) : viewMode === "grid" ? (
+					/* ── Grid View ── */
 					<div className={styles.grid} id="members-grid">
 						{paginatedMembers.map((member) => (
 							<a
@@ -335,10 +415,165 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 									<h2 className={styles.info_name} title={member.name}>
 										{member.nama_panggilan || member.name}
 									</h2>
-									<span className={styles.info_major}>{member.majorCode}</span>
+									<span
+										className={`${styles.info_major} ${
+											styles[`info_major__${member.majorTheme || "cs"}`]
+										}`}
+									>
+										{member.majorCode}
+									</span>
 								</div>
 							</a>
 						))}
+					</div>
+				) : (
+					/* ── Column / Table View ── */
+					<div className={styles.table_container} id="members-table">
+						{/* Table Column Header */}
+						<div className={styles.table_header_row} aria-hidden="true">
+							<span className={styles.col_member}>Member</span>
+							<span className={styles.col_prodi}>Prodi</span>
+							<span className={styles.col_interests}>Interests</span>
+							<span className={styles.col_socials}>Social</span>
+						</div>
+
+						{/* Table Rows */}
+						<div className={styles.table_body}>
+							{paginatedMembers.map((member) => {
+								const socials = member.socials;
+								const hasAnySocial =
+									socials &&
+									(socials.instagram ||
+										socials.linkedin ||
+										socials.github ||
+										socials.line);
+
+								return (
+									<a
+										key={member.npm}
+										href={`/members/${member.slug}`}
+										className={styles.table_row}
+									>
+										{/* Member Identity: Avatar & Names */}
+										<div className={styles.col_member}>
+											<div className={styles.row_avatar_wrapper}>
+												<img
+													src={member.photoUrl}
+													alt={member.name}
+													className={styles.row_avatar}
+													loading="lazy"
+													decoding="async"
+												/>
+											</div>
+											<div className={styles.row_names}>
+												<span className={styles.row_display_name}>
+													{member.nama_panggilan || member.name}
+												</span>
+												<span className={styles.row_full_name} title={member.name}>
+													{member.name}
+												</span>
+											</div>
+										</div>
+
+										{/* Prodi Badge */}
+										<div className={styles.col_prodi}>
+											<span
+												className={`${styles.prodi_pill} ${
+													styles[`prodi_pill__${member.majorTheme || "cs"}`]
+												}`}
+											>
+												{member.majorCode}
+											</span>
+										</div>
+
+										{/* Interests / Normalized Tags */}
+										<div className={styles.col_interests}>
+											{member.tags.length > 0 ? (
+												<div className={styles.row_tag_list}>
+													{member.tags.slice(0, 3).map((tag) => (
+														<span key={tag} className={styles.row_tag}>
+															{tag}
+														</span>
+													))}
+													{member.tags.length > 3 && (
+														<span
+															className={styles.row_tag_more}
+															title={member.tags.slice(3).join(", ")}
+														>
+															+{member.tags.length - 3}
+														</span>
+													)}
+												</div>
+											) : (
+												<span className={styles.row_tag_empty}>-</span>
+											)}
+										</div>
+
+										{/* Social Media Links Column */}
+										<div className={styles.col_socials}>
+											{hasAnySocial ? (
+												<div className={styles.row_socials}>
+													{socials.instagram && (
+														<a
+															href={socials.instagram}
+															target="_blank"
+															rel="noopener noreferrer"
+															onClick={handleSocialClick}
+															className={styles.row_social_btn}
+															aria-label="Instagram"
+															title="Instagram"
+														>
+															<InstagramIcon size={16} />
+														</a>
+													)}
+													{socials.linkedin && (
+														<a
+															href={socials.linkedin}
+															target="_blank"
+															rel="noopener noreferrer"
+															onClick={handleSocialClick}
+															className={styles.row_social_btn}
+															aria-label="LinkedIn"
+															title="LinkedIn"
+														>
+															<LinkedInIconSvg size={16} />
+														</a>
+													)}
+													{socials.github && (
+														<a
+															href={socials.github}
+															target="_blank"
+															rel="noopener noreferrer"
+															onClick={handleSocialClick}
+															className={styles.row_social_btn}
+															aria-label="GitHub"
+															title="GitHub"
+														>
+															<GithubIcon size={16} />
+														</a>
+													)}
+													{socials.line && (
+														<a
+															href={socials.line}
+															target="_blank"
+															rel="noopener noreferrer"
+															onClick={handleSocialClick}
+															className={styles.row_social_btn}
+															aria-label="LINE"
+															title="LINE"
+														>
+															<LineIcon size={16} />
+														</a>
+													)}
+												</div>
+											) : (
+												<span className={styles.row_tag_empty}>-</span>
+											)}
+										</div>
+									</a>
+								);
+							})}
+						</div>
 					</div>
 				)}
 			</section>
