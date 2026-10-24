@@ -1,5 +1,5 @@
 ---
-import SearchIcon from "@/icons/search.svg";
+import { Search as SearchIcon } from "lucide-react";
 import Surface from "./Surface.astro";
 import styles from "./SearchBar.module.css";
 
@@ -15,7 +15,7 @@ const {
 ---
 
 <Surface variant="bar" class={styles.search_bar}>
-	<SearchIcon class={styles.search_icon} width={22} height={22} />
+	<SearchIcon className={styles.search_icon} width={22} height={22} />
 	<input
 		type="search"
 		id={id}
