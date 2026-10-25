@@ -3,6 +3,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import rawData from "@/data/members.json";
 import type { Member } from "@/types/member";
 import {
+	formatTitleCase,
 	getMajorCode,
 	getMajorThemeKey,
 	getMemberPhotoUrl,
@@ -62,6 +63,10 @@ const title = `${member.name} - Members - Zenith`;
 const majorCode = getMajorCode(member.major);
 const majorTheme = getMajorThemeKey(member.major);
 const displayName = member.nama_panggilan || member.name;
+const realName = formatTitleCase(member.name);
+const showRealName =
+	Boolean(member.name &&
+	member.name.trim().toLowerCase() !== displayName.trim().toLowerCase());
 
 const instagramUrl = member.instagram
 	? `https://instagram.com/${member.instagram.replace(/^@/, "")}`
@@ -166,9 +171,16 @@ const quote =
 				</div>
 
 				<!-- Name & Major Badge -->
-				<div class={styles.header_row}>
-					<h1 class={styles.name}>{displayName}</h1>
-					<Pill variant="solid" theme={majorTheme}>{majorCode}</Pill>
+				<div class={styles.header_section}>
+					<div class={styles.header_row}>
+						<h1 class={styles.name}>{displayName}</h1>
+						<Pill variant="solid" theme={majorTheme}>{majorCode}</Pill>
+					</div>
+					{showRealName && (
+						<p class={styles.real_name} title={member.name}>
+							{realName}
+						</p>
+					)}
 				</div>
 
 				<!-- Member Quote -->
