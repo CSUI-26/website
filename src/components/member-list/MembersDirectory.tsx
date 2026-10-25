@@ -16,7 +16,13 @@ import {
 	Tag,
 	X,
 } from "lucide-react";
-import { type ChangeEvent, type MouseEvent, useMemo, useState } from "react";
+import {
+	type ChangeEvent,
+	type MouseEvent,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import styles from "./MembersDirectory.module.css";
 import { matchQueryToCanonicalTags } from "./tags";
 import { CANONICAL_TAGS } from "./tags/rules";
@@ -57,6 +63,53 @@ const MAJORS = [
 	{ label: "AI", value: "Kecerdasan Artifisial", theme: "ai" },
 ] as const;
 
+const MAJORS_PARAM_MAP: Record<string, string> = {
+	all: "ALL",
+	cs: "Ilmu Komputer",
+	"computer-science": "Ilmu Komputer",
+	"computer science": "Ilmu Komputer",
+	"ilmu-komputer": "Ilmu Komputer",
+	"ilmu komputer": "Ilmu Komputer",
+	si: "Sistem Informasi",
+	"information-system": "Sistem Informasi",
+	"information system": "Sistem Informasi",
+	"sistem-informasi": "Sistem Informasi",
+	"sistem informasi": "Sistem Informasi",
+	kki: "Ilmu Komputer KKI",
+	"cs-kki": "Ilmu Komputer KKI",
+	"cs kki": "Ilmu Komputer KKI",
+	"ilmu-komputer-kki": "Ilmu Komputer KKI",
+	"ilmu komputer kki": "Ilmu Komputer KKI",
+	ai: "Kecerdasan Artifisial",
+	"artificial-intelligence": "Kecerdasan Artifisial",
+	"artificial intelligence": "Kecerdasan Artifisial",
+	"kecerdasan-artifisial": "Kecerdasan Artifisial",
+	"kecerdasan artifisial": "Kecerdasan Artifisial",
+};
+
+/**
+ * Normalizes query string major parameter into canonical internal major name.
+ */
+function resolveMajorParam(param: string | null): string | null {
+	if (!param) return null;
+	const key = param.trim().toLowerCase();
+	return MAJORS_PARAM_MAP[key] || null;
+}
+
+/**
+ * Matches a tag query parameter against canonical tags (case-insensitive)
+ * or falls back to the literal trimmed tag string.
+ */
+function resolveTagParam(tagParam: string | null): string | null {
+	if (!tagParam) return null;
+	const trimmed = tagParam.trim();
+	if (!trimmed) return null;
+	const canonical = CANONICAL_TAGS.find(
+		(t) => t.toLowerCase() === trimmed.toLowerCase(),
+	);
+	return canonical || trimmed;
+}
+
 const INITIAL_VISIBLE_TAG_COUNT = 12;
 
 function LinkedInIconSvg({ size = 16 }: { size?: number }) {
@@ -88,6 +141,31 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 	const [viewMode, setViewMode] = useState<"grid" | "column">("grid");
 	const [currentPage, setCurrentPage] = useState(1);
 
+	// Synchronize filter selections from URL parameters when landing on the page
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		const params = new URLSearchParams(window.location.search);
+
+		const majorParam = params.get("major") || params.get("prodi");
+		const resolvedMajor = resolveMajorParam(majorParam);
+		if (resolvedMajor) {
+			setSelectedMajor(resolvedMajor);
+		}
+
+		const tagParam = params.get("tag");
+		if (tagParam) {
+			const resolvedTag = resolveTagParam(tagParam);
+			if (resolvedTag) {
+				setSelectedTags([resolvedTag]);
+			}
+		}
+
+		const searchParam = params.get("q") || params.get("search");
+		if (searchParam) {
+			setSearchQuery(searchParam.trim());
+		}
+	}, []);
+
 	// Compute tag counts across members matching the current major filter
 	const tagCounts = useMemo(() => {
 		const counts = new Map<string, number>();
@@ -102,12 +180,11 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 
 	// Visible canonical tags (top N by default, plus any currently selected tags outside top N)
 	const visibleTags = useMemo(() => {
-		if (showAllTags) return [...CANONICAL_TAGS];
-		const initial = CANONICAL_TAGS.slice(0, INITIAL_VISIBLE_TAG_COUNT);
-		const extraSelected = CANONICAL_TAGS.slice(
-			INITIAL_VISIBLE_TAG_COUNT,
-		).filter((t) => selectedTags.includes(t));
-		return [...initial, ...extraSelected];
+		const base: readonly string[] = showAllTags
+			? CANONICAL_TAGS
+			: CANONICAL_TAGS.slice(0, INITIAL_VISIBLE_TAG_COUNT);
+		const extraSelected = selectedTags.filter((t) => !base.includes(t));
+		return [...base, ...extraSelected];
 	}, [showAllTags, selectedTags]);
 
 	// Filter members based on major category, selected tag chips, and search text
