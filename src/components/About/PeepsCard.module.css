@@ -1,0 +1,68 @@
+.peeps_card {
+	background-color: rgba(0 0 0 / .44);
+	padding: 2.5rem;
+	border: 1px solid white;
+	border-radius: var(--border-radius-1);
+	margin-block-start: 3rem;
+}
+
+.prodi_container {
+	display: flex;
+	justify-content: space-around;
+	gap: 1rem;
+	margin-block-end: 2rem;
+}
+
+.prodi_card {
+	display: flex;
+	gap: .5rem;
+	padding-block: 1rem;
+	flex-basis: 50%;
+	flex-grow: 1;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid white;
+	border-radius: var(--border-radius-4);
+
+	&.red {
+		background: linear-gradient(to bottom, #97090C, #E40D10);
+	}
+
+	&.blue {
+		background: linear-gradient(to bottom, #140CAB, #0011FF);
+	}
+}
+
+.prodi_card_count {
+	text-align: center;
+
+	.prodi_card_count_num {
+		font-weight: var(--font-base-weight-black);
+		font-size: 40px;
+	}
+}
+
+.prodi_name {
+	font-weight: var(--font-base-weight-heavy);
+	font-size: var(--font-base-size-normal);
+	white-space: nowrap;
+}
+
+.cta {
+	display: flex;
+	justify-content: space-between;
+}
+
+.tagline {
+	font-weight: bold;
+}
+
+.members_btn {
+	background: linear-gradient(to bottom, #0011FF, #050065);
+	box-shadow: 0 .1em 20px #0D00FF;
+	text-decoration: none !important;
+	padding: 1rem 1.3rem;
+	border-radius: var(--border-radius-pill);
+	font-weight: bold;
+}
