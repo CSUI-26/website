@@ -115,6 +115,17 @@ export function getMajorThemeKey(
 }
 
 /**
+ * Formats a name string into title case (capitalizing the initial letter of each word).
+ * Handles word boundaries including spaces, hyphens, and periods.
+ */
+export function formatTitleCase(text: string): string {
+	if (!text) return "";
+	return text
+		.toLowerCase()
+		.replace(/(?:^|[\s\-/.])[a-z]/g, (char) => char.toUpperCase());
+}
+
+/**
  * Shuffles an array in-place using Fisher-Yates and Math.random().
  */
 export function shuffle<T>(array: T[]): T[] {

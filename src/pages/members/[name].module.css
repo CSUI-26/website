@@ -112,12 +112,18 @@
 		}
 	}
 
+	.header_section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		margin-block-end: 1.25rem;
+	}
+
 	.header_row {
 		display: flex;
 		align-items: center;
 		gap: 1.25rem;
 		flex-wrap: wrap;
-		margin-block-end: 1.25rem;
 	}
 
 	.name {
@@ -126,6 +132,14 @@
 		letter-spacing: var(--font-base-letterspacing);
 		line-height: 1.1;
 		color: var(--fg-text-normal);
+	}
+
+	.real_name {
+		font-size: clamp(16px, 2.2vw, 21px);
+		font-weight: var(--font-base-weight-semibold);
+		letter-spacing: var(--font-base-letterspacing);
+		color: rgba(255, 255, 255, 0.65);
+		margin: 0;
 	}
 
 	.major_pill {
