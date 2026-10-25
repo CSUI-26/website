@@ -1,7 +1,8 @@
 .carousel_container {
 	overflow-x: scroll;
 	scrollbar-width: thin;
-	scrollbar-color: white black;
+	scrollbar-color: white transparent;
+	scroll-snap-type: x mandatory;
 	margin-block-start: 3rem;
 	padding-inline-start: 15rem;
 	padding-block-end: 1rem;
