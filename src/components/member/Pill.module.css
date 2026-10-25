@@ -10,7 +10,8 @@
 		background 0.2s,
 		border-color 0.2s,
 		color 0.2s,
-		transform 0.2s;
+		transform 0.2s,
+		box-shadow 0.2s;
 	font-family: inherit;
 	border: 1px solid transparent;
 }
@@ -45,6 +46,12 @@
 	font-size: 17px;
 	font-weight: var(--font-base-weight-normal);
 	backdrop-filter: blur(var(--blur-radius));
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.16);
+		border-color: rgba(255, 255, 255, 0.35);
+		color: white;
+	}
 }
 
 .pill__badge {
@@ -68,6 +75,10 @@
 	font-weight: var(--font-base-weight-heavy);
 	letter-spacing: 0;
 	box-shadow: 0 4px 15px rgba(0, 102, 255, 0.35);
+
+	&:hover {
+		filter: brightness(1.12);
+	}
 }
 
 /* Specific Major Themes (CS -> Blue, SI -> Red, CS KKI -> Dark Blue, AI -> Green) */
@@ -90,4 +101,18 @@
 .pill__theme_ai {
 	background: rgba(16, 160, 72, 1);
 	box-shadow: 0 4px 15px rgba(16, 160, 72, 0.35);
+}
+
+/* Interactive link styling for clickable pills */
+a.pill {
+	cursor: pointer;
+
+	&:hover {
+		transform: translateY(-2px);
+	}
+
+	&:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 2px;
+	}
 }

@@ -174,7 +174,14 @@ const quote =
 				<div class={styles.header_section}>
 					<div class={styles.header_row}>
 						<h1 class={styles.name}>{displayName}</h1>
-						<Pill variant="solid" theme={majorTheme}>{majorCode}</Pill>
+						<Pill
+							variant="solid"
+							theme={majorTheme}
+							href={`/members?major=${encodeURIComponent(majorCode)}`}
+							title={`Filter directory by ${member.major}`}
+						>
+							{majorCode}
+						</Pill>
 					</div>
 					{showRealName && (
 						<p class={styles.real_name} title={member.name}>
@@ -199,7 +206,13 @@ const quote =
 				{nicheTags.length > 0 && (
 					<div class={styles.niche_tags}>
 						{nicheTags.map((tag) => (
-							<Pill variant="tag">{tag}</Pill>
+							<Pill
+								variant="tag"
+								href={`/members?tag=${encodeURIComponent(tag)}`}
+								title={`Filter directory by tag: ${tag}`}
+							>
+								{tag}
+							</Pill>
 						))}
 					</div>
 				)}
