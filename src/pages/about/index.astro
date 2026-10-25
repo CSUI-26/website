@@ -20,6 +20,7 @@ import { Picture } from "astro:assets";
 import HighlightCarousel from "@components/About/HighlightCarousel.astro";
 import ActivitiesCarousel from "@components/About/ActivitiesCarousel.astro";
 import ActivitiesCard from "@components/About/ActivitiesCard.astro";
+import PeepsCard from "@/components/About/PeepsCard.astro";
 
 const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 ---
@@ -147,9 +148,15 @@ const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 	</section>
 
 	<section class={`${Styles.section} ${Styles.section_peeps}`}>
-		<Heading level={2} class={Styles.subheadings}>Our Peeps</Heading>
-		<p>
-			<a href="/members">See our members!</a>
-		</p>
+		<div class={Styles.section_contents}>
+			<Heading level={2} class={Styles.subheadings}>Our Peeps</Heading>
+			<p>
+				Lorem ipsum dolor sit amet consectetur adipisicing elit.
+				Voluptate fugiat neque aut, eaque commodi quia quo accusantium
+				expedita ad obcaecati, accusamus ullam a vel cumque, consequatur
+				in nostrum dicta aspernatur.
+			</p>
+			<PeepsCard />
+		</div>
 	</section>
 </BaseLayout>

@@ -2,6 +2,10 @@
 	min-height: 75vh;
 	position: relative;
 
+	&:not(.section_hero) {
+		margin-block-end: 5rem;
+	}
+
 	a {
 		color: white;
 		text-decoration: underline;
@@ -44,6 +48,18 @@
 	gap: 1rem;
 }
 
+.section_highlight {
+
+}
+
+.section_activities {
+
+}
+
+.section_peeps {
+
+}
+
 .image {
 	border-radius: var(--border-radius-3);
 }
@@ -51,6 +67,7 @@
 .subheadings {
 	font-size: 80px;
 	font-style: italic;
+	margin-block-end: .5rem;
 }
 
 .icon_set {
