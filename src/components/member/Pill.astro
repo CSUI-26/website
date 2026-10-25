@@ -6,16 +6,18 @@ import styles from "./Pill.module.css";
 export type PillVariant = "filter" | "tag" | "badge" | "solid";
 export type PillTheme = "cs" | "si" | "kki" | "ai";
 
-interface Props extends Omit<HTMLAttributes<"span">, "class"> {
-	as?: "span" | "button" | "div";
+interface Props extends HTMLAttributes<"a"> {
+	as?: "span" | "button" | "div" | "a";
 	variant?: PillVariant;
 	theme?: PillTheme | undefined | null;
 	active?: boolean;
 	class?: string | undefined | null;
+	href?: string | undefined | null;
+	type?: "button" | "submit" | "reset" | undefined;
 }
 
 const {
-	as: Tag = "span",
+	as: Tag = Astro.props.href ? "a" : "span",
 	variant = "tag",
 	theme,
 	active = false,
