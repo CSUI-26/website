@@ -1,0 +1,213 @@
+---
+import Styles from "./prodi.module.css";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Strings } from "@/strings";
+import { RootRoutes } from "@/routes";
+import { programStudies, type ProgramStudy } from "@/data/academic";
+
+export function getStaticPaths() {
+	return programStudies.map((prodi) => ({
+		params: { prodi: prodi.id },
+		props: { prodi },
+	}));
+}
+
+interface Props {
+	prodi: ProgramStudy;
+}
+
+const { prodi } = Astro.props;
+const title = `${prodi.name} - ${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
+const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
+---
+
+<BaseLayout title={title} activeTab={RootRoutes.get("Academic")!}>
+	<div class={Styles.page_wrapper}>
+		{/* Top navigation bar / back link */}
+		<div class={Styles.top_bar}>
+			<a class={Styles.back_link} href="/academic">
+				← Kembali ke Pilih Jurusan
+			</a>
+		</div>
+
+		{/* Prodi Header */}
+		<header class={Styles.prodi_header}>
+			<h1 class={Styles.prodi_title}>{prodi.name}</h1>
+
+			<div class={Styles.career_tags}>
+				{prodi.careers.map((career) => (
+					<span class={Styles.career_tag}>{career}</span>
+				))}
+			</div>
+
+			<p class={Styles.prodi_description}>{prodi.description}</p>
+
+			<div class={Styles.prodi_links}>
+				<a
+					class={Styles.action_btn}
+					href="https://scele.cs.ui.ac.id/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					LINK MATERI ↗
+				</a>
+				<a
+					class={Styles.action_btn}
+					href="https://ristek.link/the-npc-guide-to-pacil"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					DRIVE KATING ↗
+				</a>
+			</div>
+		</header>
+
+		{/* Curriculum Section */}
+		<section class={Styles.curriculum_section} aria-label="Kurikulum">
+			<h2 class={Styles.curriculum_title}>MATERI YANG DIPELAJARI</h2>
+
+			{/* Semester Pill Tabs */}
+			<div class={Styles.semester_tabs} role="tablist">
+				{prodi.semesters.map((sem, sIdx) => (
+					<button
+						type="button"
+						role="tab"
+						class={`${Styles.semester_tab} ${sIdx === 0 ? Styles.semester_tab_active : ""}`}
+						data-semester-idx={sIdx}
+						aria-selected={sIdx === 0 ? "true" : "false"}
+					>
+						{typeof sem.semester === "number"
+							? `SEMESTER ${sem.semester}`
+							: "MATKUL PILIHAN"}
+					</button>
+				))}
+			</div>
+
+			{/* Frame 39 (Figma Curriculum Container) */}
+			<div class={Styles.curriculum_frame}>
+				{prodi.semesters.map((sem, sIdx) => (
+					<div
+						class={`${Styles.semester_panel} ${sIdx === 0 ? Styles.semester_panel_active : ""}`}
+						data-semester-panel={sIdx}
+						role="tabpanel"
+					>
+						<div class={Styles.semester_banner}>
+							<h3 class={Styles.semester_banner_title}>
+								{typeof sem.semester === "number"
+									? `Semester ${sem.semester}`
+									: "Mata Kuliah Pilihan"}
+							</h3>
+						</div>
+
+						{/* Course Accordion Cards */}
+						<div class={Styles.course_list}>
+							{sem.courses.map((course, cIdx) => {
+								const isRed = cIdx % 2 === 1;
+								const themeClass = isRed
+									? Styles.course_card_red
+									: Styles.course_card_blue;
+								return (
+									<details class={`${Styles.course_card} ${themeClass}`}>
+										<summary class={Styles.course_summary}>
+											<span class={Styles.course_title}>{course.name}</span>
+											<div class={Styles.course_badge_group}>
+												<span class={Styles.sks_badge}>{course.sks} SKS</span>
+												<span class={Styles.expand_icon} aria-hidden="true">
+													▾
+												</span>
+											</div>
+										</summary>
+
+										<div class={Styles.course_details}>
+											{course.description && (
+												<p class={Styles.course_description}>
+													{course.description}
+												</p>
+											)}
+
+											{course.prerequisites &&
+												course.prerequisites.length > 0 && (
+													<div class={Styles.prerequisites_box}>
+														<span class={Styles.prerequisites_label}>
+															Merupakan syarat wajib dari matkul:
+														</span>
+														<ul class={Styles.prerequisites_list}>
+															{course.prerequisites.map((req) => (
+																<li>{req}</li>
+															))}
+														</ul>
+													</div>
+												)}
+
+											<div class={Styles.course_footer}>
+												<a
+													class={Styles.material_btn}
+													href="https://scele.cs.ui.ac.id/"
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													LINK MATERIAL ↗
+												</a>
+											</div>
+										</div>
+									</details>
+								);
+							})}
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
+
+		{/* Other Majors Quick Switcher */}
+		<nav class={Styles.other_majors} aria-label="Lihat Jurusan Lain">
+			<span class={Styles.other_majors_label}>Lihat Jurusan Lain:</span>
+			<div class={Styles.other_majors_list}>
+				{otherProdis.map((other) => (
+					<a class={Styles.other_major_btn} href={other.slug}>
+						{other.name} ↗
+					</a>
+				))}
+			</div>
+		</nav>
+	</div>
+</BaseLayout>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const semesterTabs = document.querySelectorAll("[data-semester-idx]");
+		const panels = document.querySelectorAll("[data-semester-panel]");
+
+		for (const tab of semesterTabs) {
+			tab.addEventListener("click", () => {
+				const semIdx = (tab as HTMLElement).dataset.semesterIdx;
+				if (semIdx === undefined) return;
+
+				// Deactivate other tabs
+				for (const t of semesterTabs) {
+					t.setAttribute("aria-selected", "false");
+					t.removeAttribute("data-active");
+					t.classList.remove(
+						// biome-ignore lint/style/noNonNullAssertion: class always exists
+						document.querySelector("[class*='semester_tab_active']")?.classList[1] ||
+							"semester_tab_active",
+					);
+				}
+
+				// Activate clicked tab
+				tab.setAttribute("aria-selected", "true");
+				tab.setAttribute("data-active", "true");
+
+				// Show target semester panel
+				for (const p of panels) {
+					const isTarget = (p as HTMLElement).dataset.semesterPanel === semIdx;
+					if (isTarget) {
+						(p as HTMLElement).style.display = "block";
+					} else {
+						(p as HTMLElement).style.display = "none";
+					}
+				}
+			});
+		}
+	});
+</script>

@@ -1,0 +1,852 @@
+/* ══════════════════════════════════════════════════════════
+   VIEW 1: ACADEMIC HERO SELECTOR
+   ══════════════════════════════════════════════════════════ */
+.academic_hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	min-height: calc(100vh - 80px);
+	position: relative;
+	overflow: hidden;
+	/* Snug top clearance matching photo 2 */
+	padding-block-start: clamp(5.5rem, 8.5vh, 6.75rem);
+	padding-block-end: clamp(3rem, 6vh, 5rem);
+	background:
+		radial-gradient(
+			circle at 10% 90%,
+			rgba(220, 38, 38, 0.32) 0%,
+			transparent 50%
+		),
+		radial-gradient(
+			circle at 90% 90%,
+			rgba(37, 99, 235, 0.32) 0%,
+			transparent 50%
+		);
+	animation: fadeIn 0.3s ease;
+}
+
+.hero_content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	z-index: 2;
+	width: 100%;
+	max-width: 900px;
+	padding-inline: 1.5rem;
+}
+
+/* ── Title ── */
+.title {
+	font-size: clamp(2.25rem, 5.5vw, 4rem);
+	font-weight: 900;
+	font-style: italic;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+	color: #ffffff;
+	margin: 0;
+	line-height: 1.1;
+	text-shadow: 0 4px 25px rgba(0, 0, 0, 0.9);
+}
+
+.title_accent {
+	display: block;
+	width: clamp(220px, 35vw, 380px);
+	height: 4px;
+	margin-inline: auto;
+	margin-block-start: 1rem;
+	margin-block-end: clamp(2rem, 4.5vh, 3.5rem);
+	border-radius: 9999px;
+	background: linear-gradient(90deg, #3b82f6 0%, #ef4444 100%);
+	box-shadow:
+		0 0 16px rgba(59, 130, 246, 0.7),
+		0 0 16px rgba(239, 68, 68, 0.7);
+}
+
+/* ── Major Navigation ── */
+.majors_nav {
+	width: 100%;
+}
+
+.majors_list {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: clamp(1.25rem, 2.7vh, 2.5rem);
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.major_item {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.major_btn {
+	background: transparent;
+	border: none;
+	font-family: inherit;
+	font-size: clamp(1.5rem, 3.8vw, 2.85rem);
+	font-weight: 900;
+	font-style: italic;
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+	color: #ffffff;
+	cursor: pointer;
+	padding: 0.35rem 1.75rem;
+	position: relative;
+	transition:
+		color 0.25s ease,
+		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+		text-shadow 0.25s ease;
+	user-select: none;
+}
+
+.major_btn:hover {
+	color: #ffffff;
+	transform: scale(1.06);
+	text-shadow:
+		0 0 25px rgba(255, 255, 255, 0.6),
+		0 0 50px rgba(59, 130, 246, 0.4),
+		0 0 70px rgba(239, 68, 68, 0.3);
+}
+
+/* ── Raccoon Mascots ── */
+.mascot_container {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	pointer-events: none;
+	z-index: 1;
+	overflow: hidden;
+}
+
+.mascot_wrapper_left,
+.mascot_wrapper_right {
+	display: flex;
+	align-items: flex-end;
+}
+
+.mascot {
+	width: clamp(200px, 28vw, 420px);
+	height: auto;
+	filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8));
+	transition: transform 0.4s ease;
+}
+
+.mascot_left {
+	transform: translate(-10%, 12%);
+}
+
+.mascot_right {
+	transform: translate(10%, 12%);
+}
+
+/* ══════════════════════════════════════════════════════════
+   VIEW 2: PRODI DETAIL VIEW (GANTI TAMPILAN)
+   ══════════════════════════════════════════════════════════ */
+.prodi_view_container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 1240px;
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+	/* Snug top clearance so navbar never collides */
+	padding-block-start: clamp(5.5rem, 8.5vh, 6.75rem);
+	padding-block-end: 8rem;
+	min-height: 100vh;
+	animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Top Back Button */
+.top_bar {
+	width: 100%;
+	max-width: 1204px;
+	display: flex;
+	justify-content: flex-start;
+	margin-block-end: 2rem;
+}
+
+.back_btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 9999px;
+	color: rgba(255, 255, 255, 0.8);
+	font-family: inherit;
+	font-size: 0.85rem;
+	font-weight: 700;
+	padding: 0.5rem 1.25rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.back_btn:hover {
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.15);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: translateX(-3px);
+}
+
+/* Prodi Section Article */
+.prodi_section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+/* Header */
+.prodi_header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	max-width: 880px;
+	margin-block-end: 4rem;
+}
+
+.prodi_title {
+	font-size: clamp(2.5rem, 6vw, 4.5rem);
+	font-weight: 900;
+	font-style: italic;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+	color: #ffffff;
+	margin: 0;
+	line-height: 1.1;
+	text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
+}
+
+.career_tags {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-block-start: 1.75rem;
+	margin-block-end: 2rem;
+}
+
+.career_tag {
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 9999px;
+	padding: 0.45rem 1.25rem;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.prodi_description {
+	font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+	line-height: 1.75;
+	color: rgba(255, 255, 255, 0.85);
+	margin: 0;
+	margin-block-end: 2.5rem;
+}
+
+.prodi_links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1.25rem;
+}
+
+.action_btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.85rem;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #ffffff;
+	text-decoration: none;
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	border-radius: 9999px;
+	padding: 0.65rem 1.75rem;
+	backdrop-filter: blur(8px);
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.action_btn:hover {
+	background: rgba(255, 255, 255, 0.16);
+	border-color: rgba(255, 255, 255, 0.65);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Curriculum Section ── */
+.curriculum_section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.curriculum_title {
+	font-size: clamp(1.6rem, 3.5vw, 2.35rem);
+	font-weight: 900;
+	font-style: italic;
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+	color: #ffffff;
+	margin: 0;
+	margin-block-end: 2rem;
+	text-align: center;
+}
+
+/* Semester Tabs */
+.semester_tabs {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.65rem;
+	max-width: 950px;
+	margin-block-end: 2.5rem;
+}
+
+.semester_tab {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	color: rgba(255, 255, 255, 0.72);
+	font-family: inherit;
+	font-size: 0.8rem;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	padding: 0.5rem 1.35rem;
+	border-radius: 9999px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.semester_tab:hover {
+	color: #ffffff;
+	border-color: rgba(255, 255, 255, 0.45);
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.semester_tab[data-active="true"],
+.semester_tab_active {
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.2);
+	border-color: #ffffff;
+	box-shadow: 0 0 15px rgba(255, 255, 255, 0.35);
+}
+
+/* ── Curriculum Frame (Frame 39 in Figma) ── */
+.curriculum_frame {
+	width: 100%;
+	max-width: 1204px;
+	background: rgba(13, 16, 26, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 20px;
+	padding: clamp(1.5rem, 3.5vw, 2.5rem);
+	backdrop-filter: blur(16px);
+	box-shadow:
+		0 25px 60px rgba(0, 0, 0, 0.6),
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.semester_panel {
+	display: none;
+	width: 100%;
+}
+
+.semester_panel_active {
+	display: block;
+	animation: fadeIn 0.3s ease;
+}
+
+.semester_banner {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 12px;
+	padding: 0.85rem 1.5rem;
+	margin-block-end: 2rem;
+}
+
+.semester_banner_title {
+	font-size: 1.35rem;
+	font-weight: 800;
+	color: #ffffff;
+	margin: 0;
+	letter-spacing: -0.01em;
+}
+
+/* ── Course Accordion List ── */
+.course_list {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	width: 100%;
+}
+
+.course_card {
+	border-radius: 14px;
+	overflow: hidden;
+	transition:
+		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 0.25s ease;
+	cursor: pointer;
+}
+
+/* ── Alternating Neon Blue and Red Glow Bars (Figma) ── */
+.course_card_blue {
+	background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+	border: 1px solid #3b82f6;
+	box-shadow:
+		0 0 22px rgba(37, 99, 235, 0.6),
+		0 0 8px rgba(37, 99, 235, 0.8);
+}
+
+.course_card_blue:hover {
+	transform: translateY(-2px);
+	box-shadow:
+		0 0 30px rgba(37, 99, 235, 0.8),
+		0 0 12px rgba(59, 130, 246, 1);
+}
+
+.course_card_red {
+	background: linear-gradient(90deg, #b91c1c 0%, #dc2626 100%);
+	border: 1px solid #ef4444;
+	box-shadow:
+		0 0 22px rgba(220, 38, 38, 0.6),
+		0 0 8px rgba(220, 38, 38, 0.8);
+}
+
+.course_card_red:hover {
+	transform: translateY(-2px);
+	box-shadow:
+		0 0 30px rgba(220, 38, 38, 0.8),
+		0 0 12px rgba(239, 68, 68, 1);
+}
+
+/* ── Summary Bar ── */
+.course_summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.95rem 1.65rem;
+	list-style: none;
+	user-select: none;
+}
+
+.course_summary::-webkit-details-marker {
+	display: none;
+}
+
+.course_title {
+	font-size: clamp(0.95rem, 2vw, 1.15rem);
+	font-weight: 800;
+	color: #ffffff;
+	letter-spacing: -0.01em;
+}
+
+.course_badge_group {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+}
+
+.sks_badge {
+	background: rgba(0, 0, 0, 0.45);
+	color: #ffffff;
+	font-size: 0.8rem;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	padding: 0.35rem 0.95rem;
+	border-radius: 9999px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.expand_icon {
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 1.1rem;
+	transition: transform 0.25s ease;
+}
+
+.course_card[open] .expand_icon {
+	transform: rotate(180deg);
+}
+
+/* ── Expanded Content (Figma Accordion) ── */
+.course_details {
+	background: rgba(10, 14, 24, 0.95);
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	padding: 1.5rem 1.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.course_description {
+	font-size: 0.95rem;
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.85);
+	margin: 0;
+}
+
+.prerequisites_box {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.prerequisites_label {
+	font-size: 0.85rem;
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.prerequisites_list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.prerequisites_list li {
+	font-size: 0.85rem;
+	color: rgba(255, 255, 255, 0.7);
+	position: relative;
+	padding-left: 1.25rem;
+}
+
+.prerequisites_list li::before {
+	content: "•";
+	position: absolute;
+	left: 0.25rem;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.course_footer {
+	display: flex;
+	justify-content: flex-start;
+	padding-top: 0.5rem;
+}
+
+.material_btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #ffffff;
+	text-decoration: none;
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 9999px;
+	padding: 0.5rem 1.25rem;
+	transition: all 0.2s ease;
+}
+
+.material_btn:hover {
+	background: rgba(255, 255, 255, 0.2);
+	border-color: #ffffff;
+	transform: translateY(-1px);
+}
+
+/* ── Other Majors Switcher ── */
+.other_majors {
+	margin-block-start: 5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.25rem;
+}
+
+.other_majors_label {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.6);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.other_majors_list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.85rem;
+}
+
+.other_major_btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 9999px;
+	color: #ffffff;
+	font-family: inherit;
+	font-size: 0.85rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	padding: 0.55rem 1.35rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.other_major_btn:hover {
+	background: rgba(255, 255, 255, 0.15);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: translateY(-2px);
+}
+
+/* ── Responsive Rules ── */
+@media (max-width: 900px) {
+	.academic_hero {
+		padding-block-start: 7.5rem;
+		padding-block-end: 4rem;
+	}
+
+	.prodi_view_container {
+		padding-block-start: 7.5rem;
+	}
+
+	.mascot {
+		width: clamp(140px, 24vw, 240px);
+	}
+}
+
+/* Mobile Screens (Phone Portrait) */
+@media (max-width: 600px) {
+	/* Header in Header.module.css is taller on mobile (~140px) due to column-reverse,
+	   so we need 10.5rem - 11.5rem padding-top so title is never obscured */
+	.academic_hero {
+		padding-block-start: clamp(10rem, 21vh, 12rem);
+		padding-block-end: 0;
+		min-height: auto;
+		justify-content: flex-start;
+	}
+
+	.hero_content {
+		padding-inline: 1rem;
+	}
+
+	.title {
+		font-size: clamp(1.45rem, 6.8vw, 2.2rem);
+		white-space: nowrap;
+		letter-spacing: -0.01em;
+	}
+
+	.title_accent {
+		width: clamp(160px, 45vw, 240px);
+		margin-block-start: 0.5rem;
+		margin-block-end: 1.5rem;
+	}
+
+	.majors_list {
+		gap: 0.9rem;
+	}
+
+	.major_btn {
+		font-size: clamp(1.1rem, 4.8vw, 1.45rem);
+		padding: 0.25rem 0.5rem;
+		white-space: nowrap;
+		letter-spacing: 0;
+	}
+
+	.mascot_container {
+		position: relative;
+		margin-block-start: 1.25rem;
+		width: 100%;
+	}
+
+	.mascot {
+		width: clamp(95px, 25vw, 130px);
+	}
+
+	.mascot_left {
+		transform: translate(-5%, 4%);
+	}
+
+	.mascot_right {
+		transform: translate(5%, 4%);
+	}
+
+	/* Detail View Mobile */
+	.prodi_view_container {
+		padding-block-start: clamp(10rem, 21vh, 12rem);
+		padding-block-end: 1rem;
+		padding-inline: 0.85rem;
+		min-height: auto;
+	}
+
+	.top_bar {
+		justify-content: flex-start;
+		margin-block-end: 1.25rem;
+	}
+
+	.back_btn {
+		font-size: 0.78rem;
+		padding: 0.4rem 0.9rem;
+	}
+
+	.prodi_header {
+		margin-block-end: 2.5rem;
+	}
+
+	.prodi_title {
+		font-size: clamp(1.85rem, 8vw, 2.75rem);
+	}
+
+	.career_tags {
+		gap: 0.35rem;
+		margin-block-start: 0.85rem;
+		margin-block-end: 1.25rem;
+	}
+
+	.career_tag {
+		padding: 0.3rem 0.7rem;
+		font-size: 0.65rem;
+	}
+
+	.prodi_description {
+		font-size: 0.88rem;
+		line-height: 1.6;
+		margin-block-end: 1.5rem;
+	}
+
+	.prodi_links {
+		gap: 0.65rem;
+	}
+
+	.action_btn {
+		font-size: 0.75rem;
+		padding: 0.5rem 1.15rem;
+	}
+
+	.curriculum_title {
+		font-size: 1.35rem;
+		margin-block-end: 1.25rem;
+	}
+
+	/* Sleek horizontal scrolling semester pill tabs on mobile */
+	.semester_tabs {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		gap: 0.45rem;
+		width: 100%;
+		padding-inline: 0.25rem;
+		padding-block-end: 0.5rem;
+		margin-block-end: 1.5rem;
+		justify-content: flex-start;
+	}
+
+	.semester_tabs::-webkit-scrollbar {
+		display: none;
+	}
+
+	.semester_tab {
+		flex-shrink: 0;
+		white-space: nowrap;
+		font-size: 0.72rem;
+		padding: 0.4rem 0.85rem;
+	}
+
+	.curriculum_frame {
+		padding: 1rem 0.65rem;
+		border-radius: 16px;
+	}
+
+	.semester_banner {
+		padding: 0.6rem 0.85rem;
+		margin-block-end: 1.25rem;
+	}
+
+	.semester_banner_title {
+		font-size: 1.1rem;
+	}
+
+	.course_summary {
+		padding: 0.75rem 0.95rem;
+	}
+
+	.course_title {
+		font-size: 0.88rem;
+		line-height: 1.3;
+	}
+
+	.course_badge_group {
+		gap: 0.5rem;
+	}
+
+	.sks_badge {
+		font-size: 0.72rem;
+		padding: 0.25rem 0.65rem;
+	}
+
+	.course_details {
+		padding: 1rem 0.85rem;
+		gap: 0.85rem;
+	}
+
+	.course_description {
+		font-size: 0.85rem;
+		line-height: 1.55;
+	}
+
+	.other_majors {
+		margin-block-start: 3.5rem;
+	}
+
+	.other_major_btn {
+		font-size: 0.75rem;
+		padding: 0.45rem 1rem;
+	}
+}

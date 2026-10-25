@@ -1,8 +1,8 @@
-import type { Member } from "@/types/member";
 import fs from "node:fs";
 import path from "node:path";
+import type { Member } from "@/types/member";
 
-declare type RecordValues<T extends Record<PropertyKey, any>> = T[keyof T];
+export type RecordValues<T extends Record<PropertyKey, unknown>> = T[keyof T];
 
 let localPhotosSet: Set<string> | null = null;
 

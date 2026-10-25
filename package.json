@@ -10,6 +10,7 @@
 		"sync": "astro sync",
 		"preview": "astro preview",
 		"astro": "astro",
+		"check": "astro check",
 		"lint": "biome lint ./src",
 		"format": "biome format ./src --write",
 		"storybook": "storybook dev",
@@ -32,12 +33,15 @@
 		"esbuild": true
 	},
 	"devDependencies": {
+		"@astrojs/check": "^0.9.10",
+		"@astrojs/ts-plugin": "^1.10.12",
 		"@biomejs/biome": "2.5.15",
 		"@storybook-astro/framework": "^1.12.0",
 		"@storybook/builder-vite": "^10.6.1",
 		"@storybook/react": "^10.6.1",
 		"@vitejs/plugin-react": "^6.1.2",
 		"storybook": "^10.6.1",
-		"storybook-dark-mode": "^5.0.0"
+		"storybook-dark-mode": "^5.0.0",
+		"typescript": "~6.0.3"
 	}
 }
