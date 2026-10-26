@@ -1,6 +1,6 @@
 import { StorybookConfig } from "@storybook-astro/framework"
 import { react } from '@storybook-astro/framework/integrations'
-
+import { fontProviders } from "astro/config"
 
 export default {
 	framework: {
@@ -8,6 +8,8 @@ export default {
 		options: {
 			fonts: [
 				{
+					// @storybook-astro supports Astro's `fontProviders`, but its type isn't modified
+					// @ts-expect-error
 					provider: fontProviders.fontsource(),
 					name: "Inter",
 					display: "swap",
