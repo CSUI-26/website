@@ -1,22 +1,27 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import rawData from "@/data.json";
+import rawData from "@/data/members.json";
 import type { Member } from "@/types/member";
 import {
+	formatTitleCase,
 	getMajorCode,
+	getMajorThemeKey,
 	getMemberPhotoUrl,
 	getMemberSlug,
 	shuffle,
 } from "@/util";
-import ArrowLeftIcon from "@/icons/arrow-left.svg";
-import InstagramIcon from "@/icons/instagram.svg";
+import { parseMemberNiche } from "@/components/member-list/tags";
+import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
+import {
+	SiGithub as GithubIcon,
+	SiInstagram as InstagramIcon,
+	SiLine as LineIcon,
+} from "@icons-pack/react-simple-icons";
 import LinkedinIcon from "@/icons/linkedin.svg";
-import GithubIcon from "@/icons/github.svg";
-import LineIcon from "@/icons/line.svg";
-import IconButton from "@/components/Members/IconButton.astro";
-import Pill from "@/components/Members/Pill.astro";
-import Surface from "@/components/Members/Surface.astro";
-import PeerCarousel from "@/components/Members/PeerCarousel.astro";
+import IconButton from "@/components/member/IconButton.astro";
+import Pill from "@/components/member/Pill.astro";
+import Surface from "@/components/member/Surface.astro";
+import PeerCarousel from "@/components/member/PeerCarousel.astro";
 import styles from "./[name].module.css";
 
 export async function getStaticPaths() {
@@ -56,7 +61,12 @@ const { member, similar } = Astro.props;
 
 const title = `${member.name} - Members - Zenith`;
 const majorCode = getMajorCode(member.major);
+const majorTheme = getMajorThemeKey(member.major);
 const displayName = member.nama_panggilan || member.name;
+const realName = formatTitleCase(member.name);
+const showRealName =
+	Boolean(member.name &&
+	member.name.trim().toLowerCase() !== displayName.trim().toLowerCase());
 
 const instagramUrl = member.instagram
 	? `https://instagram.com/${member.instagram.replace(/^@/, "")}`
@@ -81,12 +91,14 @@ const lineUrl =
 		? `https://line.me/ti/p/~${member.line}`
 		: null;
 
-const nicheTags = member.niche
-	? member.niche
-			.split(/[,/]/)
-			.map((tag) => tag.trim())
-			.filter(Boolean)
-	: [];
+const { allTags: nicheTags } = parseMemberNiche(member.niche);
+
+const quote =
+	member.quotes &&
+	member.quotes.trim() !== "-" &&
+	member.quotes.trim() !== "*"
+		? member.quotes.trim()
+		: null;
 ---
 
 <BaseLayout title={title} activeTab="/members">
@@ -159,10 +171,31 @@ const nicheTags = member.niche
 				</div>
 
 				<!-- Name & Major Badge -->
-				<div class={styles.header_row}>
-					<h1 class={styles.name}>{displayName}</h1>
-					<Pill variant="solid">{majorCode}</Pill>
+				<div class={styles.header_section}>
+					<div class={styles.header_row}>
+						<h1 class={styles.name}>{displayName}</h1>
+						<Pill
+							variant="solid"
+							theme={majorTheme}
+							href={`/members?major=${encodeURIComponent(majorCode)}`}
+							title={`Filter directory by ${member.major}`}
+						>
+							{majorCode}
+						</Pill>
+					</div>
+					{showRealName && (
+						<p class={styles.real_name} title={member.name}>
+							{realName}
+						</p>
+					)}
 				</div>
+
+				<!-- Member Quote -->
+				{quote && (
+					<blockquote class={styles.quote}>
+						<p>{quote}</p>
+					</blockquote>
+				)}
 
 				<!-- Bio / Description -->
 				<p class={styles.bio}>
@@ -173,7 +206,13 @@ const nicheTags = member.niche
 				{nicheTags.length > 0 && (
 					<div class={styles.niche_tags}>
 						{nicheTags.map((tag) => (
-							<Pill variant="tag">{tag}</Pill>
+							<Pill
+								variant="tag"
+								href={`/members?tag=${encodeURIComponent(tag)}`}
+								title={`Filter directory by tag: ${tag}`}
+							>
+								{tag}
+							</Pill>
 						))}
 					</div>
 				)}
