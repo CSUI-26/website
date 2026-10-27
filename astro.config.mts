@@ -7,7 +7,7 @@ import compress from "astro-compress";
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://website-csui26.vercel.app",
+	site: "https://zenith.csui.dev",
 	prefetch: {
 		defaultStrategy: 'viewport'
 	},

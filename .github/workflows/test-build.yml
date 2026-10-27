@@ -2,6 +2,13 @@ name: Build
 
 on:
     pull_request:
+        paths:
+          - 'src/**'
+          - 'public/**'
+          - 'astro.config.mts'
+          - 'package.json'
+          - 'vercel.json'
+          - 'bun.lock'
 
 jobs:
     test:

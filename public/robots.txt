@@ -1,0 +1,3 @@
+User-Agent: *
+Allow: /
+Sitemap: https://zenith.csui.dev/sitemap-index.xml
