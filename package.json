@@ -34,7 +34,7 @@
 		"esbuild": true
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.10",
+		"@astrojs/check": "^0.9.12",
 		"@astrojs/ts-plugin": "^1.10.12",
 		"@biomejs/biome": "2.6.2",
 		"@storybook-astro/framework": "^1.12.0",
