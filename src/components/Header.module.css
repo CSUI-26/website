@@ -1,0 +1,229 @@
+.header {
+	margin-block-start: 1rem;
+	display: flex;
+	align-items: center;
+	position: fixed;
+	width: min(600px, calc(100vw - 2rem));
+	left: 50%;
+	translate: -50%;
+	z-index: 100;
+	background: var(--glass-bg, rgba(14, 18, 30, 0.75));
+	border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.16));
+	backdrop-filter: blur(20px) saturate(180%);
+	-webkit-backdrop-filter: blur(20px) saturate(180%);
+	padding: 8px 20px 8px 24px;
+	border-radius: var(--border-radius-pill);
+	justify-content: space-between;
+	gap: 1.75rem;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+	transition:
+		background 0.2s,
+		border-color 0.2s;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+	.header {
+		background: #0f0f0f;
+		backdrop-filter: none;
+	}
+}
+
+.nav_bar {
+	display: flex;
+	align-items: center;
+}
+
+.header_logo_wrapper {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	padding-inline-end: 14px;
+	margin-inline-end: 4px;
+}
+
+.header_title_link {
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	transition:
+		opacity 0.2s,
+		transform 0.2s;
+
+	&:hover {
+		opacity: 0.85;
+		transform: scale(1.03);
+	}
+}
+
+.header_logo {
+	height: 22px;
+	width: auto;
+	max-width: 90px;
+	display: block;
+}
+
+.header_links {
+	display: flex;
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	gap: 1.35rem;
+	align-items: center;
+	font-size: 14px;
+	letter-spacing: -0.02em;
+}
+
+.header_links_items {
+	cursor: pointer;
+	position: relative;
+	white-space: nowrap;
+
+	a {
+		display: inline-flex;
+		align-items: center;
+		text-decoration: none;
+		color: rgba(255, 255, 255, 0.65);
+		font-weight: 500;
+		transition:
+			color 0.2s,
+			opacity 0.2s;
+
+		&:hover {
+			color: #ffffff;
+		}
+	}
+}
+
+.header_links_items__active {
+	a {
+		color: #ffffff;
+		font-weight: 700;
+	}
+}
+
+.link_text {
+	display: inline;
+}
+
+.link_icon {
+	display: none;
+}
+
+.boardwall_mobile_item {
+	display: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET & MOBILE VIEW (max-width: 900px):
+   - Top navbar/logo is completely hidden
+   - Bottom navbar floats fixed at bottom with icons only
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+	.header {
+		display: contents; /* Header wrapper becomes non-renderable container */
+	}
+
+	/* Top navbar / logo is completely hidden on mobile/tablet view */
+	.header_logo_wrapper {
+		display: none;
+	}
+
+	/* Bottom Fixed Icon Navigation Bar */
+	.nav_bar {
+		position: fixed;
+		bottom: 16px;
+		left: 50%;
+		translate: -50%;
+		z-index: 100;
+		width: min(400px, calc(100vw - 1.25rem));
+		background: var(--glass-bg, rgba(14, 18, 30, 0.78));
+		border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.16));
+		border-radius: var(--border-radius-pill);
+		backdrop-filter: blur(20px) saturate(180%);
+		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		padding: 6px 10px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+	}
+
+	@media (max-width: 480px) {
+		.nav_bar {
+			width: min(370px, calc(100vw - 1rem));
+			padding: 5px 8px;
+		}
+	}
+
+	.header_links {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0;
+	}
+
+	.header_links_items {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.link_text {
+		display: none;
+	}
+
+	.link_icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		color: rgba(255, 255, 255, 0.6);
+		transition:
+			color 0.2s ease,
+			background-color 0.2s ease,
+			transform 0.2s ease;
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		.header_links_items__active & {
+			color: #ffffff;
+			background-color: rgba(255, 255, 255, 0.14);
+			transform: scale(1.08);
+		}
+	}
+
+	.boardwall_mobile_item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.boardwall_mobile_text {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: lowercase;
+		letter-spacing: -0.01em;
+		color: #ffffff;
+		background: rgba(255, 255, 255, 0.12);
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		border-radius: var(--border-radius-pill);
+		padding: 5px 9px;
+		line-height: 1;
+		white-space: nowrap;
+		transition:
+			background 0.2s ease,
+			transform 0.2s ease;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.22);
+			transform: scale(1.05);
+		}
+	}
+}

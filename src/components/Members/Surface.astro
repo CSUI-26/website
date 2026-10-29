@@ -1,0 +1,27 @@
+---
+// note: maybe used for a common UI component in the future
+import type { HTMLAttributes } from "astro/types";
+import styles from "./Surface.module.css";
+
+export type SurfaceVariant = "card" | "bar" | "button" | "subtle";
+
+type Props = Omit<HTMLAttributes<"div"> & HTMLAttributes<"a">, "class"> & {
+	as?: "div" | "section" | "article" | "nav" | "aside" | "a";
+	variant?: SurfaceVariant;
+	class?: string | undefined | null;
+};
+
+const {
+	as: Tag = Astro.props.href ? "a" : "div",
+	variant = "card",
+	class: className = "",
+	...rest
+} = Astro.props;
+
+const variantClass = styles[`surface__${variant}`];
+---
+
+<Tag class:list={[styles.surface, variantClass, className]} {...rest}>
+	<slot />
+</Tag>
+

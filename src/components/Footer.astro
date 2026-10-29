@@ -1,0 +1,46 @@
+---
+import Styles from "./Footer.module.css";
+import { RootRoutes } from "@/routes";
+import { Strings } from "@/strings";
+
+import {
+	SiGmail,
+	SiInstagram,
+	SiX,
+	SiYoutube,
+} from "@icons-pack/react-simple-icons";
+---
+
+<footer class={Styles.footer}>
+	<div class={Styles.logo}>
+		<div class={Styles.footer_title}>
+			<a
+				data-text={Strings.FleetingCode}
+				href={RootRoutes.get("Home")}
+				class={Styles.footer_title_text}
+			>
+				{Strings.FleetingCode}
+			</a>
+		</div>
+		<p class={Styles.copyright_text}>©2026 CSUI 26. All rights reserved.</p>
+	</div>
+	<div class={Styles.more}>
+		<div class={Styles.mininavbar}>
+			<ul class={Styles.footer_links}>
+				{
+					Array.from(RootRoutes).map(([title, path]) => (
+						<li title={title} class={Styles.footer_links_items}>
+							<a href={path}>{title}</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+		<div class={Styles.icon_set}>
+			<SiGmail class:list={Styles.icon!} />
+			<SiX class:list={Styles.icon!} />
+			<SiInstagram class:list={Styles.icon!} />
+			<SiYoutube class:list={Styles.icon!} />
+		</div>
+	</div>
+</footer>

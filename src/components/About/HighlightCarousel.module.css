@@ -1,0 +1,30 @@
+:root {
+	--highlight-scroll-boundary: -1010px;
+	--highlight-scroll-speed: 35s;
+}
+
+@keyframes scroll-carousel {
+	from {
+		translate: var(--highlight-scroll-boundary);
+	}
+
+	to {
+		translate: calc(var(--highlight-scroll-boundary) * 2);
+	}
+}
+
+.carousel_container {
+	display: flex;
+	overflow-x: visible;
+	gap: 2rem;
+	translate: -20vw;
+	animation: scroll-carousel var(--highlight-scroll-speed) linear infinite;
+
+	&.carousel_paused {
+		animation-play-state: paused;
+	}
+
+	.carousel_image {
+		/* border-radius: var(--border-radius-4); */
+	}
+}

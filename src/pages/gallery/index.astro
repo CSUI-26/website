@@ -1,0 +1,96 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import ImageRibbon from "@/components/Gallery/ImageRibbon.astro";
+import Carousel from "@/components/Gallery/Carousel.astro";
+import { Strings } from "@/strings";
+import { RootRoutes } from "@/routes";
+import { Image } from "astro:assets";
+import styles from "./index.module.css";
+import lastImage from "@images/gallery/foto-angkatan-4.jpg";
+import Heading from "@/components/Heading.astro";
+
+const getGallery = import.meta.glob<{ default: ImageMetadata }>(
+	"@images/gallery/*.{jpg,jpeg,png,webp,avif}",
+	{ eager: true },
+);
+
+const getHeroes = import.meta.glob<{ default: ImageMetadata }>(
+	"@images/gallery/heroes/*.{jpg,jpeg,png,webp,avif}",
+	{ eager: true },
+);
+
+const title = `${Strings.SlugTitles.Gallery} - ${Strings.SiteTitle}`;
+const gallery = Object.entries(getGallery)
+	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+	.map(([, mod]) => mod.default);
+const heroes = Object.entries(getHeroes)
+	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+	.map(([, mod]) => mod.default);
+---
+
+<BaseLayout title={title} activeTab={RootRoutes.get("Gallery")!}>
+	<main class={styles.main}>
+		<section class={styles.hero}>
+			<!-- title -->
+			<div class={styles.top}>
+				<Heading level={1} class={styles.title}
+					>Capturing moments,<br />sharing stories</Heading
+				>
+			</div>
+
+			<!-- introduction -->
+			<div class={styles.bottom}>
+				<div class={styles.left}>
+					<p class={styles.heroP}>
+						Lorem ipsum dolor sit amet consectetur, adipisicing
+						elit. Architecto, consequuntur tempore eligendi aut odit
+						sint est odio, eaque cumque dicta reiciendis illo
+						repellendus veritatis unde quisquam, libero assumenda
+						tempora aspernatur.
+					</p>
+				</div>
+
+				<div class={styles.right}>
+					<Carousel slides={gallery} alts={[""]} interval={6000} />
+				</div>
+			</div>
+
+			<!-- mid container -->
+			<section class={styles.container}>
+				<div class={styles.hero2}>
+					<Carousel
+						slides={heroes}
+						alts={[""]}
+						interval={6000}
+						aspectRatio={1 / 1.75}
+					/>
+				</div>
+
+				<div class={styles.hero2}>
+					<Heading level={2}>Original Character</Heading>
+					<p>
+						Lorem ipsum dolor sit amet consectetur adipisicing elit.
+						Officia, at? Officiis tempora quod, enim quas doloribus
+						nemo laboriosam, sunt sequi architecto asperiores
+						suscipit repudiandae illum, deserunt iusto odit deleniti
+						velit.
+					</p>
+					<p>
+						Lorem ipsum dolor sit amet consectetur adipisicing elit.
+						Officia, at? Officiis tempora quod, enim quas doloribus
+						nemo laboriosam, sunt sequi architecto asperiores
+						suscipit repudiandae illum, deserunt iusto odit deleniti
+						velit.
+					</p>
+				</div>
+			</section>
+
+			<!-- last image -->
+			<div class={styles.lastIMGContainer}>
+				<Image src={lastImage} alt="" class={styles.heroImg} />
+			</div>
+		</section>
+	</main>
+
+	<ImageRibbon images={gallery} speed={80} height={180} />
+</BaseLayout>

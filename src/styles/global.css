@@ -1,0 +1,93 @@
+@import url("./colors.css");
+@import url("./geometry.css");
+@import url("./typography.css");
+
+:root {
+	scroll-padding-block: 25vh;
+	scroll-behavior: smooth;
+	--blur-radius: 7.35px;
+	--glass-bg: rgba(14, 18, 30, 0.75);
+	--glass-border: 1px solid rgba(255, 255, 255, 0.15);
+	--glass-blur: 16px;
+	--glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+	font-family: var(--fontface-inter);
+	font-size: var(--font-base-size-normal);
+	font-weight: var(--font-base-weight-normal);
+	letter-spacing: var(--font-base-letterspacing);
+	color: white;
+}
+
+html,
+body {
+	padding: 0;
+	min-height: 100vh;
+	overflow-x: hidden;
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+}
+
+body {
+	&::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		will-change: transform;
+
+		background:
+			linear-gradient(
+				to bottom,
+				var(--bg-grad-overlay-start),
+				var(--bg-grad-overlay-end)
+			),
+			radial-gradient(circle at bottom left, var(--accent-red), transparent 75%),
+			radial-gradient(
+				circle at bottom right,
+				var(--accent-blue),
+				transparent 75%
+			),
+			black;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
+}
+
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+
+	&:focus,
+	&:target {
+		outline: 1px solid white;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		interpolate-size: allow-keywords;
+	}
+}
+
+@media (prefers-contrast: more) {
+	header,
+	p,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		outline: 1px solid;
+	}
+}
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}

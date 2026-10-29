@@ -1,0 +1,39 @@
+---
+import "@styles/global.css";
+import Footer from "@components/Footer.astro";
+
+import Header from "@components/Header.astro";
+import type { RootRoutesValues } from "@/routes";
+import { Font } from "astro:assets";
+import SpeedInsights from "@vercel/speed-insights/astro";
+
+interface Props {
+	title: string;
+	activeTab: RootRoutesValues;
+}
+
+const { title, activeTab } = Astro.props;
+---
+
+<SpeedInsights />
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>{title}</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<Font cssVariable="--fontface-inter" preload />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+	</head>
+	<body>
+		<Header activeTab={activeTab} />
+
+		<main style="flex-grow: 1;">
+			<slot />
+		</main>
+
+		<Footer activeTab={activeTab} />
+	</body>
+</html>

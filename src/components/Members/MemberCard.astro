@@ -1,0 +1,66 @@
+---
+import type { Member } from "@/types/member";
+import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
+import Pill from "@/components/Members/Pill.astro";
+import styles from "./MemberCard.module.css";
+
+interface Props {
+	member: Member;
+	hidden?: boolean;
+}
+
+const { member, hidden = false } = Astro.props;
+
+// Determine badge niches list: prefer generalized niches, fallback to raw niche or "Member"
+const nichesList =
+	member.general_niches && member.general_niches.length > 0
+		? member.general_niches
+		: member.niche
+			? member.niche
+					.split(/[,/]/)
+					.map((t) => t.trim())
+					.filter(Boolean)
+			: ["Member"];
+
+const initialBadge = nichesList[0] || "Member";
+
+const majorCode = getMajorCode(member.major);
+const displayName = member.nama_panggilan || member.name;
+const profileUrl = `/members/${getMemberSlug(member)}`;
+const photoUrl = getMemberPhotoUrl(member);
+---
+
+<a
+	href={profileUrl}
+	class={styles.card}
+	data-member-card
+	data-npm={member.npm}
+	data-name={member.name}
+	data-nickname={member.nama_panggilan}
+	data-major={member.major}
+	data-niche={member.niche}
+	data-general-niches={JSON.stringify(nichesList)}
+	style={hidden ? "display: none;" : undefined}
+>
+	<div class={styles.picture}>
+		<img
+			src={photoUrl}
+			alt={member.name}
+			class={styles.picture_image}
+			loading="lazy"
+			decoding="async"
+		/>
+		<Pill
+			variant="badge"
+			class={styles.picture_badge}
+			data-badge-cycler
+			data-niches={JSON.stringify(nichesList)}
+		>
+			<span class={styles.badge_text}>{initialBadge}</span>
+		</Pill>
+	</div>
+	<div class={styles.info}>
+		<h2 class={styles.info_name} title={member.name}>{displayName}</h2>
+		<span class={styles.info_major}>{majorCode}</span>
+	</div>
+</a>

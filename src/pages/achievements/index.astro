@@ -1,0 +1,13 @@
+---
+import "@styles/global.css";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Strings } from "@/strings";
+import { RootRoutes } from "@/routes";
+
+const title = `${Strings.SlugTitles.Achievements} - ${Strings.SiteTitle}`;
+---
+
+<BaseLayout title={title} activeTab={RootRoutes.get("Achievements")!}>
+	<h1>{Strings.SlugTitles.Achievements}</h1>
+	<p>Coming soon...</p>
+</BaseLayout>

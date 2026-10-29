@@ -1,0 +1,213 @@
+---
+import Styles from "./ActivitiesCarousel.module.css";
+---
+
+<div
+	class={Styles.carousel_wrapper}
+	data-activities-carousel
+	data-dot-class={Styles.dot}
+	data-dot-fill-class={Styles.dot_fill}
+>
+	<!-- Viewport containing the sliding track -->
+	<div class={Styles.carousel_viewport} data-viewport>
+		<div class={Styles.carousel_track} data-track id="activitiesCarouselContainer">
+			<slot />
+		</div>
+	</div>
+
+	<!-- Pagination Bar (< ..o... > Navigation & Progress Dots) -->
+	<div class={Styles.pagination_bar}>
+		<button
+			type="button"
+			class={`${Styles.nav_btn} ${Styles.prev_btn}`}
+			data-prev
+			aria-label="Previous activity"
+		>
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+				<path d="m15 18-6-6 6-6"></path>
+			</svg>
+		</button>
+
+		<div
+			class={Styles.dots}
+			data-dots
+			role="tablist"
+			aria-label="Activity carousel progress"
+		>
+			<!-- Generated dynamically by client script -->
+		</div>
+
+		<button
+			type="button"
+			class={`${Styles.nav_btn} ${Styles.next_btn}`}
+			data-next
+			aria-label="Next activity"
+		>
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+				<path d="m9 18 6-6-6-6"></path>
+			</svg>
+		</button>
+	</div>
+</div>
+
+<script>
+	function setupActivitiesCarousel() {
+		const wrappers = document.querySelectorAll<HTMLElement>(
+			"[data-activities-carousel]",
+		);
+
+		for (const wrapper of wrappers) {
+			if (wrapper.dataset.initialized === "true") continue;
+			wrapper.dataset.initialized = "true";
+
+			const track = wrapper.querySelector<HTMLElement>("[data-track]");
+			const dotsContainer = wrapper.querySelector<HTMLElement>("[data-dots]");
+			const prevBtn = wrapper.querySelector<HTMLButtonElement>("[data-prev]");
+			const nextBtn = wrapper.querySelector<HTMLButtonElement>("[data-next]");
+
+			if (!track || !dotsContainer) continue;
+
+			const slides = Array.from(track.children) as HTMLElement[];
+			const count = slides.length;
+			if (count === 0) continue;
+
+			const delay = 10000; // 10 seconds
+			let currentIndex = 0;
+			let timer: number | undefined;
+
+			dotsContainer.innerHTML = "";
+			const dots: HTMLButtonElement[] = [];
+
+			for (let i = 0; i < count; i++) {
+				const dot = document.createElement("button");
+				dot.type = "button";
+				dot.className = wrapper.dataset.dotClass || "";
+				dot.setAttribute("role", "tab");
+				dot.setAttribute("aria-label", `Activity ${i + 1} of ${count}`);
+				dot.setAttribute("aria-selected", i === 0 ? "true" : "false");
+				if (i === 0) dot.dataset.active = "true";
+
+				const fill = document.createElement("span");
+				fill.className = wrapper.dataset.dotFillClass || "";
+				dot.appendChild(fill);
+
+				dot.addEventListener("click", () => {
+					goToSlide(i);
+					startTimer();
+				});
+
+				dotsContainer.appendChild(dot);
+				dots.push(dot);
+			}
+
+			function updateDots(idx: number) {
+				for (let i = 0; i < dots.length; i++) {
+					const dot = dots[i];
+					if (!dot) continue;
+					const isTarget = i === idx;
+					dot.setAttribute("aria-selected", isTarget ? "true" : "false");
+					if (isTarget) {
+						dot.dataset.active = "true";
+						// Re-trigger progress bar animation from 0%
+						const fill = dot.firstElementChild as HTMLElement | null;
+						if (fill) {
+							fill.style.animation = "none";
+							void fill.offsetHeight; // force reflow
+							fill.style.animation = "";
+						}
+					} else {
+						delete dot.dataset.active;
+					}
+				}
+			}
+
+			function goToSlide(idx: number) {
+				currentIndex = (idx + count) % count;
+				if (track) {
+					track.style.transform = `translateX(-${currentIndex * 100}%)`;
+				}
+				updateDots(currentIndex);
+			}
+
+			function startTimer() {
+				stopTimer();
+				if (count < 2) return;
+				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+				timer = window.setInterval(() => {
+					goToSlide(currentIndex + 1);
+				}, delay);
+			}
+
+			function stopTimer() {
+				if (timer !== undefined) {
+					clearInterval(timer);
+					timer = undefined;
+				}
+			}
+
+			prevBtn?.addEventListener("click", () => {
+				goToSlide(currentIndex - 1);
+				startTimer();
+			});
+
+			nextBtn?.addEventListener("click", () => {
+				goToSlide(currentIndex + 1);
+				startTimer();
+			});
+
+			// Touch swipe gestures
+			let touchStartX = 0;
+			wrapper.addEventListener(
+				"touchstart",
+				(e) => {
+					touchStartX = e.changedTouches[0]?.screenX ?? 0;
+					stopTimer();
+				},
+				{ passive: true },
+			);
+
+			wrapper.addEventListener(
+				"touchend",
+				(e) => {
+					const touchEndX = e.changedTouches[0]?.screenX ?? 0;
+					const diff = touchStartX - touchEndX;
+					if (Math.abs(diff) > 45) {
+						if (diff > 0) {
+							goToSlide(currentIndex + 1);
+						} else {
+							goToSlide(currentIndex - 1);
+						}
+					}
+					startTimer();
+				},
+				{ passive: true },
+			);
+
+			// Keyboard navigation
+			wrapper.addEventListener("keydown", (e) => {
+				if (e.key === "ArrowLeft") {
+					goToSlide(currentIndex - 1);
+					startTimer();
+				} else if (e.key === "ArrowRight") {
+					goToSlide(currentIndex + 1);
+					startTimer();
+				}
+			});
+
+			// Pause on hover & focus
+			wrapper.addEventListener("mouseenter", stopTimer);
+			wrapper.addEventListener("mouseleave", startTimer);
+			wrapper.addEventListener("focusin", stopTimer);
+			wrapper.addEventListener("focusout", startTimer);
+
+			// Start 10s auto-slide
+			startTimer();
+		}
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", setupActivitiesCarousel);
+	} else {
+		setupActivitiesCarousel();
+	}
+</script>

@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types";
+interface Props extends HTMLAttributes<"h1"> {
+	level: 1 | 2 | 3 | 4 | 5 | 6;
+	id?: string;
+	skipToc?: boolean;
+}
+
+const { level = 1, class: className, skipToc, id, ...props } = Astro.props;
+const Tag = `h${level}` as const;
+---
+
+<Tag id={id} data-toc-skip={skipToc} data-toc-level={level} class={className} {...props}>
+	<slot />
+</Tag>

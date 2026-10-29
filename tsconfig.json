@@ -1,0 +1,34 @@
+{
+	"extends": "astro/tsconfigs/strictest",
+	"include": [
+		// ! Hanya akan di-generate setelah sync/build
+		".astro/types.d.ts",
+		"src/**/*"
+	],
+	"exclude": ["dist", "admin"],
+	"compilerOptions": {
+		// bundler mode
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+
+		// react integration
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+
+		// plugin typescript
+		"plugins": [
+			{
+				"name": "@astrojs/ts-plugin"
+			}
+		],
+
+		// shortcut paths
+		"paths": {
+			"@/*": ["./src/*"],
+			"@styles/*": ["./src/styles/*"],
+			"@components/*": ["./src/components/*"],
+			"@layouts/*": ["./src/layouts/*"],
+			"@images/*": ["./src/images/*"]
+		}
+	}
+}

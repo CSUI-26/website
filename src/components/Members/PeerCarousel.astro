@@ -1,0 +1,80 @@
+---
+import type { Member } from "@/types/member";
+import { getMemberSlug, getMajorCode, getMemberPhotoUrl } from "@/util";
+import ArrowLeftIcon from "@/icons/arrow-left.svg";
+import ArrowRightIcon from "@/icons/arrow-right.svg";
+import IconButton from "./IconButton.astro";
+import styles from "./PeerCarousel.module.css";
+
+interface Props {
+	similar: Member[];
+	carouselId?: string;
+}
+
+const { similar, carouselId = "similar-carousel" } = Astro.props;
+---
+
+<section class={styles.similar_section}>
+	<div class={styles.similar_header}>
+		<h2 class={styles.similar_title}>See similar people</h2>
+		<div class={styles.scroll_controls}>
+			<IconButton
+				id="scroll-left-btn"
+				size="md"
+				ariaLabel="Scroll left"
+				class={styles.scroll_btn}
+			>
+				<ArrowLeftIcon width={18} height={18} />
+			</IconButton>
+			<IconButton
+				id="scroll-right-btn"
+				size="md"
+				ariaLabel="Scroll right"
+				class={styles.scroll_btn}
+			>
+				<ArrowRightIcon width={18} height={18} />
+			</IconButton>
+		</div>
+	</div>
+	<div class={styles.similar_carousel} id={carouselId}>
+		{
+			similar.map((s) => (
+				<a
+					href={`/members/${getMemberSlug(s)}`}
+					class={styles.similar_card}
+				>
+					<div class={styles.similar_photo_box}>
+						<img
+							src={getMemberPhotoUrl(s)}
+							alt={s.name}
+							class={styles.similar_photo}
+							loading="lazy"
+							decoding="async"
+						/>
+					</div>
+					<span class={styles.similar_name} title={s.name}>
+						{s.nama_panggilan || s.name}
+					</span>
+					<span class={styles.similar_major}>
+						{getMajorCode(s.major)}
+					</span>
+				</a>
+			))
+		}
+	</div>
+</section>
+
+<script>
+	const carousel = document.getElementById("similar-carousel");
+	const leftBtn = document.getElementById("scroll-left-btn");
+	const rightBtn = document.getElementById("scroll-right-btn");
+
+	leftBtn?.addEventListener("click", () => {
+		carousel?.scrollBy({ left: -360, behavior: "smooth" });
+	});
+
+	rightBtn?.addEventListener("click", () => {
+		carousel?.scrollBy({ left: 360, behavior: "smooth" });
+	});
+</script>
+

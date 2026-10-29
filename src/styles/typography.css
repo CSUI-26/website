@@ -1,0 +1,16 @@
+:root {
+	--font-base-size-normal: 24px;
+	--font-base-size-large: 32px;
+	--font-base-size-heading: 48px;
+	--font-base-size-title: 75px;
+	--font-base-letterspacing: -0.05em;
+	--font-base-weight-normal: 400;
+	--font-base-weight-semibold: 600;
+	--font-base-weight-heavy: 850;
+	--font-base-weight-black: 1000;
+
+	--font-normal: var(--font-base-size-normal) normal
+		var(--font-base-weight-normal);
+	--font-title: var(--font-base-size-heading) italic
+		var(--font-base-weight-heavy);
+}

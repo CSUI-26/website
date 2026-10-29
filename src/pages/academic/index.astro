@@ -1,0 +1,351 @@
+---
+import Styles from "./index.module.css";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Strings } from "@/strings";
+import { RootRoutes } from "@/routes";
+import { Image } from "astro:assets";
+import Racoon1 from "@images/Racoon1.png";
+import Racoon2 from "@images/Racoon2.png";
+import { programStudies } from "@/data/academic";
+
+const title = `${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
+---
+
+<BaseLayout title={title} activeTab={RootRoutes.get("Academic")!}>
+	<!-- ════════ VIEW 1: HERO SELECTOR (TAMPILAN AWAL) ════════ -->
+	<section id="hero-view" class={Styles.academic_hero}>
+		<div class={Styles.hero_content}>
+			<h1 class={Styles.title}>PILIH JURUSANMU:</h1>
+			<div class={Styles.title_accent} aria-hidden="true"></div>
+
+			<!-- Major Buttons: Switches view in-place (no new tab, no reload) -->
+			<nav class={Styles.majors_nav} aria-label="Pilih Program Studi">
+				<ul class={Styles.majors_list}>
+					{
+						programStudies.map((major) => {
+							const isBlue = major.id.includes("ilmu-komputer");
+							return (
+								<li class={Styles.major_item}>
+									<button
+										type="button"
+										class={`${Styles.major_btn} ${isBlue ? Styles.major_btn_blue : Styles.major_btn_red}`}
+										data-select-prodi={major.id}
+									>
+										<span class={Styles.major_name}>{major.name}</span>
+									</button>
+								</li>
+							);
+						})
+					}
+				</ul>
+			</nav>
+		</div>
+
+		<!-- Mascots -->
+		<div class={Styles.mascot_container} aria-hidden="true">
+			<div class={Styles.mascot_wrapper_left}>
+				<Image
+					class={`${Styles.mascot} ${Styles.mascot_left}`}
+					src={Racoon1}
+					alt=""
+					width={400}
+					loading="eager"
+					draggable={false}
+				/>
+			</div>
+			<div class={Styles.mascot_wrapper_right}>
+				<Image
+					class={`${Styles.mascot} ${Styles.mascot_right}`}
+					src={Racoon2}
+					alt=""
+					width={400}
+					loading="eager"
+					draggable={false}
+				/>
+			</div>
+		</div>
+	</section>
+
+	<!-- ════════ VIEW 2: PRODI DETAIL VIEW (GANTI TAMPILAN) ════════ -->
+	<div id="prodi-view" class={Styles.prodi_view_container} style="display: none;">
+		<!-- Back button to return to Hero Selector -->
+		<div class={Styles.top_bar}>
+			<button type="button" class={Styles.back_btn} id="back-to-hero">
+				← Kembali ke Pilih Jurusan
+			</button>
+		</div>
+
+		{
+			programStudies.map((prodi, pIdx) => {
+				const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
+				return (
+					<article
+						id={`prodi-${prodi.id}`}
+						class={Styles.prodi_section}
+						data-prodi-panel={prodi.id}
+						style={pIdx === 0 ? "display: flex;" : "display: none;"}
+					>
+						{/* Header */}
+						<header class={Styles.prodi_header}>
+							<h2 class={Styles.prodi_title}>{prodi.name}</h2>
+
+							<div class={Styles.career_tags}>
+								{prodi.careers.map((career) => (
+									<span class={Styles.career_tag}>{career}</span>
+								))}
+							</div>
+
+							<p class={Styles.prodi_description}>{prodi.description}</p>
+
+							<div class={Styles.prodi_links}>
+								<a
+									class={Styles.action_btn}
+									href="https://scele.cs.ui.ac.id/"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									LINK MATERI ↗
+								</a>
+								<a
+									class={Styles.action_btn}
+									href="https://ristek.link/the-npc-guide-to-pacil"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									DRIVE KATING ↗
+								</a>
+							</div>
+						</header>
+
+						{/* Curriculum Section */}
+						<section class={Styles.curriculum_section} aria-label="Materi yang Dipelajari">
+							<h3 class={Styles.curriculum_title}>MATERI YANG DIPELAJARI</h3>
+
+							{/* Semester Choices Navbar: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | Pilihan */}
+							<nav class={Styles.semester_nav} aria-label="Pilih Semester" role="tablist">
+								{prodi.semesters.map((sem, sIdx) => {
+									const label = typeof sem.semester === "number" ? sem.semester : "Pilihan";
+									return (
+										<>
+											{sIdx > 0 && <span class={Styles.semester_nav_divider} aria-hidden="true">|</span>}
+											<button
+												type="button"
+												role="tab"
+												class={`${Styles.semester_nav_item} ${sIdx === 0 ? Styles.semester_nav_item_active : ""}`}
+												data-prodi-id={prodi.id}
+												data-semester-idx={sIdx}
+												aria-selected={sIdx === 0 ? "true" : "false"}
+											>
+												{label}
+											</button>
+										</>
+									);
+								})}
+							</nav>
+
+							{/* Frame 39 (Figma Curriculum Container) */}
+							<div class={Styles.curriculum_frame}>
+								{prodi.semesters.map((sem, sIdx) => (
+									<div
+										class={`${Styles.semester_panel} ${sIdx === 0 ? Styles.semester_panel_active : ""}`}
+										data-prodi-content={prodi.id}
+										data-semester-content={sIdx}
+										role="tabpanel"
+									>
+										<div class={Styles.semester_banner}>
+											<h4 class={Styles.semester_banner_title}>
+												{typeof sem.semester === "number"
+													? `Semester ${sem.semester}`
+													: "Mata Kuliah Pilihan"}
+											</h4>
+										</div>
+
+										{/* Minimalist Course Dropdowns */}
+										<div class={Styles.course_list}>
+											{sem.courses.map((course) => {
+												return (
+													<details class={Styles.course_card}>
+														<summary class={Styles.course_summary}>
+															<span class={Styles.course_title}>{course.name}</span>
+															<div class={Styles.course_badge_group}>
+																<span class={Styles.sks_badge}>{course.sks} SKS</span>
+																<span class={Styles.expand_icon} aria-hidden="true">
+																	▾
+																</span>
+															</div>
+														</summary>
+
+														<div class={Styles.course_details}>
+															{course.description && (
+																<p class={Styles.course_description}>
+																	{course.description}
+																</p>
+															)}
+
+															{course.prerequisites &&
+																course.prerequisites.length > 0 && (
+																	<div class={Styles.prerequisites_box}>
+																		<span class={Styles.prerequisites_label}>
+																			Merupakan syarat wajib dari matkul:
+																		</span>
+																		<ul class={Styles.prerequisites_list}>
+																			{course.prerequisites.map((req) => (
+																				<li>{req}</li>
+																			))}
+																		</ul>
+																	</div>
+																)}
+
+															<div class={Styles.course_footer}>
+																<a
+																	class={Styles.material_btn}
+																	href="https://scele.cs.ui.ac.id/"
+																	target="_blank"
+																	rel="noopener noreferrer"
+																>
+																	LINK MATERIAL ↗
+																</a>
+															</div>
+														</div>
+													</details>
+												);
+											})}
+										</div>
+									</div>
+								))}
+							</div>
+						</section>
+
+						{/* Quick Switch to Other Majors */}
+						<nav class={Styles.other_majors} aria-label="Lihat Jurusan Lain">
+							<span class={Styles.other_majors_label}>Lihat Jurusan Lain:</span>
+							<div class={Styles.other_majors_list}>
+								{otherProdis.map((other) => (
+									<button
+										type="button"
+										class={Styles.other_major_btn}
+										data-select-prodi={other.id}
+									>
+										{other.name} →
+									</button>
+								))}
+							</div>
+						</nav>
+					</article>
+				);
+			})
+		}
+	</div>
+</BaseLayout>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const heroView = document.getElementById("hero-view");
+		const prodiView = document.getElementById("prodi-view");
+		const backBtn = document.getElementById("back-to-hero");
+
+		function showHero() {
+			if (heroView && prodiView) {
+				prodiView.style.display = "none";
+				heroView.style.display = "flex";
+				window.scrollTo({ top: 0, behavior: "instant" });
+				history.pushState(null, "", window.location.pathname);
+			}
+		}
+
+		function showProdi(prodiId: string, updateUrl = true) {
+			if (!heroView || !prodiView) return;
+
+			// Hide hero view, show prodi view
+			heroView.style.display = "none";
+			prodiView.style.display = "flex";
+
+			// Show only the requested prodi panel
+			const allPanels = document.querySelectorAll("[data-prodi-panel]");
+			for (const panel of allPanels) {
+				const isTarget = (panel as HTMLElement).dataset.prodiPanel === prodiId;
+				(panel as HTMLElement).style.display = isTarget ? "flex" : "none";
+			}
+
+			window.scrollTo({ top: 0, behavior: "instant" });
+
+			if (updateUrl) {
+				history.pushState(null, "", `#${prodiId}`);
+			}
+		}
+
+		// Attach clicks to all prodi triggers (Hero buttons + Other majors buttons)
+		const prodiTriggers = document.querySelectorAll("[data-select-prodi]");
+		for (const trigger of prodiTriggers) {
+			trigger.addEventListener("click", () => {
+				const prodiId = (trigger as HTMLElement).dataset.selectProdi;
+				if (prodiId) {
+					showProdi(prodiId, true);
+				}
+			});
+		}
+
+		// Attach back button
+		if (backBtn) {
+			backBtn.addEventListener("click", () => {
+				showHero();
+			});
+		}
+
+		// Handle browser back/forward buttons
+		window.addEventListener("popstate", () => {
+			const hash = window.location.hash.replace("#", "");
+			if (hash && document.querySelector(`[data-prodi-panel="${hash}"]`)) {
+				showProdi(hash, false);
+			} else {
+				showHero();
+			}
+		});
+
+		// Semester tab clicks within each prodi
+		const semesterTabs = document.querySelectorAll(
+			"[data-prodi-id][data-semester-idx]",
+		);
+		for (const tab of semesterTabs) {
+			tab.addEventListener("click", () => {
+				const prodiId = (tab as HTMLElement).dataset.prodiId;
+				const semIdx = (tab as HTMLElement).dataset.semesterIdx;
+				if (!prodiId || semIdx === undefined) return;
+
+				// Deactivate other tabs in this prodi
+				const prodiTabs = document.querySelectorAll(
+					`[data-prodi-id="${prodiId}"]`,
+				);
+				for (const t of prodiTabs) {
+					t.setAttribute("aria-selected", "false");
+					t.removeAttribute("data-active");
+					for (const c of Array.from(t.classList)) {
+						if (c.includes("semester_nav_item_active") || c.includes("semester_tab_active")) {
+							t.classList.remove(c);
+						}
+					}
+				}
+
+				// Activate clicked tab
+				tab.setAttribute("aria-selected", "true");
+				tab.setAttribute("data-active", "true");
+
+				// Show target semester content panel
+				const contentPanels = document.querySelectorAll(
+					`[data-prodi-content="${prodiId}"]`,
+				);
+				for (const p of contentPanels) {
+					const isTarget =
+						(p as HTMLElement).dataset.semesterContent === semIdx;
+					(p as HTMLElement).style.display = isTarget ? "block" : "none";
+				}
+			});
+		}
+
+		// Check initial hash on page load
+		const initialHash = window.location.hash.replace("#", "");
+		if (initialHash && document.querySelector(`[data-prodi-panel="${initialHash}"]`)) {
+			showProdi(initialHash, false);
+		}
+	});
+</script>
