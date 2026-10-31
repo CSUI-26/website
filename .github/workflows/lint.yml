@@ -6,6 +6,10 @@ on:
 jobs:
     test:
         runs-on: ubuntu-slim
+        permissions:
+            contents: read
+            pull-requests: write
+
         steps:
             - name: Setup bun
               uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
@@ -16,6 +20,15 @@ jobs:
             - name: Install deps
               run: bun install
 
-            - name: Lint project
+            - name: Setup reviewdog
+              uses: reviewdog/action-setup@d8edfce3dd5e1ec6978745e801f9c50b5ef80252
+              with:
+                  reviewdog_version: latest
+
+            - name: Comment Biome findings
               continue-on-error: true
-              run: bun run lint
+              env:
+                  REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  bun run lint --reporter=rdjson > "$RUNNER_TEMP/biome-report.json" || true
+                  reviewdog -f=rdjson -name=Biome -reporter=github-pr-review -filter-mode=added -fail-level=none < "$RUNNER_TEMP/biome-report.json"
