@@ -9,5 +9,6 @@ export const Strings = {
 		Boardwall: "Boardwall",
 		Gallery: "Gallery",
 		Academic: "Academic",
+		NotFound: "Not Found",
 	},
 } as const;

@@ -9,7 +9,7 @@ import SpeedInsights from "@vercel/speed-insights/astro";
 
 interface Props {
 	title: string;
-	activeTab: RootRoutesValues;
+	activeTab?: RootRoutesValues;
 }
 
 const { title, activeTab } = Astro.props;
