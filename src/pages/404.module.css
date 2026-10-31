@@ -1,0 +1,16 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	top: 50%;
+	left: 50%;
+	position: absolute;
+	transform: translateX(-50%) translateY(-50%);
+
+	h1 {
+		font-size: var(--font-base-size-title);
+	}
+
+	a {
+		color: white;
+	}
+}

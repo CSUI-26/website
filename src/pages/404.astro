@@ -1,0 +1,14 @@
+---
+import { Strings } from "@/strings";
+import Styles from "./404.module.css";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const title = `${Strings.SlugTitles.NotFound} - ${Strings.SiteTitle}`;
+---
+
+<BaseLayout title={title}>
+	<div class={Styles.container}>
+		<h1>404</h1>
+		<p><a href="/">Kembali ke laman utama?</a></p>
+	</div>
+</BaseLayout>
