@@ -1,6 +1,30 @@
 ---
 import Styles from "./PeepsCard.module.css";
 import { GraduationCap } from "lucide-react";
+import memberData from "@/data.json";
+
+type Majors =
+	| "Sistem Informasi"
+	| "Ilmu Komputer"
+	| "Ilmu Komputer KKI"
+	| "Kecerdasan Artifisial";
+
+function getProdiCount(): Record<Majors, number> {
+	const result: Record<Majors, number> = {
+		"Ilmu Komputer": 0,
+		"Ilmu Komputer KKI": 0,
+		"Kecerdasan Artifisial": 0,
+		"Sistem Informasi": 0,
+	};
+
+	(memberData as { major: Majors }[]).forEach((member) => {
+		result[member.major]++;
+	});
+
+	return result;
+}
+
+const ProdiCount = getProdiCount();
 ---
 
 <div class={Styles.peeps_card}>
@@ -8,7 +32,9 @@ import { GraduationCap } from "lucide-react";
 		<div class={`${Styles.prodi_card} ${Styles.red}`}>
 			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num}>67</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Ilmu Komputer"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>students</div>
 			</div>
 			<div class={Styles.prodi_name}>Computer Science</div>
@@ -16,7 +42,9 @@ import { GraduationCap } from "lucide-react";
 		<div class={`${Styles.prodi_card} ${Styles.red}`}>
 			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num}>67</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Sistem Informasi"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>students</div>
 			</div>
 			<div class={Styles.prodi_name}>Information Systems</div>
@@ -24,7 +52,9 @@ import { GraduationCap } from "lucide-react";
 		<div class={`${Styles.prodi_card} ${Styles.blue}`}>
 			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num}>67</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Kecerdasan Artifisial"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>students</div>
 			</div>
 			<div class={Styles.prodi_name}>Artificial Intelligence</div>
@@ -32,7 +62,9 @@ import { GraduationCap } from "lucide-react";
 		<div class={`${Styles.prodi_card} ${Styles.blue}`}>
 			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num}>67</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Ilmu Komputer KKI"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>students</div>
 			</div>
 			<div class={Styles.prodi_name}>Computer Science KKI</div>
