@@ -19,10 +19,11 @@ import {
 import {
 	type ChangeEvent,
 	type MouseEvent,
-	useEffect,
+	useLayoutEffect,
 	useMemo,
 	useState,
 } from "react";
+import { updateHistoryState, useSearchParams } from "@/hooks/useSearchParams";
 import styles from "./MembersDirectory.module.css";
 import { matchQueryToCanonicalTags } from "./tags";
 import { CANONICAL_TAGS } from "./tags/rules";
@@ -97,6 +98,24 @@ function resolveMajorParam(param: string | null): string | null {
 }
 
 /**
+ * Returns canonical short major code for query parameters (e.g. "cs", "si", "kki", "ai").
+ */
+function getMajorCodeFromCanonical(canonicalMajor: string): string {
+	switch (canonicalMajor) {
+		case "Ilmu Komputer":
+			return "cs";
+		case "Sistem Informasi":
+			return "si";
+		case "Ilmu Komputer KKI":
+			return "kki";
+		case "Kecerdasan Artifisial":
+			return "ai";
+		default:
+			return canonicalMajor.toLowerCase();
+	}
+}
+
+/**
  * Matches a tag query parameter against canonical tags (case-insensitive)
  * or falls back to the literal trimmed tag string.
  */
@@ -134,37 +153,61 @@ function LinkedInIconSvg({ size = 16 }: { size?: number }) {
 }
 
 export default function MembersDirectory({ members, pageSize = 40 }: Props) {
-	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedMajor, setSelectedMajor] = useState("ALL");
-	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-	const [showAllTags, setShowAllTags] = useState(false);
-	const [viewMode, setViewMode] = useState<"grid" | "column">("grid");
-	const [currentPage, setCurrentPage] = useState(1);
+	const [searchParams, setSearchParams] = useSearchParams();
 
-	// Synchronize filter selections from URL parameters when landing on the page
-	useEffect(() => {
-		if (typeof window === "undefined") return;
-		const params = new URLSearchParams(window.location.search);
+	// Derive state directly from URL search parameters
+	const searchQuery =
+		(searchParams.get("q") || searchParams.get("search") || "").trim();
 
-		const majorParam = params.get("major") || params.get("prodi");
-		const resolvedMajor = resolveMajorParam(majorParam);
-		if (resolvedMajor) {
-			setSelectedMajor(resolvedMajor);
-		}
+	const selectedMajor =
+		resolveMajorParam(searchParams.get("major") || searchParams.get("prodi")) ||
+		"ALL";
 
-		const tagParam = params.get("tag");
-		if (tagParam) {
-			const resolvedTag = resolveTagParam(tagParam);
-			if (resolvedTag) {
-				setSelectedTags([resolvedTag]);
+	const selectedTags = useMemo(() => {
+		const tags: string[] = [];
+		for (const p of searchParams.getAll("tag")) {
+			const resolved = resolveTagParam(p);
+			if (resolved && !tags.includes(resolved)) {
+				tags.push(resolved);
 			}
 		}
+		const commaSeparated = searchParams.get("tags");
+		if (commaSeparated) {
+			for (const t of commaSeparated.split(",")) {
+				const resolved = resolveTagParam(t);
+				if (resolved && !tags.includes(resolved)) {
+					tags.push(resolved);
+				}
+			}
+		}
+		return tags;
+	}, [searchParams]);
 
-		const searchParam = params.get("q") || params.get("search");
-		if (searchParam) {
-			setSearchQuery(searchParam.trim());
+	const [showAllTags, setShowAllTags] = useState(false);
+
+	const viewMode: "grid" | "column" =
+		searchParams.get("view") === "column" ? "column" : "grid";
+
+	const rawPage = parseInt(searchParams.get("page") || "1", 10);
+	const currentPage = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+
+	// Restore scroll position from history.state if returning via browser back traversal
+	useLayoutEffect(() => {
+		if (typeof window === "undefined") return;
+		const state = window.history.state as Record<string, unknown> | null;
+		if (state && typeof state.scrollY === "number" && state.scrollY > 0) {
+			window.scrollTo({ top: state.scrollY, behavior: "instant" });
 		}
 	}, []);
+
+	// Capture scroll position before navigating to a member detail page
+	const handleMemberCardClick = () => {
+		if (typeof window === "undefined") return;
+		updateHistoryState({
+			scrollY: window.scrollY,
+			fromDirectory: true,
+		});
+	};
 
 	// Compute tag counts across members matching the current major filter
 	const tagCounts = useMemo(() => {
@@ -238,32 +281,109 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 		return filteredMembers.slice(start, start + pageSize);
 	}, [filteredMembers, currentPage, pageSize]);
 
-	// Handlers that reset page to 1 on filter/search change
+	// Handlers that update URL search params directly via setSearchParams
 	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setSearchQuery(e.target.value);
-		setCurrentPage(1);
+		const val = e.target.value;
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev);
+			const trimmed = val.trim();
+			if (trimmed) {
+				next.set("q", val);
+			} else {
+				next.delete("q");
+				next.delete("search");
+			}
+			next.delete("page");
+			return next;
+		});
 	};
 
 	const handleMajorSelect = (major: string) => {
-		setSelectedMajor(major);
-		setCurrentPage(1);
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev);
+			if (major !== "ALL") {
+				const code = getMajorCodeFromCanonical(major);
+				next.set("major", code);
+			} else {
+				next.delete("major");
+				next.delete("prodi");
+			}
+			next.delete("page");
+			return next;
+		});
 	};
 
 	const handleTagToggle = (tag: string) => {
-		setSelectedTags((prev) =>
-			prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-		);
-		setCurrentPage(1);
+		setSearchParams((prev) => {
+			const next = new URLSearchParams();
+			// Copy non-tag params
+			for (const [key, value] of prev.entries()) {
+				if (key !== "tag" && key !== "tags" && key !== "page") {
+					next.append(key, value);
+				}
+			}
+			const existingTags: string[] = [];
+			for (const p of prev.getAll("tag")) {
+				const resolved = resolveTagParam(p);
+				if (resolved && !existingTags.includes(resolved)) {
+					existingTags.push(resolved);
+				}
+			}
+			const commaSeparated = prev.get("tags");
+			if (commaSeparated) {
+				for (const t of commaSeparated.split(",")) {
+					const resolved = resolveTagParam(t);
+					if (resolved && !existingTags.includes(resolved)) {
+						existingTags.push(resolved);
+					}
+				}
+			}
+			const updatedTags = existingTags.includes(tag)
+				? existingTags.filter((t) => t !== tag)
+				: [...existingTags, tag];
+
+			for (const t of updatedTags) {
+				next.append("tag", t);
+			}
+			return next;
+		});
 	};
 
 	const handleClearTags = () => {
-		setSelectedTags([]);
-		setCurrentPage(1);
+		setSearchParams((prev) => {
+			const next = new URLSearchParams();
+			for (const [key, value] of prev.entries()) {
+				if (key !== "tag" && key !== "tags" && key !== "page") {
+					next.append(key, value);
+				}
+			}
+			return next;
+		});
+	};
+
+	const handleViewModeSelect = (mode: "grid" | "column") => {
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev);
+			if (mode !== "grid") {
+				next.set("view", mode);
+			} else {
+				next.delete("view");
+			}
+			return next;
+		});
 	};
 
 	const goToPage = (page: number) => {
 		const target = Math.max(1, Math.min(page, totalPages));
-		setCurrentPage(target);
+		setSearchParams((prev) => {
+			const next = new URLSearchParams(prev);
+			if (target > 1) {
+				next.set("page", target.toString());
+			} else {
+				next.delete("page");
+			}
+			return next;
+		});
 		// Smooth scroll up towards top of grid/table on page change
 		const gridEl = document.getElementById("members-grid-top");
 		gridEl?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -437,7 +557,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 					<div className={styles.view_toggle_group}>
 						<button
 							type="button"
-							onClick={() => setViewMode("grid")}
+							onClick={() => handleViewModeSelect("grid")}
 							aria-label="Switch to grid view"
 							title="Grid view"
 							aria-pressed={viewMode === "grid"}
@@ -449,7 +569,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						</button>
 						<button
 							type="button"
-							onClick={() => setViewMode("column")}
+							onClick={() => handleViewModeSelect("column")}
 							aria-label="Switch to column view"
 							title="Column view"
 							aria-pressed={viewMode === "column"}
@@ -476,6 +596,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 							<a
 								key={member.npm}
 								href={`/members/${member.slug}`}
+								onClick={handleMemberCardClick}
 								className={styles.card}
 							>
 								<div className={styles.picture}>
@@ -504,7 +625,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						))}
 					</div>
 				) : (
-					/* ── Column / Table View ── */
+					/* Column / Table View */
 					<div className={styles.table_container} id="members-table">
 						{/* Table Column Header */}
 						<div className={styles.table_header_row} aria-hidden="true">
@@ -529,6 +650,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 									<a
 										key={member.npm}
 										href={`/members/${member.slug}`}
+										onClick={handleMemberCardClick}
 										className={styles.table_row}
 									>
 										{/* Member Identity: Avatar & Names */}

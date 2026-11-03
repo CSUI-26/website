@@ -105,7 +105,7 @@ const quote =
 	<main class={styles.container}>
 		<!-- Back Button -->
 		<nav class={styles.back_nav} aria-label="Breadcrumb">
-			<Surface as="a" href="/members" variant="subtle" class={styles.back_button}>
+			<Surface as="a" href="/members" variant="subtle" class={styles.back_button} id="back-to-members-btn">
 				<ArrowLeftIcon width={20} height={20} />
 				<span>Back to members</span>
 			</Surface>
@@ -222,4 +222,22 @@ const quote =
 		<!-- Bottom: See Similar People Section -->
 		{similar.length > 0 && <PeerCarousel similar={similar} />}
 	</main>
+
+	<script is:inline>
+		(() => {
+			const backBtn = document.getElementById("back-to-members-btn");
+			if (!backBtn) return;
+
+			backBtn.addEventListener("click", (e) => {
+				if (
+					window.history.length > 1 &&
+					document.referrer &&
+					new URL(document.referrer, window.location.origin).pathname === "/members"
+				) {
+					e.preventDefault();
+					window.history.back();
+				}
+			});
+		})();
+	</script>
 </BaseLayout>
