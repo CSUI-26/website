@@ -87,6 +87,45 @@ export function getMajorCode(major: string): string {
 }
 
 /**
+ * Maps major name or code to a theme identifier for distinct prodi coloring:
+ * - CS: blue
+ * - SI: red
+ * - CS KKI: dark blue
+ * - AI: green
+ */
+export function getMajorThemeKey(
+	majorOrCode: string,
+): "cs" | "si" | "kki" | "ai" {
+	switch (majorOrCode) {
+		case "Ilmu Komputer":
+		case "CS":
+			return "cs";
+		case "Sistem Informasi":
+		case "SI":
+			return "si";
+		case "Ilmu Komputer KKI":
+		case "CS KKI":
+			return "kki";
+		case "Kecerdasan Artifisial":
+		case "AI":
+			return "ai";
+		default:
+			return "cs";
+	}
+}
+
+/**
+ * Formats a name string into title case (capitalizing the initial letter of each word).
+ * Handles word boundaries including spaces, hyphens, and periods.
+ */
+export function formatTitleCase(text: string): string {
+	if (!text) return "";
+	return text
+		.toLowerCase()
+		.replace(/(?:^|[\s\-/.])[a-z]/g, (char) => char.toUpperCase());
+}
+
+/**
  * Shuffles an array in-place using Fisher-Yates and Math.random().
  */
 export function shuffle<T>(array: T[]): T[] {
