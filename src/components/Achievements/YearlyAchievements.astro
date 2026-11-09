@@ -1,0 +1,47 @@
+---
+import type { YearGroup } from "@/data/achievements";
+import styles from "./YearlyAchievements.module.css";
+
+interface Props {
+	yearGroups: YearGroup[];
+}
+
+const { yearGroups } = Astro.props;
+---
+
+<section class={styles.yearly_section} aria-label="Yearly Achievements">
+	<h2 class={styles.heading}>YEARLY ACHIEVEMENTS</h2>
+
+	{
+		yearGroups.map((group) => (
+			<div class={styles.year_group}>
+				<h3 class={styles.year_label}>{group.year}</h3>
+
+				<div class={styles.cards_grid}>
+					{group.items.map((item) => (
+						<article
+							class={styles.card}
+							aria-label={`${item.title} - ${group.year}`}
+						>
+							<div class={styles.card_placeholder}>
+								<svg
+									class={styles.card_icon}
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.75"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<circle cx="12" cy="8" r="6" />
+									<path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+								</svg>
+							</div>
+							<p class={styles.card_title}>{item.title}</p>
+						</article>
+					))}
+				</div>
+			</div>
+		))
+	}
+</section>
