@@ -40,7 +40,7 @@
 		"@storybook-astro/framework": "^1.15.0",
 		"@storybook/builder-vite": "^10.6.5",
 		"@storybook/react": "^10.6.5",
-		"@vitejs/plugin-react": "^6.1.2",
+		"@vitejs/plugin-react": "^6.2.1",
 		"storybook": "^10.6.5",
 		"storybook-dark-mode": "^5.0.0",
 		"typescript": "~6.0.3"
