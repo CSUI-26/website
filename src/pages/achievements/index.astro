@@ -3,11 +3,26 @@ import "@styles/global.css";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
+import {
+	latestAchievements,
+	yearlyAchievementsByYear,
+} from "@/data/achievements";
+import LatestAchievements from "@/components/Achievements/LatestAchievements.astro";
+import YearlyAchievements from "@/components/Achievements/YearlyAchievements.astro";
+import styles from "./index.module.css";
 
 const title = `${Strings.SlugTitles.Achievements} - ${Strings.SiteTitle}`;
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Achievements")!}>
-	<h1>{Strings.SlugTitles.Achievements}</h1>
-	<p>Coming soon...</p>
+	<div class={styles.achievements_page}>
+		<LatestAchievements achievements={latestAchievements} />
+		<YearlyAchievements yearGroups={yearlyAchievementsByYear} />
+	</div>
 </BaseLayout>
+
+<style is:global>
+	body {
+		background-color: #030007;
+	}
+</style>

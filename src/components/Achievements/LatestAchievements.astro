@@ -1,0 +1,151 @@
+---
+import type { LatestAchievement } from "@/data/achievements";
+import styles from "./LatestAchievements.module.css";
+
+interface Props {
+	achievements: LatestAchievement[];
+}
+
+const { achievements } = Astro.props;
+---
+
+<section class={styles.latest_section} aria-label="Latest Achievements">
+	<h1 class={styles.heading}>LATEST ACHIEVEMENTS</h1>
+
+	<!-- Carousel Bar with Arrows & Floating Center Card -->
+	<div class={styles.carousel_bar} data-achievement-carousel>
+		<button
+			type="button"
+			class={`${styles.nav_button} ${styles.prev_btn}`}
+			data-prev
+			aria-label="Previous achievement"
+		>
+			<svg class={styles.nav_icon} viewBox="0 0 24 24">
+				<path d="M16 4L6 12L16 20Z"></path>
+			</svg>
+		</button>
+
+		<div class={styles.cards_viewport} data-viewport>
+			{
+				achievements.map((item, idx) => (
+					<div
+						class={styles.slide_card}
+						data-slide
+						data-index={idx}
+						data-active={idx === 0 ? "true" : undefined}
+						role="group"
+						aria-roledescription="slide"
+						aria-label={`${item.title} - ${item.award}`}
+					>
+						<img
+							src={item.image}
+							alt={item.title}
+							class={styles.card_image}
+							loading={idx === 0 ? "eager" : "lazy"}
+						/>
+						{item.showOverlay !== false && (
+							<div class={styles.card_overlay}>
+								<span class={styles.card_award}>{item.award}</span>
+								<span class={styles.card_title}>{item.title}</span>
+							</div>
+						)}
+					</div>
+				))
+			}
+		</div>
+
+		<button
+			type="button"
+			class={`${styles.nav_button} ${styles.next_btn}`}
+			data-next
+			aria-label="Next achievement"
+		>
+			<svg class={styles.nav_icon} viewBox="0 0 24 24">
+				<path d="M8 4L18 12L8 20Z"></path>
+			</svg>
+		</button>
+	</div>
+
+	<!-- Active Slide Details (Team list + Description) -->
+	<div class={styles.details_row} data-details-container>
+		<div class={styles.team_col}>
+			<h2 class={styles.team_name} data-team-name>
+				{achievements[0]?.teamName}
+			</h2>
+			<ol class={styles.member_list} data-member-list>
+				{
+					achievements[0]?.members.map((member) => (
+						<li class={styles.member_item}>{member}</li>
+					))
+				}
+			</ol>
+		</div>
+
+		<div class={styles.desc_col}>
+			<p class={styles.description_text} data-description>
+				{achievements[0]?.description}
+			</p>
+		</div>
+	</div>
+</section>
+
+<!-- Data for dynamic client switching -->
+<script define:vars={{ achievementsData: achievements }}>
+	function initLatestCarousel() {
+		const container = document.querySelector("[data-achievement-carousel]");
+		if (!container) return;
+
+		const slides = container.querySelectorAll("[data-slide]");
+		const prevBtn = container.querySelector("[data-prev]");
+		const nextBtn = container.querySelector("[data-next]");
+		const teamNameEl = document.querySelector("[data-team-name]");
+		const memberListEl = document.querySelector("[data-member-list]");
+		const descEl = document.querySelector("[data-description]");
+
+		let currentIndex = 0;
+		const total = slides.length;
+		if (total <= 1) {
+			if (prevBtn) prevBtn.style.display = "none";
+			if (nextBtn) nextBtn.style.display = "none";
+			return;
+		}
+
+		function updateSlide(newIndex) {
+			currentIndex = (newIndex + total) % total;
+
+			slides.forEach((slide, idx) => {
+				if (idx === currentIndex) {
+					slide.dataset.active = "true";
+				} else {
+					delete slide.dataset.active;
+				}
+			});
+
+			const activeData = achievementsData[currentIndex];
+			if (activeData) {
+				if (teamNameEl) teamNameEl.textContent = activeData.teamName;
+				if (descEl) descEl.textContent = activeData.description;
+				if (memberListEl) {
+					memberListEl.innerHTML = activeData.members
+						.map((m) => `<li style="font-size: clamp(0.88rem, 1.2vw, 0.98rem); line-height: 1.6; color: rgba(255, 255, 255, 0.9);">${m}</li>`)
+						.join("");
+				}
+			}
+		}
+
+		prevBtn?.addEventListener("click", () => updateSlide(currentIndex - 1));
+		nextBtn?.addEventListener("click", () => updateSlide(currentIndex + 1));
+
+		// Keyboard navigation
+		container.addEventListener("keydown", (e) => {
+			if (e.key === "ArrowLeft") updateSlide(currentIndex - 1);
+			if (e.key === "ArrowRight") updateSlide(currentIndex + 1);
+		});
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initLatestCarousel);
+	} else {
+		initLatestCarousel();
+	}
+</script>
