@@ -7,6 +7,11 @@
 	flex-direction: column;
 	align-items: center;
 	color: var(--fg-text-normal);
+
+	@media (max-width: 900px) {
+		padding-block-start: 3rem;
+		padding-inline: 1rem;
+	}
 }
 
 .back_nav {
@@ -50,6 +55,7 @@
 	@media (max-width: 900px) {
 		flex-direction: column;
 		align-items: center;
+		gap: 1.5rem;
 	}
 }
 
@@ -61,6 +67,14 @@
 	overflow: hidden;
 	background: rgba(255, 255, 255, 0.05);
 	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+	@media (max-width: 900px) {
+		max-width: 340px;
+	}
+
+	@media (max-width: 480px) {
+		max-width: 280px;
+	}
 
 	.photo {
 		width: 100%;
@@ -82,6 +96,11 @@
 	flex-direction: column;
 	justify-content: space-between;
 	min-width: 0;
+
+	@media (max-width: 600px) {
+		width: 100%;
+		padding: 1.5rem 1.25rem;
+	}
 
 	.social_row {
 		display: flex;

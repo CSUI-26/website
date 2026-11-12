@@ -516,7 +516,7 @@
 /* Mobile Screens (Phone Portrait) */
 @media (max-width: 600px) {
 	.page_wrapper {
-		padding-block-start: clamp(10rem, 21vh, 12rem);
+		padding-block-start: 3rem;
 		padding-inline: 0.85rem;
 	}
 

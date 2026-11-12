@@ -662,10 +662,8 @@
 
 /* Mobile Screens (Phone Portrait) */
 @media (max-width: 600px) {
-	/* Header in Header.module.css is taller on mobile (~140px) due to column-reverse,
-	   so we need 10.5rem - 11.5rem padding-top so title is never obscured */
 	.academic_hero {
-		padding-block-start: clamp(10rem, 21vh, 12rem);
+		padding-block-start: 3rem;
 		padding-block-end: 0;
 		min-height: auto;
 		justify-content: flex-start;
@@ -718,7 +716,7 @@
 
 	/* Detail View Mobile */
 	.prodi_view_container {
-		padding-block-start: clamp(10rem, 21vh, 12rem);
+		padding-block-start: 3rem;
 		padding-block-end: 1rem;
 		padding-inline: 0.85rem;
 		min-height: auto;

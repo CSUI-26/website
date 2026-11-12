@@ -37,6 +37,7 @@
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	padding-block: 8px;
+	-webkit-overflow-scrolling: touch;
 }
 
 .similar_photo {
@@ -94,4 +95,27 @@
 	font-weight: var(--font-base-weight-semibold);
 	color: rgba(255, 255, 255, 0.7);
 	margin-block-start: 2px;
+}
+
+@media (max-width: 600px) {
+	.similar_title {
+		font-size: 1rem;
+	}
+
+	.similar_carousel {
+		gap: 16px;
+	}
+
+	.similar_card {
+		flex-basis: 130px;
+		max-width: 130px;
+	}
+
+	.similar_name {
+		font-size: 0.75rem;
+	}
+
+	.similar_major {
+		font-size: 0.625rem;
+	}
 }
