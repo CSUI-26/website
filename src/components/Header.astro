@@ -2,26 +2,52 @@
 import styles from "./Header.module.css";
 import { RootRoutes, type RootRoutesValues } from "@/routes";
 import { Strings } from "@/strings";
+import HomeIcon from "@/icons/home.svg";
+import GalleryIcon from "@/icons/gallery.svg";
+import AcademicIcon from "@/icons/academic.svg";
+import MembersIcon from "@/icons/members.svg";
+import AchievementsIcon from "@/icons/achievements.svg";
 
 interface Props {
 	activeTab?: RootRoutesValues | undefined;
 }
 
 const { activeTab } = Astro.props;
+const routeIcons = {
+	Home: HomeIcon,
+	Gallery: GalleryIcon,
+	Academic: AcademicIcon,
+	Members: MembersIcon,
+	Achievements: AchievementsIcon,
+};
 ---
 
 <header class={styles.header}>
+	<nav class={styles.nav} aria-label="Main navigation">
 	<ul class={styles.header_links}>
 		{
-			Array.from(RootRoutes).map(([page, path]) => (
+			Array.from(RootRoutes).map(([page, path]) => {
+				const Icon = routeIcons[page];
+				return (
 				<li
 					class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
 				>
-					<a href={path}>{Strings.SlugTitles[page === "Members" ? "Member" : page]}</a>
+					<a
+						href={path}
+						aria-label={Strings.SlugTitles[page === "Members" ? "Member" : page]}
+						aria-current={activeTab === path ? "page" : undefined}
+					>
+						<span class={styles.link_text}>
+							{Strings.SlugTitles[page === "Members" ? "Member" : page]}
+						</span>
+						<span class={styles.link_icon} aria-hidden="true"><Icon /></span>
+					</a>
 				</li>
-			))
+				);
+			})
 		}
 	</ul>
+	</nav>
 	<div class={styles.header_title}>
 		<a
 			data-text={Strings.SiteTitle.toUpperCase()}
