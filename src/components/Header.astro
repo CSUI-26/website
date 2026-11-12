@@ -2,27 +2,54 @@
 import styles from "./Header.module.css";
 import { RootRoutes, type RootRoutesValues } from "@/routes";
 import { Strings } from "@/strings";
+import HomeIcon from "@/icons/home.svg";
+import GalleryIcon from "@/icons/gallery.svg";
+import AcademicIcon from "@/icons/academic.svg";
+import MembersIcon from "@/icons/members.svg";
+import AchievementsIcon from "@/icons/achievements.svg";
 
 interface Props {
 	activeTab?: RootRoutesValues | undefined;
 }
 
 const { activeTab } = Astro.props;
+const routeIcons = {
+	Home: HomeIcon,
+	Gallery: GalleryIcon,
+	Academic: AcademicIcon,
+	Members: MembersIcon,
+	Achievements: AchievementsIcon,
+};
 ---
 
 <header class={styles.header}>
+	<nav class={styles.nav} aria-label="Main navigation">
 	<ul class={styles.header_links}>
 		{
-			Array.from(RootRoutes).map(([title, path]) => (
+			Array.from(RootRoutes).map(([title, path]) => {
+				const Icon = routeIcons[title];
+				return (
 				<li
 					title={title}
 					class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
 				>
-					<a href={path}>{title.toLowerCase()}</a>
+					<a href={path} aria-label={title} aria-current={activeTab === path ? "page" : undefined}>
+						<span class={styles.link_text}>{title.toLowerCase()}</span>
+						<span class={styles.link_icon} aria-hidden="true"><Icon /></span>
+					</a>
 				</li>
-			))
+				);
+			})
 		}
+		{activeTab === RootRoutes.get("Members") && (
+			<li class={`${styles.header_links_items} ${styles.boardwall_item}`}>
+				<a href="/boardwall" aria-label="BoardWall">
+					<span class={styles.boardwall_text}>boardwall</span>
+				</a>
+			</li>
+		)}
 	</ul>
+	</nav>
 	<div class={styles.header_title}>
 		<a
 			data-text={Strings.SiteTitle.toUpperCase()}

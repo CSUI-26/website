@@ -6,13 +6,25 @@
 	gap: 14px;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 
+	@media (max-width: 600px) {
+		height: 48px;
+		gap: 10px;
+		padding-inline: 18px;
+	}
+
 	.search_icon {
 		color: rgba(255, 255, 255, 0.7);
 		flex-shrink: 0;
+
+		@media (max-width: 600px) {
+			width: 18px;
+			height: 18px;
+		}
 	}
 
 	.search_input {
 		flex: 1;
+		min-width: 0;
 		background: transparent;
 		border: none;
 		outline: none;

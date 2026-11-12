@@ -19,6 +19,11 @@
 	}
 }
 
+.link_icon,
+.boardwall_item {
+	display: none;
+}
+
 @media (prefers-reduced-transparency: reduce) {
 	.header {
 		backdrop-filter: brightness(0.25);
@@ -95,5 +100,115 @@
 		z-index: -1;
 		content: attr(data-text);
 		text-shadow: 0 0 8px black;
+	}
+}
+
+@media (max-width: 900px) {
+	.header {
+		display: contents;
+	}
+
+	.header_title {
+		display: none;
+	}
+
+	.nav {
+		position: fixed;
+		bottom: max(1rem, env(safe-area-inset-bottom));
+		left: 50%;
+		translate: -50%;
+		z-index: 100;
+		width: min(21.5rem, calc(100vw - 1.5rem));
+		padding: 0.25rem 0.45rem;
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		border-radius: var(--border-radius-pill);
+		background: rgba(14, 18, 30, 0.55);
+		backdrop-filter: blur(25px);
+		-webkit-backdrop-filter: blur(25px);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+	}
+
+	.header_links {
+		width: 100%;
+		margin: 0;
+		gap: 0;
+		justify-content: space-between;
+	}
+
+	.header_links_items {
+		overflow: visible;
+		border: 0;
+	}
+
+	.link_text {
+		display: none;
+	}
+
+	.link_icon {
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		color: rgba(255, 255, 255, 0.65);
+		transition: color 0.2s, background-color 0.2s, transform 0.2s;
+	}
+
+	.link_icon svg {
+		width: 18px;
+		height: 18px;
+	}
+
+	.boardwall_item {
+		display: block;
+	}
+
+	.boardwall_item a {
+		display: grid;
+		place-items: center;
+		min-height: 36px;
+	}
+
+	.boardwall_text {
+		padding: 0.2rem 0.35rem;
+		border-radius: var(--border-radius-pill);
+		background: rgba(255, 255, 255, 0.15);
+		font-size: 0.5625rem;
+		font-weight: var(--font-base-weight-semibold);
+	}
+
+	@media (max-width: 360px) {
+		.nav {
+			padding-inline: 0.2rem;
+		}
+
+		.link_icon,
+		.boardwall_item a {
+			width: 32px;
+			height: 32px;
+		}
+
+		.link_icon svg {
+			width: 16px;
+			height: 16px;
+		}
+
+		.boardwall_text {
+			font-size: 0.45rem;
+			padding-inline: 0.2rem;
+		}
+	}
+
+	.header_links_items__active .link_icon {
+		color: white;
+		background: rgba(255, 255, 255, 0.14);
+	}
+}
+
+@media (max-width: 900px) and (prefers-reduced-transparency: reduce) {
+	.nav {
+		background: #0f0f0f;
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
 	}
 }
