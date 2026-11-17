@@ -16,7 +16,7 @@ const { achievements } = Astro.props;
 	<div class={styles.carousel_bar} data-achievement-carousel>
 		<button
 			type="button"
-			class={`${styles.nav_button} ${styles.prev_btn}`}
+			class={styles.nav_button}
 			data-prev
 			aria-label="Previous achievement"
 		>
@@ -56,7 +56,7 @@ const { achievements } = Astro.props;
 
 		<button
 			type="button"
-			class={`${styles.nav_button} ${styles.next_btn}`}
+			class={styles.nav_button}
 			data-next
 			aria-label="Next achievement"
 		>

@@ -117,6 +117,7 @@
 	}
 
 	.heading {
+		font-size: min(8.5vw, 3.25rem);
 		margin-block-start: 2.75rem;
 		margin-block-end: 1.5rem;
 	}
