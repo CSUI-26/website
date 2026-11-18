@@ -1,4 +1,8 @@
 .achievements_page {
+	--glass-bg: rgba(0, 0, 0, 0.44);
+	--glass-border: 1px solid rgba(255, 255, 255, 0.18);
+	--glass-blur: blur(var(--blur-radius));
+
 	width: 100%;
 	max-width: 1100px;
 	margin-inline: auto;

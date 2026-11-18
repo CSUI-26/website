@@ -12,7 +12,7 @@
 	font-style: italic;
 	letter-spacing: -0.02em;
 	text-transform: uppercase;
-	color: #ffffff;
+	color: var(--fg-text-normal);
 	margin: 0;
 	margin-block-start: clamp(3.5rem, 6vh, 5.5rem);
 	margin-block-end: 2rem;
@@ -31,7 +31,7 @@
 	font-family: inherit;
 	font-size: clamp(1.85rem, 3.2vw, 2.5rem);
 	font-weight: 900;
-	color: #ffffff;
+	color: var(--fg-text-normal);
 	margin: 0;
 	margin-block-end: 1.25rem;
 	letter-spacing: -0.02em;
@@ -46,7 +46,7 @@
 }
 
 .card {
-	background: #ffffff;
+	background: var(--bg-card-light);
 	border-radius: clamp(16px, 1.8vw, 24px);
 	aspect-ratio: 1 / 1;
 	display: flex;
@@ -81,14 +81,14 @@
 .card_icon {
 	width: clamp(28px, 3.5vw, 42px);
 	height: clamp(28px, 3.5vw, 42px);
-	color: #e2e8f0;
+	color: var(--fg-icon-muted);
 	transition:
 		color 0.25s ease,
 		transform 0.25s ease;
 }
 
 .card:hover .card_icon {
-	color: #f59e0b;
+	color: var(--accent-gold-deep);
 	transform: scale(1.12);
 }
 
@@ -96,7 +96,7 @@
 	font-family: inherit;
 	font-size: clamp(0.72rem, 0.95vw, 0.88rem);
 	font-weight: 700;
-	color: #000000;
+	color: var(--fg-text-inverse);
 	text-align: center;
 	line-height: 1.25;
 	margin: 0;
