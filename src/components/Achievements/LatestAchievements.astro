@@ -90,7 +90,12 @@ const { achievements } = Astro.props;
 </section>
 
 <!-- Data for dynamic client switching -->
-<script define:vars={{ achievementsData: achievements }}>
+<script
+	define:vars={{
+		achievementsData: achievements,
+		memberItemClass: styles.member_item,
+	}}
+>
 	function initLatestCarousel() {
 		const container = document.querySelector("[data-achievement-carousel]");
 		if (!container) return;
@@ -126,9 +131,14 @@ const { achievements } = Astro.props;
 				if (teamNameEl) teamNameEl.textContent = activeData.teamName;
 				if (descEl) descEl.textContent = activeData.description;
 				if (memberListEl) {
-					memberListEl.innerHTML = activeData.members
-						.map((m) => `<li style="font-size: clamp(0.88rem, 1.2vw, 0.98rem); line-height: 1.6; color: rgba(255, 255, 255, 0.9);">${m}</li>`)
-						.join("");
+					memberListEl.replaceChildren(
+						...activeData.members.map((member) => {
+							const item = document.createElement("li");
+							item.className = memberItemClass;
+							item.textContent = member;
+							return item;
+						}),
+					);
 				}
 			}
 		}
