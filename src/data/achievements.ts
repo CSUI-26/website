@@ -6,7 +6,6 @@ export interface LatestAchievement {
 	teamName: string;
 	members: string[];
 	description: string;
-	showOverlay?: boolean;
 }
 
 export interface YearlyAchievement {
@@ -36,7 +35,6 @@ export const latestAchievements: LatestAchievement[] = [
 		],
 		description:
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-		showOverlay: false, // ioai-winner.png already incorporates the Figma artwork typography
 	},
 	{
 		id: "icpc-2024",
@@ -52,7 +50,6 @@ export const latestAchievements: LatestAchievement[] = [
 		],
 		description:
 			"Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-		showOverlay: true,
 	},
 	{
 		id: "gemastik-2024",
@@ -68,7 +65,6 @@ export const latestAchievements: LatestAchievement[] = [
 		],
 		description:
 			"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-		showOverlay: true,
 	},
 ];
 

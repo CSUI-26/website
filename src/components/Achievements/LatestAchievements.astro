@@ -43,12 +43,10 @@ const { achievements } = Astro.props;
 							class={styles.card_image}
 							loading={idx === 0 ? "eager" : "lazy"}
 						/>
-						{item.showOverlay !== false && (
-							<div class={styles.card_overlay}>
-								<span class={styles.card_award}>{item.award}</span>
-								<span class={styles.card_title}>{item.title}</span>
-							</div>
-						)}
+						<div class={styles.card_overlay}>
+							<span class={styles.card_award}>{item.award}</span>
+							<span class={styles.card_title}>{item.title}</span>
+						</div>
 					</div>
 				))
 			}
