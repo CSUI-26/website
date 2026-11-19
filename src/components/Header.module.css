@@ -161,20 +161,27 @@
 
 	.boardwall_item {
 		display: block;
+		flex-shrink: 0;
 	}
 
 	.boardwall_item a {
 		display: grid;
 		place-items: center;
 		min-height: 36px;
+		padding-inline: 0.5rem;
 	}
 
 	.boardwall_text {
+		display: block;
+		max-width: 100%;
 		padding: 0.2rem 0.35rem;
 		border-radius: var(--border-radius-pill);
 		background: rgba(255, 255, 255, 0.15);
 		font-size: 0.5625rem;
 		font-weight: var(--font-base-weight-semibold);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	@media (max-width: 360px) {
@@ -182,10 +189,14 @@
 			padding-inline: 0.2rem;
 		}
 
-		.link_icon,
-		.boardwall_item a {
+		.link_icon {
 			width: 32px;
 			height: 32px;
+		}
+
+		.boardwall_item a {
+			height: 32px;
+			padding-inline: 0.25rem;
 		}
 
 		.link_icon svg {
@@ -195,7 +206,7 @@
 
 		.boardwall_text {
 			font-size: 0.45rem;
-			padding-inline: 0.2rem;
+			padding-inline: 0.15rem;
 		}
 	}
 
