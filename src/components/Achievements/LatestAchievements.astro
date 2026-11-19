@@ -25,13 +25,12 @@ const { achievements } = Astro.props;
 			</svg>
 		</button>
 
-		<div class={styles.cards_viewport} data-viewport>
+		<div class={styles.cards_viewport}>
 			{
 				achievements.map((item, idx) => (
 					<div
 						class={styles.slide_card}
 						data-slide
-						data-index={idx}
 						data-active={idx === 0 ? "true" : undefined}
 						role="group"
 						aria-roledescription="slide"
@@ -65,7 +64,7 @@ const { achievements } = Astro.props;
 	</div>
 
 	<!-- Active Slide Details (Team list + Description) -->
-	<div class={styles.details_row} data-details-container>
+	<div class={styles.details_row}>
 		<div class={styles.team_col}>
 			<h2 class={styles.team_name} data-team-name>
 				{achievements[0]?.teamName}
