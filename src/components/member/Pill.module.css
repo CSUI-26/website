@@ -55,6 +55,8 @@
 }
 
 .pill__badge {
+	display: inline-block;
+	max-width: 100%;
 	padding: 6px 18px;
 	border-radius: var(--border-radius-4);
 	background: rgba(0, 0, 0, 0.44);
@@ -62,6 +64,10 @@
 	color: var(--fg-text-normal);
 	font-size: 16px;
 	font-weight: var(--font-base-weight-normal);
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	backdrop-filter: blur(var(--blur-radius));
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
