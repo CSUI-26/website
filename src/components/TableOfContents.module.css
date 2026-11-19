@@ -17,6 +17,10 @@
 		backdrop-filter: blur(var(--blur-radius));
 	}
 
+	@media (max-width: 900px) {
+		display: none;
+	}
+
 	ul {
 		list-style-type: none;
 		padding: 0;
