@@ -143,12 +143,6 @@ const { achievements } = Astro.props;
 
 		prevBtn?.addEventListener("click", () => updateSlide(currentIndex - 1));
 		nextBtn?.addEventListener("click", () => updateSlide(currentIndex + 1));
-
-		// Keyboard navigation
-		container.addEventListener("keydown", (e) => {
-			if (e.key === "ArrowLeft") updateSlide(currentIndex - 1);
-			if (e.key === "ArrowRight") updateSlide(currentIndex + 1);
-		});
 	}
 
 	if (document.readyState === "loading") {

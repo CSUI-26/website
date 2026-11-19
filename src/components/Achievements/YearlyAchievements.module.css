@@ -62,7 +62,6 @@
 	position: relative;
 	overflow: hidden;
 	user-select: none;
-	cursor: pointer;
 }
 
 .card:hover {
