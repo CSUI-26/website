@@ -28,16 +28,14 @@
 	border: var(--glass-border);
 	backdrop-filter: var(--glass-blur);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) auto;
-	align-items: center;
-	gap: clamp(0.5rem, 2vw, 1.5rem);
-	padding: clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.25rem, 3vw, 2.5rem);
-	min-height: clamp(220px, 28vw, 300px);
+	aspect-ratio: 1098 / 247;
 	box-sizing: border-box;
 }
 
 .nav_button {
+	position: absolute;
+	top: 50%;
+	translate: 0 -50%;
 	background: transparent;
 	border: none;
 	color: var(--fg-text-normal);
@@ -56,6 +54,17 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
+/* Arrow centres mirror the design: 227/1162 and 903/1162 of the bar width. */
+.prev_btn {
+	left: 19.9%;
+	translate: -50% -50%;
+}
+
+.next_btn {
+	left: 79.3%;
+	translate: -50% -50%;
+}
+
 .nav_button:hover {
 	transform: scale(1.15);
 	background: rgba(255, 255, 255, 0.12);
@@ -66,18 +75,19 @@
 }
 
 .nav_icon {
-	width: clamp(20px, 2.5vw, 32px);
-	height: clamp(20px, 2.5vw, 32px);
+	width: clamp(24px, 4vw, 56px);
+	height: clamp(24px, 4vw, 56px);
 	fill: currentColor;
 }
 
 /* ── Center Card Container ── */
 .cards_viewport {
-	position: relative;
-	justify-self: center;
-	width: 100%;
-	max-width: clamp(260px, 36vw, 440px);
-	aspect-ratio: 16 / 10;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	translate: -50% -50%;
+	width: 46.3%;
+	aspect-ratio: 508 / 323;
 	z-index: 3;
 }
 
@@ -157,10 +167,10 @@
 /* ── Details Row (Team + Description) ── */
 .details_row {
 	display: grid;
-	grid-template-columns: 1fr 1.65fr;
-	gap: clamp(1.5rem, 4vw, 3.5rem);
+	grid-template-columns: 32.3% 45.4%;
+	justify-content: space-between;
 	width: 100%;
-	margin-block-start: clamp(2rem, 4vh, 3rem);
+	margin-block-start: clamp(1.5rem, 3.5vw, 2.75rem);
 	box-sizing: border-box;
 }
 
@@ -207,17 +217,25 @@
 	line-height: 1.65;
 	color: rgba(255, 255, 255, 0.85);
 	margin: 0;
+	text-align: end;
 }
 
 /* ── Responsive Mobile/Tablet ── */
 @media (max-width: 768px) {
 	.carousel_bar {
+		aspect-ratio: auto;
 		min-height: 220px;
-		padding-inline: 0.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		gap: 0.25rem;
+		padding-inline: 0.25rem;
 	}
 
 	.nav_button {
+		position: static;
+		translate: none;
+		flex: 0 0 auto;
 		padding: 0.25rem;
 	}
 
@@ -226,10 +244,22 @@
 		height: 16px;
 	}
 
+	.cards_viewport {
+		position: relative;
+		inset: auto;
+		translate: none;
+		flex: 1 1 auto;
+		width: 100%;
+		max-width: 260px;
+	}
+
 	.details_row {
 		grid-template-columns: 1fr;
-		gap: 1.25rem;
 		margin-block-start: 1.75rem;
+	}
+
+	.description_text {
+		text-align: start;
 	}
 
 	.heading {
