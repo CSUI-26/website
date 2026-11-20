@@ -9,3 +9,12 @@
 	display: flex;
 	gap: 2rem;
 }
+
+@media (max-width: 700px) {
+	.carousel_container {
+		box-sizing: border-box;
+		padding-inline: 1rem;
+		gap: 1rem;
+		margin-block-start: 1.5rem;
+	}
+}
