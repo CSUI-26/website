@@ -7,7 +7,7 @@
 	scroll-behavior: smooth;
 	--blur-radius: 7.35px;
 	font-family: var(--fontface-inter);
-	font-size: var(--font-base-size-normal);
+	font-size: min(4vw, var(--font-base-size-normal));
 	font-weight: var(--font-base-weight-normal);
 	letter-spacing: var(--font-base-letterspacing);
 	color: white;
