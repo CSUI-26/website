@@ -16,7 +16,7 @@ const { similar, carouselId = "similar-carousel" } = Astro.props;
 
 <section class={styles.similar_section}>
 	<div class={styles.similar_header}>
-		<h2 class={styles.similar_title}>See similar people</h2>
+		<h2 class={styles.similar_title}>Anggota lain</h2>
 		<div class={styles.scroll_controls}>
 			<IconButton
 				id="scroll-left-btn"
@@ -77,4 +77,3 @@ const { similar, carouselId = "similar-carousel" } = Astro.props;
 		carousel?.scrollBy({ left: 360, behavior: "smooth" });
 	});
 </script>
-

@@ -71,7 +71,7 @@ export function initMembersPage(pillActiveClass: string, pageSize = 24) {
 					const remaining = totalMatches - visibleLimit;
 					const countSpan = loadMoreBtn.querySelector("span");
 					if (countSpan) {
-						countSpan.textContent = `Load more (${remaining} remaining)`;
+						countSpan.textContent = `Tampilkan lebih banyak (${remaining} tersisa)`;
 					}
 				}
 			} else {
@@ -81,11 +81,11 @@ export function initMembersPage(pillActiveClass: string, pageSize = 24) {
 
 		if (resultsLabel) {
 			if (query) {
-				resultsLabel.textContent = `Showing results for: "${query}"`;
+				resultsLabel.textContent = `Menampilkan hasil untuk: "${query}"`;
 			} else if (currentMajor !== "ALL") {
-				resultsLabel.textContent = `Showing results for: ${currentMajor}`;
+				resultsLabel.textContent = `Menampilkan hasil untuk: ${currentMajor}`;
 			} else {
-				resultsLabel.textContent = "Showing all members";
+				resultsLabel.textContent = "Menampilkan semua anggota";
 			}
 		}
 	}

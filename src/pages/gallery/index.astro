@@ -20,12 +20,30 @@ const getHeroes = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 const title = `${Strings.SlugTitles.Gallery} - ${Strings.SiteTitle}`;
-const gallery = Object.entries(getGallery)
-	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-	.map(([, mod]) => mod.default);
-const heroes = Object.entries(getHeroes)
-	.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
-	.map(([, mod]) => mod.default);
+const imageAlts: Record<string, string> = {
+	"foto-angkatan-1.jpg":
+		"Mahasiswa CSUI 2026 berpakaian kasual duduk dan berdiri di lapangan depan Rektorat UI.",
+	"foto-angkatan-2.jpg":
+		"Mahasiswa CSUI 2026 berjaket kuning UI berfoto bersama di depan gedung Rektorat UI.",
+	"foto-angkatan-3.jpg":
+		"Mahasiswa berjaket kuning dan bercelana putih berpose dalam dua baris di depan Rektorat UI.",
+	"foto-angkatan-4.jpg":
+		"Mahasiswa CSUI 2026 membentuk setengah lingkaran di depan Rektorat UI, beberapa memegang map kuning.",
+	"Racoon1.png":
+		"Ilustrasi rakun Zenith berpita merah muda sambil membawa buku hitam berlogo Python.",
+	"Racoon2.png":
+		"Ilustrasi rakun Zenith berjaket biru sambil memegang laptop yang terbuka.",
+};
+
+const getSlides = (images: Record<string, { default: ImageMetadata }>) =>
+	Object.entries(images)
+		.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+		.map(([path, { default: image }]) => ({
+			image,
+			alt: imageAlts[path.split("/").pop() ?? ""] ?? "",
+		}));
+const gallery = getSlides(getGallery);
+const heroes = getSlides(getHeroes);
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Gallery")!}>
@@ -33,25 +51,24 @@ const heroes = Object.entries(getHeroes)
 		<section class={styles.hero}>
 			<!-- title -->
 			<div class={styles.top}>
-				<Heading level={1} class={styles.title}
-					>Capturing moments,<br />sharing stories</Heading
-				>
+				<Heading level={1} class={styles.title}>Galeri Zenith</Heading>
 			</div>
 
 			<!-- introduction -->
 			<div class={styles.bottom}>
 				<div class={styles.left}>
 					<p class={styles.heroP}>
-						Lorem ipsum dolor sit amet consectetur, adipisicing
-						elit. Architecto, consequuntur tempore eligendi aut odit
-						sint est odio, eaque cumque dicta reiciendis illo
-						repellendus veritatis unde quisquam, libero assumenda
-						tempora aspernatur.
+						Foto-foto Zenith waktu baru masuk Fasilkom. Kalau kamu ikut foto di depan Rektorat, coba cari barisanmu.
 					</p>
 				</div>
 
 				<div class={styles.right}>
-					<Carousel slides={gallery} alts={[""]} interval={6000} />
+					<Carousel
+						slides={gallery.map(({ image }) => image)}
+						alts={gallery.map(({ alt }) => alt)}
+						label="Foto"
+						interval={6000}
+					/>
 				</div>
 			</div>
 
@@ -59,38 +76,39 @@ const heroes = Object.entries(getHeroes)
 			<section class={styles.container}>
 				<div class={styles.hero2}>
 					<Carousel
-						slides={heroes}
-						alts={[""]}
+						slides={heroes.map(({ image }) => image)}
+						alts={heroes.map(({ alt }) => alt)}
+						label="Ilustrasi"
 						interval={6000}
 						aspectRatio={1 / 1.75}
 					/>
 				</div>
 
 				<div class={styles.hero2}>
-					<Heading level={2}>Original Character</Heading>
+					<Heading level={2}>Karakter Zenith</Heading>
 					<p>
-						Lorem ipsum dolor sit amet consectetur adipisicing elit.
-						Officia, at? Officiis tempora quod, enim quas doloribus
-						nemo laboriosam, sunt sequi architecto asperiores
-						suscipit repudiandae illum, deserunt iusto odit deleniti
-						velit.
+						Ini rakun Zenith. Di salah satu ilustrasi, dia pakai jaket biru sambil pegang laptop.
 					</p>
 					<p>
-						Lorem ipsum dolor sit amet consectetur adipisicing elit.
-						Officia, at? Officiis tempora quod, enim quas doloribus
-						nemo laboriosam, sunt sequi architecto asperiores
-						suscipit repudiandae illum, deserunt iusto odit deleniti
-						velit.
+						Pakai tombol panah di samping gambar untuk lihat ilustrasi satunya.
 					</p>
 				</div>
 			</section>
 
 			<!-- last image -->
 			<div class={styles.lastIMGContainer}>
-				<Image src={lastImage} alt="" class={styles.heroImg} />
+				<Image
+					src={lastImage}
+					alt={imageAlts["foto-angkatan-4.jpg"]}
+					class={styles.heroImg}
+				/>
 			</div>
 		</section>
 	</main>
 
-	<ImageRibbon images={gallery} speed={40} height={180} />
+	<ImageRibbon
+		images={gallery.map(({ image, alt }) => ({ src: image.src, alt }))}
+		speed={40}
+		height={180}
+	/>
 </BaseLayout>

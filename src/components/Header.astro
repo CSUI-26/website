@@ -13,12 +13,11 @@ const { activeTab } = Astro.props;
 <header class={styles.header}>
 	<ul class={styles.header_links}>
 		{
-			Array.from(RootRoutes).map(([title, path]) => (
+			Array.from(RootRoutes).map(([page, path]) => (
 				<li
-					title={title}
 					class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
 				>
-					<a href={path}>{title.toLowerCase()}</a>
+					<a href={path}>{Strings.SlugTitles[page === "Members" ? "Member" : page]}</a>
 				</li>
 			))
 		}

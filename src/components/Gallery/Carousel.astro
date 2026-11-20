@@ -4,14 +4,16 @@ import { Image } from "astro:assets";
 
 interface Props {
 	slides: ImageMetadata[];
-	alts?: string[];
+	alts: string[];
+	label: "Foto" | "Ilustrasi";
 	interval?: number; // autoplay delay in ms
 	aspectRatio?: string | number; // e.g. "16 / 9", "1", 1.5
 }
 
 const {
 	slides,
-	alts = [],
+	alts,
+	label,
 	interval = 5000,
 	aspectRatio = "4 / 3",
 } = Astro.props;
@@ -28,7 +30,7 @@ const {
 			slides.map((src, i) => (
 				<Image
 					src={src}
-					alt={alts[i] ?? `Slide ${i + 1}`}
+					alt={alts[i] ?? ""}
 					class={Styles.heroImg}
 					loading={i === 0 ? "eager" : "lazy"}
 				/>
@@ -39,10 +41,10 @@ const {
 	{
 		slides.length > 1 && (
 			<>
-				<button class={`${Styles.nav} ${Styles.prev}`} data-prev aria-label="Previous slide">
+				<button class={`${Styles.nav} ${Styles.prev}`} data-prev aria-label={`${label} sebelumnya`}>
 					&#10094;
 				</button>
-				<button class={`${Styles.nav} ${Styles.next}`} data-next aria-label="Next slide">
+				<button class={`${Styles.nav} ${Styles.next}`} data-next aria-label={`${label} berikutnya`}>
 					&#10095;
 				</button>
 
@@ -52,7 +54,7 @@ const {
 							class={Styles.dot}
 							data-dot
 							data-active={i === 0 ? "" : undefined}
-							aria-label={`Go to slide ${i + 1}`}
+							aria-label={`Tampilkan ${label.toLowerCase()} ke-${i + 1}`}
 						/>
 					))}
 				</div>

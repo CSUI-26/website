@@ -9,8 +9,8 @@ interface Props {
 const { achievements } = Astro.props;
 ---
 
-<section class={styles.latest_section} aria-label="Latest Achievements">
-	<h1 class={styles.heading}>LATEST ACHIEVEMENTS</h1>
+<section class={styles.latest_section} aria-label="Prestasi terbaru">
+	<h2 class={styles.heading}>PRESTASI TERBARU</h2>
 
 	<!-- Carousel Bar with Arrows & Floating Center Card -->
 	<div class={styles.carousel_bar} data-achievement-carousel>
@@ -18,7 +18,7 @@ const { achievements } = Astro.props;
 			type="button"
 			class={`${styles.nav_button} ${styles.prev_btn}`}
 			data-prev
-			aria-label="Previous achievement"
+			aria-label="Prestasi sebelumnya"
 		>
 			<svg class={styles.nav_icon} viewBox="0 0 24 24">
 				<path d="M16 4L6 12L16 20Z"></path>
@@ -33,7 +33,7 @@ const { achievements } = Astro.props;
 						data-slide
 						data-active={idx === 0 ? "true" : undefined}
 						role="group"
-						aria-roledescription="slide"
+						aria-roledescription="salindia"
 						aria-label={`${item.title} - ${item.award}`}
 					>
 						<img
@@ -55,7 +55,7 @@ const { achievements } = Astro.props;
 			type="button"
 			class={`${styles.nav_button} ${styles.next_btn}`}
 			data-next
-			aria-label="Next achievement"
+			aria-label="Prestasi berikutnya"
 		>
 			<svg class={styles.nav_icon} viewBox="0 0 24 24">
 				<path d="M8 4L18 12L8 20Z"></path>
