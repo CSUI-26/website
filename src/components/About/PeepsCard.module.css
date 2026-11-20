@@ -66,3 +66,65 @@
 	border-radius: var(--border-radius-pill);
 	font-weight: bold;
 }
+
+@media (max-width: 700px) {
+	.peeps_card {
+		box-sizing: border-box;
+		width: 100%;
+		padding: 1rem;
+		margin-block-start: 1.5rem;
+		border-radius: 2rem;
+	}
+
+	.prodi_container {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.prodi_card {
+		box-sizing: border-box;
+		min-width: 0;
+		gap: 0.5rem;
+		padding: 0.75rem 0.4rem;
+
+		svg {
+			width: 48px;
+			height: 48px;
+		}
+	}
+
+	.prodi_card_count .prodi_card_count_num {
+		font-size: 32px;
+		line-height: 1.1;
+	}
+
+	.prodi_card_count_sub {
+		font-size: 14px;
+	}
+
+	.prodi_name {
+		font-size: clamp(12px, 3.8vw, 15px);
+		line-height: 1.2;
+		text-align: center;
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+
+	.cta {
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		text-align: center;
+	}
+
+	.tagline {
+		font-size: 16px;
+		line-height: 1.35;
+	}
+
+	.members_btn {
+		padding: 0.75rem 1.25rem;
+		font-size: 14px;
+	}
+}

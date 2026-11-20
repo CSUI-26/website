@@ -26,6 +26,11 @@ const { title, activeTab } = Astro.props;
 		<Font cssVariable="--fontface-inter" preload />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		{/* Black so the browser paints its own chrome to match the footer. */}
+		<meta name="theme-color" content="#000000" />
+		{/* The site has no light theme; claim dark only so browser UI such as
+		    scrollbars and the Android navigation bar render dark too. */}
+		<meta name="color-scheme" content="dark" />
 	</head>
 	<body>
 		<Header activeTab={activeTab} />

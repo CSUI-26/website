@@ -50,4 +50,98 @@ const carouselImages: [ImageMetadata, string][] = [
 	carouselContainer.addEventListener("mouseleave", () => {
 		carouselContainer.classList.remove(carouselPausedClass);
 	});
+
+	/* Below the breakpoint the strip is a native scroll container rather than
+	   the animated desktop marquee, so it has to be advanced by hand. Manual
+	   swiping stays available: any pointer activity stops the timer, which
+	   resumes once the strip has been left alone for a few seconds. */
+	const mobileQuery = window.matchMedia("(max-width: 700px)");
+	const reducedMotionQuery = window.matchMedia(
+		"(prefers-reduced-motion: reduce)",
+	);
+	const advanceDelay = 4000;
+	const resumeDelay = 6000;
+
+	let advanceTimer: number | undefined;
+	let resumeTimer: number | undefined;
+	let visible = true;
+
+	const slideStep = () => {
+		const firstSlide = carouselContainer.firstElementChild as HTMLElement;
+		if (!firstSlide) return 0;
+		const gap =
+			Number.parseFloat(getComputedStyle(carouselContainer).columnGap) || 0;
+		return firstSlide.getBoundingClientRect().width + gap;
+	};
+
+	const stop = () => {
+		if (advanceTimer !== undefined) {
+			window.clearInterval(advanceTimer);
+			advanceTimer = undefined;
+		}
+	};
+
+	const advance = () => {
+		const step = slideStep();
+		if (!step) return;
+
+		const atEnd =
+			carouselContainer.scrollLeft + carouselContainer.clientWidth >=
+			carouselContainer.scrollWidth - 2;
+
+		/* Wrapping by animating would rewind through every slide, so the next
+		   pass starts instantly instead. */
+		if (atEnd) {
+			carouselContainer.scrollTo({ left: 0, behavior: "auto" });
+			return;
+		}
+
+		carouselContainer.scrollBy({ left: step, behavior: "smooth" });
+	};
+
+	const start = () => {
+		stop();
+		if (!mobileQuery.matches || reducedMotionQuery.matches || !visible) {
+			return;
+		}
+		advanceTimer = window.setInterval(advance, advanceDelay);
+	};
+
+	const pauseForInteraction = () => {
+		stop();
+		window.clearTimeout(resumeTimer);
+		resumeTimer = window.setTimeout(start, resumeDelay);
+	};
+
+	carouselContainer.addEventListener(
+		"pointerdown",
+		pauseForInteraction,
+		{ passive: true },
+	);
+	carouselContainer.addEventListener(
+		"touchstart",
+		pauseForInteraction,
+		{ passive: true },
+	);
+	document.addEventListener("visibilitychange", () => {
+		if (document.hidden) {
+			stop();
+		} else {
+			start();
+		}
+	});
+	mobileQuery.addEventListener("change", start);
+	reducedMotionQuery.addEventListener("change", start);
+
+	/* Advancing while scrolled out of view only burns frames. */
+	new IntersectionObserver((entries) => {
+		visible = entries.some((entry) => entry.isIntersecting);
+		if (visible) {
+			start();
+		} else {
+			stop();
+		}
+	}).observe(carouselContainer);
+
+	start();
 </script>
