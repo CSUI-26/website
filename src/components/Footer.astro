@@ -28,9 +28,9 @@ import {
 		<div class={Styles.mininavbar}>
 			<ul class={Styles.footer_links}>
 				{
-					Array.from(RootRoutes).map(([title, path]) => (
-						<li title={title} class={Styles.footer_links_items}>
-							<a href={path}>{title}</a>
+					Array.from(RootRoutes).map(([page, path]) => (
+						<li class={Styles.footer_links_items}>
+							<a href={path}>{Strings.SlugTitles[page === "Members" ? "Member" : page]}</a>
 						</li>
 					))
 				}

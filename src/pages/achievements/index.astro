@@ -1,5 +1,5 @@
 ---
-import "@styles/global.css";
+import { ArrowRight, Trophy } from "lucide-react";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
@@ -12,12 +12,34 @@ import YearlyAchievements from "@/components/Achievements/YearlyAchievements.ast
 import styles from "./index.module.css";
 
 const title = `${Strings.SlugTitles.Achievements} - ${Strings.SiteTitle}`;
+const yearGroups = yearlyAchievementsByYear.filter(({ items }) => items.length > 0);
+const hasAchievements = latestAchievements.length > 0 || yearGroups.length > 0;
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Achievements")!}>
-	<div class={styles.achievements_page}>
-		<LatestAchievements achievements={latestAchievements} />
-		<YearlyAchievements yearGroups={yearlyAchievementsByYear} />
+	<div class={styles.achievements_page} lang="id">
+		{hasAchievements ? (
+			<>
+				<h1 class={styles.page_title}>Prestasi</h1>
+				<p class={styles.empty_description}>Lihat hasil lomba dan karya mahasiswa Zenith.</p>
+				{latestAchievements.length > 0 && (
+					<LatestAchievements achievements={latestAchievements} />
+				)}
+				{yearGroups.length > 0 && <YearlyAchievements yearGroups={yearGroups} />}
+			</>
+		) : (
+			<section class={styles.empty_state} aria-labelledby="prestasi-title">
+				<div class={styles.trophy} aria-hidden="true">
+					<Trophy size={40} strokeWidth={1.5} focusable="false" />
+				</div>
+				<p class={styles.eyebrow}>CSUI 2026</p>
+				<h1 class={styles.page_title} id="prestasi-title">Prestasi</h1>
+				<p class={styles.empty_title}>Belum ada prestasi yang ditampilkan.</p>
+				<a class={styles.gallery_link} href={RootRoutes.get("Gallery")}>
+					Lihat Galeri <ArrowRight size={18} aria-hidden="true" focusable="false" />
+				</a>
+			</section>
+		)}
 	</div>
 </BaseLayout>
 
