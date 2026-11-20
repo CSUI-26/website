@@ -1,7 +1,6 @@
 ---
 import Styles from "./index.module.css";
 import BaseLayout from "@layouts/BaseLayout.astro";
-import TableOfContents from "@components/TableOfContents.astro";
 import { Strings } from "@/strings";
 import { RootRoutes } from "@/routes";
 import { Image } from "astro:assets";
@@ -26,7 +25,6 @@ const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Home")!}>
-	<TableOfContents />
 	<section class={`${Styles.section} ${Styles.section_hero}`}>
 		<h1 class={Styles.h1}>{Strings.SiteTitle.toUpperCase()}</h1>
 		<Image
