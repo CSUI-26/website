@@ -10,11 +10,53 @@
 	gap: 2rem;
 }
 
+.dots {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block-start: 1rem;
+}
+
+.dot {
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.3);
+	cursor: pointer;
+	transition:
+		background-color 0.2s,
+		transform 0.2s;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.55);
+	}
+
+	&:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 2px;
+	}
+}
+
+.dot_active {
+	background: white;
+	transform: scale(1.25);
+}
+
 @media (max-width: 700px) {
 	.carousel_container {
 		box-sizing: border-box;
 		padding-inline: 1rem;
 		gap: 1rem;
 		margin-block-start: 1.5rem;
+	}
+
+	/* One card fills the viewport here, so the dots are the only cue for how
+	   much of the strip is left. */
+	.dots {
+		gap: 0.6rem;
+		margin-block-start: 0.85rem;
 	}
 }
