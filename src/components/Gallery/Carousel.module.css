@@ -29,13 +29,15 @@
 	display: none;
 }
 
-/* :global so the rule reliably hits the <img> rendered by <Image> */
-.track :global(.heroImg) {
+/* Each slide must occupy exactly one track viewport. The class is defined here
+   so Styles.heroImg resolves to this hashed name; a :global() selector cannot
+   match it, which left the slides at their intrinsic widths. */
+.heroImg {
 	flex: 0 0 100%;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	scroll-snap-align: center;
+	scroll-snap-align: start;
 }
 
 .nav {
