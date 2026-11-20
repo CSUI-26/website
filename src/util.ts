@@ -68,51 +68,15 @@ export function getMemberSlug(member: Pick<Member, "name" | "npm">): string {
 	return base || member.npm;
 }
 
-/**
- * Maps major name to standardized short code.
- */
-export function getMajorCode(major: string): string {
-	switch (major) {
-		case "Ilmu Komputer":
-			return "CS";
-		case "Ilmu Komputer KKI":
-			return "CS KKI";
-		case "Sistem Informasi":
-			return "SI";
-		case "Kecerdasan Artifisial":
-			return "AI";
-		default:
-			return major;
-	}
-}
-
-/**
- * Maps major name or code to a theme identifier for distinct prodi coloring:
- * - CS: blue
- * - SI: red
- * - CS KKI: dark blue
- * - AI: green
- */
-export function getMajorThemeKey(
-	majorOrCode: string,
-): "cs" | "si" | "kki" | "ai" {
-	switch (majorOrCode) {
-		case "Ilmu Komputer":
-		case "CS":
-			return "cs";
-		case "Sistem Informasi":
-		case "SI":
-			return "si";
-		case "Ilmu Komputer KKI":
-		case "CS KKI":
-			return "kki";
-		case "Kecerdasan Artifisial":
-		case "AI":
-			return "ai";
-		default:
-			return "cs";
-	}
-}
+export {
+	getMajorCode,
+	getMajorThemeKey,
+	MAJORS,
+	type MajorCanonicalName,
+	type MajorCode,
+	type MajorThemeKey,
+	resolveMajorParam,
+} from "@/data/majors";
 
 /**
  * Formats a name string into title case (capitalizing the initial letter of each word).

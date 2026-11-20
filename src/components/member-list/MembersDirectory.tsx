@@ -24,6 +24,12 @@ import {
 	useState,
 } from "react";
 import { updateHistoryState, useSearchParams } from "@/hooks/useSearchParams";
+import {
+	getMajorThemeKey,
+	MAJORS,
+	type MajorThemeKey,
+	resolveMajorParam,
+} from "@/util";
 import styles from "./MembersDirectory.module.css";
 import { matchQueryToCanonicalTags } from "./tags";
 import { CANONICAL_TAGS } from "./tags/rules";
@@ -41,7 +47,7 @@ export interface DirectoryMember {
 	nama_panggilan: string;
 	major: string;
 	majorCode: string;
-	majorTheme?: "cs" | "si" | "kki" | "ai";
+	majorTheme?: MajorThemeKey;
 	niche: string;
 	quote: string;
 	tags: string[];
@@ -54,65 +60,6 @@ export interface DirectoryMember {
 interface Props {
 	members: DirectoryMember[];
 	pageSize?: number;
-}
-
-const MAJORS = [
-	{ label: "All", value: "ALL", theme: "all" },
-	{ label: "Computer Science", value: "Ilmu Komputer", theme: "cs" },
-	{ label: "Information System", value: "Sistem Informasi", theme: "si" },
-	{ label: "KKI", value: "Ilmu Komputer KKI", theme: "kki" },
-	{ label: "AI", value: "Kecerdasan Artifisial", theme: "ai" },
-] as const;
-
-const MAJORS_PARAM_MAP: Record<string, string> = {
-	all: "ALL",
-	cs: "Ilmu Komputer",
-	"computer-science": "Ilmu Komputer",
-	"computer science": "Ilmu Komputer",
-	"ilmu-komputer": "Ilmu Komputer",
-	"ilmu komputer": "Ilmu Komputer",
-	si: "Sistem Informasi",
-	"information-system": "Sistem Informasi",
-	"information system": "Sistem Informasi",
-	"sistem-informasi": "Sistem Informasi",
-	"sistem informasi": "Sistem Informasi",
-	kki: "Ilmu Komputer KKI",
-	"cs-kki": "Ilmu Komputer KKI",
-	"cs kki": "Ilmu Komputer KKI",
-	"ilmu-komputer-kki": "Ilmu Komputer KKI",
-	"ilmu komputer kki": "Ilmu Komputer KKI",
-	ai: "Kecerdasan Artifisial",
-	"artificial-intelligence": "Kecerdasan Artifisial",
-	"artificial intelligence": "Kecerdasan Artifisial",
-	"kecerdasan-artifisial": "Kecerdasan Artifisial",
-	"kecerdasan artifisial": "Kecerdasan Artifisial",
-};
-
-/**
- * Normalizes query string major parameter into canonical internal major name.
- */
-function resolveMajorParam(param: string | null): string | null {
-	if (!param) return null;
-	const key = param.trim().toLowerCase();
-	return MAJORS_PARAM_MAP[key] || null;
-}
-
-/**
- * Returns canonical short major code for query parameters (e.g. "cs", "si", "kki", "ai").
- */
-function getMajorCodeFromCanonical(canonicalMajor: string): string {
-	switch (canonicalMajor) {
-		case "Ilmu Komputer":
-			return "cs";
-		case "Sistem Informasi":
-			return "si";
-		case "Ilmu Komputer KKI":
-			return "kki";
-		case "Kecerdasan Artifisial":
-			return "ai";
-		default:
-			return canonicalMajor.toLowerCase();
-	}
 }
 
 /**
@@ -302,7 +249,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 		setSearchParams((prev) => {
 			const next = new URLSearchParams(prev);
 			if (major !== "ALL") {
-				const code = getMajorCodeFromCanonical(major);
+				const code = getMajorThemeKey(major);
 				next.set("major", code);
 			} else {
 				next.delete("major");
