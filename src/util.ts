@@ -101,3 +101,150 @@ export function shuffle<T>(array: T[]): T[] {
 	}
 	return array;
 }
+
+/**
+ * Sorts members alphabetically by full name (case-insensitive, Indonesian/Latin locale-aware).
+ * Returns a new array without mutating the original input.
+ */
+export function sortMembersAlphabetically(members: Member[]): Member[] {
+	return [...members].sort((a, b) =>
+		a.name.localeCompare(b.name, "id", { sensitivity: "base" }),
+	);
+}
+
+/**
+ * Normalizes and extracts key domain/niche tokens from a member's niche string.
+ */
+export function extractNicheTokens(nicheStr?: string | null): Set<string> {
+	if (!nicheStr) return new Set();
+	const raw = nicheStr.toLowerCase();
+	const tokens = new Set<string>();
+
+	if (raw.includes("front") || raw.includes("fe")) tokens.add("frontend");
+	if (raw.includes("back") || raw.includes("be")) tokens.add("backend");
+	if (raw.includes("full") || raw.includes("fs")) tokens.add("fullstack");
+	if (raw.includes("ui") || raw.includes("ux") || raw.includes("desain"))
+		tokens.add("ui-ux");
+	if (raw.includes("web")) tokens.add("web");
+	if (
+		raw.includes("data sc") ||
+		raw.includes("data sa") ||
+		raw.includes("data sci") ||
+		raw.includes("scientist")
+	)
+		tokens.add("datascience");
+	if (raw.includes("data en") || raw.includes("engineer"))
+		tokens.add("dataengineer");
+	if (
+		raw.includes("data an") ||
+		raw.includes("analyst") ||
+		raw.includes("analisis") ||
+		raw.includes("analytics")
+	)
+		tokens.add("dataanalyst");
+	if (
+		raw.includes("cyber") ||
+		raw.includes("security") ||
+		raw.includes("keamanan")
+	)
+		tokens.add("cybersecurity");
+	if (raw.includes("game")) tokens.add("gamedev");
+	if (
+		raw.includes("mobile") ||
+		raw.includes("android") ||
+		raw.includes("ios") ||
+		raw.includes("flutter")
+	)
+		tokens.add("mobile");
+	if (
+		raw.includes("ai") ||
+		raw.includes("artificial") ||
+		raw.includes("machine learning") ||
+		raw.includes("ml") ||
+		raw.includes("llm") ||
+		raw.includes("deep learning")
+	)
+		tokens.add("ai");
+	if (
+		raw.includes("cloud") ||
+		raw.includes("devops") ||
+		raw.includes("sysadmin")
+	)
+		tokens.add("cloud-devops");
+	if (
+		raw.includes("project") ||
+		raw.includes("product") ||
+		raw.includes("pm") ||
+		raw.includes("manajemen") ||
+		raw.includes("business")
+	)
+		tokens.add("management");
+
+	const stopWords = new Set([
+		"dan",
+		"yang",
+		"dengan",
+		"pada",
+		"atau",
+		"serta",
+		"like",
+		"with",
+		"into",
+		"also",
+	]);
+	const words = raw.split(/[^a-z0-9]+/);
+	for (const w of words) {
+		if (w.length > 3 && !stopWords.has(w)) {
+			tokens.add(w);
+		}
+	}
+	return tokens;
+}
+
+/**
+ * Finds the most similar peers to the target member based primarily on shared niches.
+ * Adds a secondary tie-breaker bonus if members share the same major program.
+ */
+export function getSimilarMembers(
+	target: Member,
+	allMembers: Member[],
+	count = 14,
+): Member[] {
+	const targetCombined =
+		(target.general_niches ? `${target.general_niches.join(" ")} ` : "") +
+		(target.niche || "");
+	const targetTokens = extractNicheTokens(targetCombined);
+
+	const scored = allMembers
+		.filter((m) => m.npm !== target.npm)
+		.map((other) => {
+			const otherCombined =
+				(other.general_niches ? `${other.general_niches.join(" ")} ` : "") +
+				(other.niche || "");
+			const otherTokens = extractNicheTokens(otherCombined);
+			let overlap = 0;
+			for (const t of targetTokens) {
+				if (otherTokens.has(t)) {
+					overlap++;
+				}
+			}
+
+			// Bonus for same major as secondary tiebreaker (+0.1)
+			const sameMajorBonus = other.major === target.major ? 0.1 : 0;
+			const score = overlap + sameMajorBonus;
+
+			return { member: other, score };
+		});
+
+	// Sort descending by similarity score, then alphabetically by name for consistency
+	scored.sort((a, b) => {
+		if (b.score !== a.score) {
+			return b.score - a.score;
+		}
+		return a.member.name.localeCompare(b.member.name, "id", {
+			sensitivity: "base",
+		});
+	});
+
+	return scored.slice(0, count).map((s) => s.member);
+}

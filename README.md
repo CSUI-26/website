@@ -21,20 +21,4 @@ Proyek ini menggunakan:
 
 ### Kontribusi
 
-Semua kontribusi besar (feature addition) harus melalui PR agar bisa melalui proses review. Fix/patch kecil silahkan langsung commit ke `main`.
-
-#### Kontributor luar
-
-1. Fork repositori ini
-2. Pull
-3. Buat branch baru
-4. Lakukan kontribusi
-5. Buat PR
-
-#### Kontributor internal
-
-1. (opsional) Fork repositori ini
-2. Pull
-3. Buat branch baru
-4. Lakukan kontribusi
-5. Buat PR
+wip

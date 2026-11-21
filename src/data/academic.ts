@@ -148,7 +148,10 @@ export const programStudies: ProgramStudy[] = [
 						sks: 3,
 						description:
 							"Sistem persamaan linear, matriks, determinan, ruang vektor, nilai dan vektor eigen, serta transformasi linear.",
-						prerequisites: ["Grafika & Komputasi Visual", "Kecerdasan Artifisial"],
+						prerequisites: [
+							"Grafika & Komputasi Visual",
+							"Kecerdasan Artifisial",
+						],
 						materialUrl: "https://course.csui.dev/?prodi=CS",
 					},
 					{
@@ -319,7 +322,10 @@ export const programStudies: ProgramStudy[] = [
 						sks: 3,
 						description:
 							"Paradigma algoritma Greedy, Divide & Conquer, Dynamic Programming, Graph Algorithms, dan analisis kompleksitas Big-O.",
-						prerequisites: ["Struktur Data & Algoritma", "Matematika Diskret 2"],
+						prerequisites: [
+							"Struktur Data & Algoritma",
+							"Matematika Diskret 2",
+						],
 						materialUrl: "https://scele.cs.ui.ac.id/",
 					},
 				],
@@ -773,7 +779,8 @@ export const programStudies: ProgramStudy[] = [
 						name: "Mata Kuliah Pilihan 5",
 						code: "Pilihan 5",
 						sks: 3,
-						description: "Mata kuliah elektif pendukung kompetensi profesional.",
+						description:
+							"Mata kuliah elektif pendukung kompetensi profesional.",
 						prerequisites: [],
 						materialUrl: "https://course.csui.dev/?prodi=SI",
 					},
@@ -902,7 +909,8 @@ export const programStudies: ProgramStudy[] = [
 						name: "MPK Agama",
 						code: "MPK Agama",
 						sks: 2,
-						description: "Penanaman akhlak, etika moral, dan keharmonisan sosial.",
+						description:
+							"Penanaman akhlak, etika moral, dan keharmonisan sosial.",
 						prerequisites: [],
 						materialUrl: "https://course.csui.dev/?prodi=AI",
 					},
@@ -1145,7 +1153,8 @@ export const programStudies: ProgramStudy[] = [
 						name: "Mata Kuliah Pilihan AI 1",
 						code: "Pilihan AI 1",
 						sks: 3,
-						description: "Spesialisasi riset lanjutan di bidang kecerdasan buatan.",
+						description:
+							"Spesialisasi riset lanjutan di bidang kecerdasan buatan.",
 						prerequisites: [],
 						materialUrl: "https://course.csui.dev/?prodi=AI",
 					},
@@ -1166,7 +1175,8 @@ export const programStudies: ProgramStudy[] = [
 						name: "Mata Kuliah Pilihan AI 3",
 						code: "Pilihan AI 3",
 						sks: 3,
-						description: "Eksplorasi state-of-the-art model dan teknologi AI mutakhir.",
+						description:
+							"Eksplorasi state-of-the-art model dan teknologi AI mutakhir.",
 						prerequisites: [],
 						materialUrl: "https://course.csui.dev/?prodi=AI",
 					},

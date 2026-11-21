@@ -7,7 +7,10 @@ import { Image } from "astro:assets";
 import Hero from "@images/hero.png";
 import Racoon1 from "@images/Racoon1.png";
 // import Racoon2 from "@images/Racoon2.png"
-import Highlight1 from "@images/about/highlight1.png";
+import Activity1 from "@images/gallery/foto-angkatan-1.jpg";
+import Activity2 from "@images/gallery/foto-angkatan-2.jpg";
+import Activity3 from "@images/gallery/foto-angkatan-3.jpg";
+import Activity4 from "@images/gallery/foto-angkatan-4.jpg";
 import Heading from "@components/Heading.astro";
 import {
 	SiGmail,
@@ -21,7 +24,7 @@ import ActivitiesCarousel from "@components/About/ActivitiesCarousel.astro";
 import ActivitiesCard from "@components/About/ActivitiesCard.astro";
 import PeepsCard from "@/components/About/PeepsCard.astro";
 
-const title = `${Strings.SlugTitles.Home} - ${Strings.SiteTitle}`;
+const title = `${Strings.SlugTitles.About} - ${Strings.SiteTitle}`;
 ---
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Home")!}>
@@ -36,9 +39,6 @@ const title = `${Strings.SlugTitles.Home} - ${Strings.SiteTitle}`;
 			class={Styles.hero_img}
 			draggable={false}
 		/>
-		<div class={Styles.text_columns}>
-			<p>Zenith adalah nama angkatan 2026 Fasilkom UI.</p>
-		</div>
 	</section>
 
 	<section class={`${Styles.section} ${Styles.section_greetings}`}>
@@ -47,18 +47,28 @@ const title = `${Strings.SlugTitles.Home} - ${Strings.SiteTitle}`;
 				class=`${Styles.greetings_image} ${Styles.image}`
 				src={Racoon1}
 				width={400}
-				alt="Ilustrasi rakun Zenith"
+				alt="Photo of Zenith"
 				layout="constrained"
 				loading={"lazy"}
 				decoding={"async"}
 			/>
 			<div class={Styles.greetings_content}>
-				<Heading level={2} id="greetings" class={Styles.subheadings}>Salam dari Zenith</Heading>
+				<Heading level={2} class={Styles.subheadings}>Greetings</Heading
+				>
 				<p>
-					Halo! Kalau kamu mau kenal sama anak-anak Zenith, buka halaman Anggota. Kamu bisa cari pakai nama panggilan atau lihat profilnya per prodi.
-				</p>
-				<p>
-					Di sini juga ada daftar mata kuliah per semester. Pilih program studimu di halaman Akademik untuk lihat apa saja yang dipelajari.
+					Lorem ipsum dolor sit amet consectetur adipisicing elit.
+					Explicabo nemo molestias cum nesciunt minima, tempore
+					doloremque porro adipisci. Officiis aut aliquam in ratione
+					maxime, alias dolorem beatae consectetur cumque ducimus?
+					Magnam saepe incidunt quia suscipit perspiciatis ipsam
+					doloribus aliquid maiores. Cum, cumque expedita ipsum
+					commodi voluptatum culpa tempore quis laudantium doloremque
+					sit, deleniti eligendi earum ullam aspernatur laboriosam ab.
+					Quia. Fuga corrupti quas labore debitis aut veniam, libero,
+					laborum, autem assumenda neque consequuntur exercitationem
+					error mollitia commodi delectus ratione! Amet reprehenderit
+					corrupti quasi consequuntur optio ullam incidunt at harum
+					alias?
 				</p>
 				<div class={Styles.icon_set}>
 					<SiGmail size={50} />
@@ -72,9 +82,10 @@ const title = `${Strings.SlugTitles.Home} - ${Strings.SiteTitle}`;
 
 	<section class={`${Styles.section} ${Styles.section_highlight}`}>
 		<div class={Styles.section_contents}>
-			<Heading level={2} id="our-highlight" class={Styles.subheadings}>Foto angkatan</Heading>
+			<Heading level={2} class={Styles.subheadings}>Our Highlight</Heading
+			>
 			<p class={Styles.highlight_content}>
-				Dua foto angkatan di depan Rektorat UI. Di satu foto kami pakai kemeja putih, di foto satunya pakai jakun.
+				Dari lomba, proyek sampingan, sampai kegiatan kampus sehari-hari. Bagian ini merangkum hal-hal yang sedang ramai kami kerjakan bersama.
 			</p>
 			<HighlightCarousel />
 		</div>
@@ -82,31 +93,36 @@ const title = `${Strings.SlugTitles.Home} - ${Strings.SiteTitle}`;
 
 	<section class={`${Styles.section} ${Styles.section_activities}`}>
 		<div class={Styles.section_contents}>
-			<Heading level={2} id="our-activities" class={Styles.subheadings}>Kegiatan kami</Heading>
+			<Heading level={2} class={Styles.subheadings}
+				>Our Activities</Heading
+			>
 			<p>
 				Sebelum masuk kelas, kami sudah ikut latihan pemrograman di DDP0 dan pengenalan kampus di UI dan Fasilkom.
 			</p>
 		</div>
 		<ActivitiesCarousel>
 			<ActivitiesCard
-				picture={Highlight1}
+				picture={Activity1}
 				activityTitle="DDP0"
+				date="Juli–Agustus 2026"
 				description="Sebelum masuk kelas pemrograman, kami coba mengerjakan soal-soal dasar di DDP0. Program ini disiapkan Arung 2025 untuk mahasiswa baru Fasilkom 2026."
 			/>
 			<ActivitiesCard
-				picture={Highlight1}
+				picture={Activity2}
 				activityTitle="PKKMB"
+				date="Agustus 2026"
 				description="Di PKKMB, kami ikut pengenalan kampus bareng mahasiswa baru dari fakultas lain di UI."
 			/>
 			<ActivitiesCard
-				picture={Highlight1}
+				picture={Activity3}
 				activityTitle="PSAF"
 				date="11–13 Agustus 2026"
 				description="Kalau PKKMB mengenalkan UI, PSAF membahas kuliah di Fasilkom. Kami lihat kurikulum masing-masing prodi dan ketemu dosen pembimbing akademik."
 			/>
 			<ActivitiesCard
-				picture={Highlight1}
+				picture={Activity4}
 				activityTitle="PMB"
+				date="Agustus 2026"
 				description="Kegiatan penyambutan mahasiswa baru Fasilkom. Di PMB, kami punya waktu buat kenalan dengan teman seangkatan dari prodi lain."
 			/>
 		</ActivitiesCarousel>
@@ -114,7 +130,7 @@ const title = `${Strings.SlugTitles.Home} - ${Strings.SiteTitle}`;
 
 	<section class={`${Styles.section} ${Styles.section_peeps}`}>
 		<div class={Styles.section_contents}>
-			<Heading level={2} id="our-peeps" class={Styles.subheadings}>Anggota Zenith</Heading>
+			<Heading level={2} class={Styles.subheadings}>Our Peeps</Heading>
 			<p>
 				Ada empat prodi di Zenith. Di direktori angkatan, kamu bisa cari siapa yang lagi tertarik bikin gim, belajar keamanan siber, atau ngulik data.
 			</p>

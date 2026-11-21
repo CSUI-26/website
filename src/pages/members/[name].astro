@@ -1,18 +1,19 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import rawData from "@/data/members.json";
+import rawData from "@/data.json";
 import type { Member } from "@/types/member";
 import {
 	getMajorCode,
 	getMemberPhotoUrl,
 	getMemberSlug,
-	shuffle,
+	getSimilarMembers,
 } from "@/util";
 import ArrowLeftIcon from "@/icons/arrow-left.svg";
 import InstagramIcon from "@/icons/instagram.svg";
 import LinkedinIcon from "@/icons/linkedin.svg";
 import GithubIcon from "@/icons/github.svg";
 import LineIcon from "@/icons/line.svg";
+import { Globe } from "lucide-react";
 import IconButton from "@/components/Members/IconButton.astro";
 import Pill from "@/components/Members/Pill.astro";
 import Surface from "@/components/Members/Surface.astro";
@@ -21,30 +22,13 @@ import styles from "./[name].module.css";
 
 export async function getStaticPaths() {
 	const allMembers = rawData as Member[];
-	return allMembers.map((member) => {
-		const sameMajor = allMembers.filter(
-			(m) => m.npm !== member.npm && m.major === member.major,
-		);
-		const otherMajor = allMembers.filter(
-			(m) => m.npm !== member.npm && m.major !== member.major,
-		);
-
-		// Shuffle candidates using Math.random()
-		const shuffledSame = shuffle([...sameMajor]);
-		const shuffledOther = shuffle([...otherMajor]);
-
-		// Pick 10 peers from the same prodi and 4 from other prodi so current prodi stays dominant
-		const dominantSame = shuffledSame.slice(0, 10);
-		const mixedOther = shuffledOther.slice(0, 4);
-
-		// Interleave / shuffle the combined 14 peers
-		const similar = shuffle([...dominantSame, ...mixedOther]);
-
-		return {
-			params: { name: getMemberSlug(member) },
-			props: { member, similar },
-		};
-	});
+	return allMembers.map((member) => ({
+		params: { name: getMemberSlug(member) },
+		props: {
+			member,
+			similar: getSimilarMembers(member, allMembers, 14),
+		},
+	}));
 }
 
 export interface Props {
@@ -81,6 +65,14 @@ const lineUrl =
 		? `https://line.me/ti/p/~${member.line}`
 		: null;
 
+const rawWebsite = (member as unknown as Record<string, unknown>).website as string | undefined;
+const websiteUrl =
+	rawWebsite && rawWebsite.trim() !== "" && rawWebsite.trim() !== "-"
+		? rawWebsite.startsWith("http")
+			? rawWebsite
+			: `https://${rawWebsite}`
+		: null;
+
 const nicheTags = member.niche
 	? member.niche
 			.split(/[,/]/)
@@ -90,13 +82,13 @@ const nicheTags = member.niche
 ---
 
 <BaseLayout title={title} activeTab="/members">
-	<main class={styles.container}>
+	<main class={styles.container} data-profile-npm={member.npm}>
 		<!-- Back Button -->
 		<nav class={styles.back_nav} aria-label="Breadcrumb">
-			<Surface as="a" href="/members" variant="subtle" class={styles.back_button}>
+			<a href="/members" class={styles.back_button}>
 				<ArrowLeftIcon width={20} height={20} />
 				<span>Kembali ke daftar anggota</span>
-			</Surface>
+			</a>
 		</nav>
 
 		<!-- Main Member Profile Card Section -->
@@ -107,6 +99,7 @@ const nicheTags = member.niche
 					src={getMemberPhotoUrl(member)}
 					alt={member.name}
 					class={styles.photo}
+					data-field="photo"
 					loading="eager"
 					decoding="async"
 				/>
@@ -156,16 +149,37 @@ const nicheTags = member.niche
 							<LineIcon width={22} height={22} />
 						</IconButton>
 					)}
+					{websiteUrl && (
+						<IconButton
+							href={websiteUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							ariaLabel="Website"
+							data-social="website"
+						>
+							<Globe width={20} height={20} />
+						</IconButton>
+					)}
 				</div>
 
-				<!-- Name & Major Badge -->
-				<div class={styles.header_row}>
-					<h1 class={styles.name}>{displayName}</h1>
-					<Pill variant="solid">{majorCode}</Pill>
+				<!-- Name, Real Name, Email & Major Badge -->
+				<div class={styles.header_group}>
+					<div class={styles.header_row}>
+						<h1 class={styles.name} data-field="display-name">{displayName}</h1>
+						<Pill variant="solid">{majorCode}</Pill>
+					</div>
+					{member.name && member.nama_panggilan && member.nama_panggilan.trim().toLowerCase() !== member.name.trim().toLowerCase() && (
+						<p class={styles.real_name} data-field="real-name">{member.name}</p>
+					)}
+					{member.email && (
+						<a href={`mailto:${member.email}`} class={styles.email} data-field="email">
+							{member.email}
+						</a>
+					)}
 				</div>
 
 				<!-- Bio / Description -->
-				<p class={styles.bio}>
+				<p class={styles.bio} data-field="bio">
 					{member.deskripsi || "No description provided."}
 				</p>
 
@@ -184,3 +198,58 @@ const nicheTags = member.niche
 		{similar.length > 0 && <PeerCarousel similar={similar} />}
 	</main>
 </BaseLayout>
+
+<script>
+	import { doc, onSnapshot } from "firebase/firestore";
+	import { db } from "@/lib/firebase";
+
+	const container = document.querySelector<HTMLElement>("[data-profile-npm]");
+	const npm = container?.dataset.profileNpm;
+
+	if (npm) {
+		const docRef = doc(db, "members", npm);
+		onSnapshot(docRef, (docSnap) => {
+			if (!docSnap.exists()) return;
+			const data = docSnap.data();
+
+			// Update Display Name & Real Name
+			const displayNameEl = document.querySelector<HTMLElement>("[data-field='display-name']");
+			const realNameEl = document.querySelector<HTMLElement>("[data-field='real-name']");
+			if (displayNameEl) {
+				displayNameEl.textContent = data.nama_panggilan || data.name || "";
+			}
+			if (realNameEl) {
+				realNameEl.textContent = data.name || "";
+			}
+
+			// Update Email
+			const emailEl = document.querySelector<HTMLAnchorElement>("[data-field='email']");
+			if (emailEl && data.email) {
+				emailEl.textContent = data.email;
+				emailEl.href = `mailto:${data.email}`;
+			}
+
+			// Update Bio
+			const bioEl = document.querySelector<HTMLElement>("[data-field='bio']");
+			if (bioEl) {
+				bioEl.textContent = data.deskripsi || "No description provided.";
+			}
+
+			// Update Photo
+			const photoEl = document.querySelector<HTMLImageElement>("[data-field='photo']");
+			if (photoEl && data.foto?.url) {
+				photoEl.src = data.foto.url;
+				if (data.foto.config) {
+					photoEl.style.transform = `scale(${data.foto.config.zoom || 1})`;
+					photoEl.style.objectPosition = `${data.foto.config.x || 50}% ${data.foto.config.y || 50}%`;
+				}
+			}
+
+			// Update Website link
+			const websiteBtn = document.querySelector<HTMLAnchorElement>("[data-social='website']");
+			if (websiteBtn && data.website) {
+				websiteBtn.href = data.website.startsWith("http") ? data.website : `https://${data.website}`;
+			}
+		});
+	}
+</script>

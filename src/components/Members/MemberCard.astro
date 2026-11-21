@@ -11,10 +11,18 @@ interface Props {
 
 const { member, hidden = false } = Astro.props;
 
-// Determine badge: take first niche keyword or fall back to "Developer"
-const badge = member.niche
-	? member.niche.split(/[,/]/)[0]!.trim() || "Member"
-	: "Member";
+// Determine badge niches list: prefer generalized niches, fallback to raw niche or "Member"
+const nichesList =
+	member.general_niches && member.general_niches.length > 0
+		? member.general_niches
+		: member.niche
+			? member.niche
+					.split(/[,/]/)
+					.map((t) => t.trim())
+					.filter(Boolean)
+			: ["Member"];
+
+const initialBadge = nichesList[0] || "Member";
 
 const majorCode = getMajorCode(member.major);
 const displayName = member.nama_panggilan || member.name;
@@ -31,6 +39,7 @@ const photoUrl = getMemberPhotoUrl(member);
 	data-nickname={member.nama_panggilan}
 	data-major={member.major}
 	data-niche={member.niche}
+	data-general-niches={JSON.stringify(nichesList)}
 	style={hidden ? "display: none;" : undefined}
 >
 	<div class={styles.picture}>
@@ -41,8 +50,13 @@ const photoUrl = getMemberPhotoUrl(member);
 			loading="lazy"
 			decoding="async"
 		/>
-		<Pill variant="badge" class={styles.picture_badge}>
-			{badge}
+		<Pill
+			variant="badge"
+			class={styles.picture_badge}
+			data-badge-cycler
+			data-niches={JSON.stringify(nichesList)}
+		>
+			<span class={styles.badge_text}>{initialBadge}</span>
 		</Pill>
 	</div>
 	<div class={styles.info}>
