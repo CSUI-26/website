@@ -43,6 +43,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
 	padding: 0.75rem;
 	border-radius: 50%;
 	transition:
@@ -72,6 +74,11 @@
 
 .nav_button:active {
 	transform: scale(0.95);
+}
+
+.nav_button:focus-visible {
+	outline: 2px solid var(--fg-text-normal);
+	outline-offset: 4px;
 }
 
 .nav_icon {
@@ -118,6 +125,12 @@
 	height: 100%;
 	object-fit: cover;
 	display: block;
+}
+
+.card_image_fallback {
+	width: 100%;
+	height: 100%;
+	background: var(--bg-frame);
 }
 
 .card_overlay {
