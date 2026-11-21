@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import Surface from "@/components/member/Surface.astro";
 import MembersDirectory from "@/components/member-list/MembersDirectory";
-import { Strings } from "@/strings";
-import { RootRoutes } from "@/routes";
+import { parseMemberNiche } from "@/components/member-list/tags";
 import rawData from "@/data/members.json";
+import { RootRoutes } from "@/routes";
+import { Strings } from "@/strings";
 import type { Member } from "@/types/member";
 import {
 	getMajorCode,
@@ -12,7 +12,6 @@ import {
 	getMemberPhotoUrl,
 	getMemberSlug,
 } from "@/util";
-import { parseMemberNiche } from "@/components/member-list/tags";
 import styles from "./index.module.css";
 
 const rawMembers = rawData as Member[];
@@ -67,16 +66,9 @@ const directoryMembers = rawMembers.map((member) => {
 
 <BaseLayout title={title} activeTab={RootRoutes.get("Members")!}>
 	<main class={styles.main}>
-		<h1 class={styles.title}>our members</h1>
+		<h1 class={styles.title}>Anggota Zenith</h1>
 
 		<!-- Interactive Members Directory React Island -->
 		<MembersDirectory client:load members={directoryMembers} />
-
-		<!-- Floating BoardWall CTA -->
-		<div class={styles.boardwall_cta_wrapper}>
-			<Surface as="a" href="/boardwall" variant="button" class={styles.boardwall_cta}>
-				<span>BoardWall</span>
-			</Surface>
-		</div>
 	</main>
 </BaseLayout>

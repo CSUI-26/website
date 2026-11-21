@@ -388,8 +388,8 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 			parts.push(selectedTags.join(", "));
 		}
 		return parts.length > 0
-			? `Showing results for: ${parts.join(" • ")}`
-			: "Showing all members";
+			? `Menampilkan hasil untuk: ${parts.join(" • ")}`
+			: "Menampilkan semua anggota";
 	}, [searchQuery, selectedMajor, selectedTags]);
 
 	return (
@@ -403,7 +403,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						id="member-search"
 						value={searchQuery}
 						onChange={handleSearchChange}
-						placeholder="Search by name, nickname, or interest tag..."
+						placeholder="Cari nama, nama panggilan, atau minat"
 						className={styles.search_input}
 						autoComplete="off"
 					/>
@@ -441,7 +441,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 					<div className={styles.tag_filter_header}>
 						<span className={styles.tag_filter_label}>
 							<Tag width={14} height={14} />
-							<span>Filter by interest tags</span>
+							<span>Filter berdasarkan minat</span>
 						</span>
 						{selectedTags.length > 0 && (
 							<button
@@ -450,7 +450,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 								className={styles.clear_tags_btn}
 							>
 								<X width={13} height={13} />
-								<span>Clear ({selectedTags.length})</span>
+								<span>Hapus ({selectedTags.length})</span>
 							</button>
 						)}
 					</div>
@@ -480,12 +480,12 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						>
 							{showAllTags ? (
 								<>
-									<span>Show fewer</span>
+									<span>Tampilkan lebih sedikit</span>
 									<ChevronUp width={14} height={14} />
 								</>
 							) : (
 								<>
-									<span>+{hiddenTagCount} more</span>
+									<span>+{hiddenTagCount} lagi</span>
 									<ChevronDown width={14} height={14} />
 								</>
 							)}
@@ -505,8 +505,8 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						<button
 							type="button"
 							onClick={() => handleViewModeSelect("grid")}
-							aria-label="Switch to grid view"
-							title="Grid view"
+							aria-label="Beralih ke tampilan kisi"
+							title="Tampilan kisi"
 							aria-pressed={viewMode === "grid"}
 							className={`${styles.view_toggle_btn} ${
 								viewMode === "grid" ? styles.view_toggle_btn__active : ""
@@ -517,8 +517,8 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						<button
 							type="button"
 							onClick={() => handleViewModeSelect("column")}
-							aria-label="Switch to column view"
-							title="Column view"
+							aria-label="Beralih ke tampilan kolom"
+							title="Tampilan kolom"
 							aria-pressed={viewMode === "column"}
 							className={`${styles.view_toggle_btn} ${
 								viewMode === "column" ? styles.view_toggle_btn__active : ""
@@ -534,7 +534,7 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 			<section className={styles.grid_container}>
 				{filteredMembers.length === 0 ? (
 					<div className={styles.no_results}>
-						<p>No members found matching your search.</p>
+						<p>Tidak ada hasil. Coba kata kunci lain atau pilih Semua.</p>
 					</div>
 				) : viewMode === "grid" ? (
 					/* ── Grid View ── */
@@ -576,10 +576,10 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 					<div className={styles.table_container} id="members-table">
 						{/* Table Column Header */}
 						<div className={styles.table_header_row} aria-hidden="true">
-							<span className={styles.col_member}>Member</span>
+							<span className={styles.col_member}>Anggota</span>
 							<span className={styles.col_prodi}>Prodi</span>
-							<span className={styles.col_interests}>Interests</span>
-							<span className={styles.col_socials}>Social</span>
+							<span className={styles.col_interests}>Minat</span>
+							<span className={styles.col_socials}>Sosial</span>
 						</div>
 
 						{/* Table Rows */}
@@ -728,15 +728,15 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 			{totalPages > 1 && (
 				<nav
 					className={styles.pagination_wrapper}
-					aria-label="Members pagination"
+					aria-label="Navigasi halaman anggota"
 				>
 					<button
 						type="button"
 						onClick={() => goToPage(1)}
 						disabled={currentPage === 1}
 						className={styles.pagination_nav_btn}
-						aria-label="First page"
-						title="First page"
+						aria-label="Halaman pertama"
+						title="Halaman pertama"
 					>
 						<ChevronsLeft width={18} height={18} />
 					</button>
@@ -746,8 +746,8 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						onClick={() => goToPage(currentPage - 1)}
 						disabled={currentPage === 1}
 						className={styles.pagination_nav_btn}
-						aria-label="Previous page"
-						title="Previous page"
+						aria-label="Halaman sebelumnya"
+						title="Halaman sebelumnya"
 					>
 						<ChevronLeft width={18} height={18} />
 					</button>
@@ -783,8 +783,8 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						onClick={() => goToPage(currentPage + 1)}
 						disabled={currentPage === totalPages}
 						className={styles.pagination_nav_btn}
-						aria-label="Next page"
-						title="Next page"
+						aria-label="Halaman berikutnya"
+						title="Halaman berikutnya"
 					>
 						<ChevronRight width={18} height={18} />
 					</button>
@@ -794,8 +794,8 @@ export default function MembersDirectory({ members, pageSize = 40 }: Props) {
 						onClick={() => goToPage(totalPages)}
 						disabled={currentPage === totalPages}
 						className={styles.pagination_nav_btn}
-						aria-label="Last page"
-						title="Last page"
+						aria-label="Halaman terakhir"
+						title="Halaman terakhir"
 					>
 						<ChevronsRight width={18} height={18} />
 					</button>

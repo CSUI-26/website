@@ -12,7 +12,6 @@ export interface MajorMetadata {
 	readonly canonicalName: MajorCanonicalName;
 	readonly code: MajorCode;
 	readonly theme: MajorThemeKey;
-	readonly label: string;
 	readonly aliases: readonly string[];
 }
 
@@ -21,7 +20,6 @@ export const MAJOR_DEFINITIONS: readonly MajorMetadata[] = [
 		canonicalName: "Ilmu Komputer",
 		code: "CS",
 		theme: "cs",
-		label: "Computer Science",
 		aliases: [
 			"cs",
 			"computer-science",
@@ -34,7 +32,6 @@ export const MAJOR_DEFINITIONS: readonly MajorMetadata[] = [
 		canonicalName: "Sistem Informasi",
 		code: "SI",
 		theme: "si",
-		label: "Information System",
 		aliases: [
 			"si",
 			"information-system",
@@ -47,7 +44,6 @@ export const MAJOR_DEFINITIONS: readonly MajorMetadata[] = [
 		canonicalName: "Ilmu Komputer KKI",
 		code: "CS KKI",
 		theme: "kki",
-		label: "KKI",
 		aliases: [
 			"kki",
 			"cs-kki",
@@ -60,7 +56,6 @@ export const MAJOR_DEFINITIONS: readonly MajorMetadata[] = [
 		canonicalName: "Kecerdasan Artifisial",
 		code: "AI",
 		theme: "ai",
-		label: "AI",
 		aliases: [
 			"ai",
 			"artificial-intelligence",
@@ -78,9 +73,9 @@ export interface MajorFilterOption {
 }
 
 export const MAJOR_FILTER_OPTIONS: readonly MajorFilterOption[] = [
-	{ label: "All", value: "ALL", theme: "all" },
+	{ label: "Semua", value: "ALL", theme: "all" },
 	...MAJOR_DEFINITIONS.map((m) => ({
-		label: m.label,
+		label: m.canonicalName,
 		value: m.canonicalName,
 		theme: m.theme,
 	})),
