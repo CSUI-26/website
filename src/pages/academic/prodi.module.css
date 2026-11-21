@@ -26,22 +26,23 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
-	font-size: 0.85rem;
-	font-weight: 700;
-	color: rgba(255, 255, 255, 0.7);
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.75);
 	text-decoration: none;
-	background: rgba(255, 255, 255, 0.05);
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	border-radius: 9999px;
-	padding: 0.5rem 1.25rem;
-	transition: all 0.2s ease;
+	background: transparent;
+	border: none;
+	padding: 0;
+	transition:
+		color 0.2s ease,
+		transform 0.2s ease;
 }
 
 .back_link:hover {
 	color: #ffffff;
-	background: rgba(255, 255, 255, 0.12);
-	border-color: rgba(255, 255, 255, 0.4);
-	transform: translateX(-3px);
+	background: transparent;
+	border: none;
+	transform: translateX(-4px);
 }
 
 /* ── Prodi Header ── */
@@ -150,6 +151,71 @@
 	margin: 0;
 	margin-block-end: 2rem;
 	text-align: center;
+}
+
+/* ── Semester Choices Navbar (1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | Pilihan) ── */
+.semester_nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 0.35rem 0.65rem;
+	margin-block: 1rem 2rem;
+	padding: 0.45rem 1.15rem;
+	background: var(--glass-bg, rgba(14, 18, 30, 0.75));
+	border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.16));
+	border-radius: 9999px;
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+	width: fit-content;
+	max-width: 100%;
+	margin-inline: auto;
+}
+
+.semester_nav_item {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	padding: 0.35rem 0.65rem;
+	color: rgba(255, 255, 255, 0.65);
+	font-family: inherit;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	border-radius: 9999px;
+	transition: all 0.2s ease;
+	line-height: 1;
+
+	&:hover {
+		color: #ffffff;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	&[aria-selected="true"],
+	&[data-active="true"] {
+		color: #ffffff;
+		font-weight: 800;
+		background: rgba(255, 255, 255, 0.18);
+		box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+	}
+}
+
+.semester_nav_item_active {
+	color: #ffffff;
+	font-weight: 800;
+	background: rgba(255, 255, 255, 0.18);
+	box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+}
+
+.semester_nav_divider {
+	color: rgba(255, 255, 255, 0.25);
+	font-weight: 300;
+	font-size: 0.95rem;
+	user-select: none;
+	padding-inline: 0.1rem;
 }
 
 /* Semester Tabs */

@@ -49,7 +49,7 @@ const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					Buka SCeLE Fasilkom ↗
+					LINK MATERI ↗
 				</a>
 				<a
 					class={Styles.action_btn}
@@ -57,7 +57,7 @@ const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					Buka The NPC Guide to Pacil ↗
+					DRIVE KATING ↗
 				</a>
 			</div>
 		</header>
@@ -66,22 +66,26 @@ const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
 		<section class={Styles.curriculum_section} aria-label="Kurikulum">
 			<h2 class={Styles.curriculum_title}>MATERI YANG DIPELAJARI</h2>
 
-			{/* Semester Pill Tabs */}
-			<div class={Styles.semester_tabs} role="tablist">
-				{prodi.semesters.map((sem, sIdx) => (
-					<button
-						type="button"
-						role="tab"
-						class={`${Styles.semester_tab} ${sIdx === 0 ? Styles.semester_tab_active : ""}`}
-						data-semester-idx={sIdx}
-						aria-selected={sIdx === 0 ? "true" : "false"}
-					>
-						{typeof sem.semester === "number"
-							? `SEMESTER ${sem.semester}`
-							: "MATKUL PILIHAN"}
-					</button>
-				))}
-			</div>
+			{/* Semester Choices Navbar: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | Pilihan */}
+			<nav class={Styles.semester_nav} aria-label="Pilih Semester" role="tablist">
+				{prodi.semesters.map((sem, sIdx) => {
+					const label = typeof sem.semester === "number" ? sem.semester : "Pilihan";
+					return (
+						<>
+							{sIdx > 0 && <span class={Styles.semester_nav_divider} aria-hidden="true">|</span>}
+							<button
+								type="button"
+								role="tab"
+								class={`${Styles.semester_nav_item} ${sIdx === 0 ? Styles.semester_nav_item_active : ""}`}
+								data-semester-idx={sIdx}
+								aria-selected={sIdx === 0 ? "true" : "false"}
+							>
+								{label}
+							</button>
+						</>
+					);
+				})}
+			</nav>
 
 			{/* Frame 39 (Figma Curriculum Container) */}
 			<div class={Styles.curriculum_frame}>
@@ -146,7 +150,7 @@ const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
 													target="_blank"
 													rel="noopener noreferrer"
 												>
-													Buka SCeLE Fasilkom ↗
+													LINK MATERIAL ↗
 												</a>
 											</div>
 										</div>
@@ -187,11 +191,11 @@ const otherProdis = programStudies.filter((p) => p.id !== prodi.id);
 				for (const t of semesterTabs) {
 					t.setAttribute("aria-selected", "false");
 					t.removeAttribute("data-active");
-					t.classList.remove(
-						// biome-ignore lint/style/noNonNullAssertion: class always exists
-						document.querySelector("[class*='semester_tab_active']")?.classList[1] ||
-							"semester_tab_active",
-					);
+					for (const c of Array.from(t.classList)) {
+						if (c.includes("semester_nav_item_active") || c.includes("semester_tab_active")) {
+							t.classList.remove(c);
+						}
+					}
 				}
 
 				// Activate clicked tab

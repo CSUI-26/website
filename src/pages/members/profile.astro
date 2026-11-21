@@ -1,0 +1,220 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import ArrowLeftIcon from "@/icons/arrow-left.svg";
+import InstagramIcon from "@/icons/instagram.svg";
+import LinkedinIcon from "@/icons/linkedin.svg";
+import GithubIcon from "@/icons/github.svg";
+import LineIcon from "@/icons/line.svg";
+import { Globe } from "lucide-react";
+import IconButton from "@/components/Members/IconButton.astro";
+import Pill from "@/components/Members/Pill.astro";
+import Surface from "@/components/Members/Surface.astro";
+import styles from "./[name].module.css";
+---
+
+<BaseLayout title="Member Profile - Zenith" activeTab="/members">
+	<main class={styles.container} id="profile-container">
+		<!-- Back Button -->
+		<nav class={styles.back_nav} aria-label="Breadcrumb">
+			<a href="/members" class={styles.back_button}>
+				<ArrowLeftIcon width={20} height={20} />
+				<span>Back to members</span>
+			</a>
+		</nav>
+
+		<!-- Main Member Profile Card Section -->
+		<section class={styles.card_section}>
+			<!-- Left: Avatar Photo -->
+			<div class={styles.photo_box}>
+				<img
+					id="photo-el"
+					src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+					alt="Member avatar"
+					class={styles.photo}
+					loading="eager"
+					decoding="async"
+				/>
+			</div>
+
+			<!-- Right: Member Details -->
+			<Surface variant="card" class={styles.details_box}>
+				<!-- Social Media Links -->
+				<div class={styles.social_row} id="social-row">
+					<IconButton id="social-ig" href="#" target="_blank" rel="noopener noreferrer" ariaLabel="Instagram" style="display: none;">
+						<InstagramIcon width={22} height={22} />
+					</IconButton>
+					<IconButton id="social-linkedin" href="#" target="_blank" rel="noopener noreferrer" ariaLabel="LinkedIn" style="display: none;">
+						<LinkedinIcon width={22} height={22} />
+					</IconButton>
+					<IconButton id="social-github" href="#" target="_blank" rel="noopener noreferrer" ariaLabel="GitHub" style="display: none;">
+						<GithubIcon width={22} height={22} />
+					</IconButton>
+					<IconButton id="social-line" href="#" target="_blank" rel="noopener noreferrer" ariaLabel="LINE" style="display: none;">
+						<LineIcon width={22} height={22} />
+					</IconButton>
+					<IconButton id="social-website" href="#" target="_blank" rel="noopener noreferrer" ariaLabel="Website" style="display: none;">
+						<Globe width={20} height={20} />
+					</IconButton>
+				</div>
+
+				<!-- Name, Real Name, Email & Major Badge -->
+				<div class={styles.header_group}>
+					<div class={styles.header_row}>
+						<h1 class={styles.name} id="display-name">Loading...</h1>
+						<Pill variant="solid" id="major-badge">Member</Pill>
+					</div>
+					<p class={styles.real_name} id="real-name" style="display: none;"></p>
+					<a href="#" class={styles.email} id="email-el" style="display: none;"></a>
+				</div>
+
+				<!-- Bio / Description -->
+				<p class={styles.bio} id="bio-el">Fetching profile details from database...</p>
+
+				<!-- Niche Domain Tags -->
+				<div class={styles.niche_tags} id="niche-container" style="display: none;"></div>
+			</Surface>
+		</section>
+	</main>
+</BaseLayout>
+
+<script>
+	import { doc, onSnapshot } from "firebase/firestore";
+	import { db } from "@/lib/firebase";
+	import { getMajorCode } from "@/util";
+	import type { Member } from "@/types/member";
+
+	const urlParams = new URLSearchParams(window.location.search);
+	const npm = urlParams.get("npm");
+
+	if (!npm) {
+		window.location.replace("/members");
+	} else {
+		const docRef = doc(db, "members", npm);
+		onSnapshot(docRef, (docSnap) => {
+			if (!docSnap.exists()) {
+				const bioEl = document.getElementById("bio-el");
+				if (bioEl) bioEl.textContent = "Member profile not found in database.";
+				return;
+			}
+
+			const m = docSnap.data() as Member;
+			const displayName = m.nama_panggilan || m.name || "Member";
+			document.title = `${displayName} - Members - Zenith`;
+
+			const displayNameEl = document.getElementById("display-name");
+			if (displayNameEl) displayNameEl.textContent = displayName;
+
+			const realNameEl = document.getElementById("real-name");
+			if (realNameEl) {
+				if (m.nama_panggilan && m.name && m.nama_panggilan.trim().toLowerCase() !== m.name.trim().toLowerCase()) {
+					realNameEl.textContent = m.name;
+					realNameEl.style.display = "block";
+				} else {
+					realNameEl.style.display = "none";
+				}
+			}
+
+			const emailEl = document.getElementById("email-el") as HTMLAnchorElement | null;
+			if (emailEl) {
+				if (m.email) {
+					emailEl.textContent = m.email;
+					emailEl.href = `mailto:${m.email}`;
+					emailEl.style.display = "inline-block";
+				} else {
+					emailEl.style.display = "none";
+				}
+			}
+
+			const majorBadgeEl = document.getElementById("major-badge");
+			if (majorBadgeEl) {
+				majorBadgeEl.textContent = getMajorCode(m.major);
+			}
+
+			const bioEl = document.getElementById("bio-el");
+			if (bioEl) {
+				bioEl.textContent = m.deskripsi || "No description provided.";
+			}
+
+			const photoEl = document.getElementById("photo-el") as HTMLImageElement | null;
+			if (photoEl && m.foto?.url) {
+				photoEl.src = m.foto.url;
+				photoEl.alt = m.name;
+				if (m.foto.config) {
+					photoEl.style.transform = `scale(${m.foto.config.zoom || 1})`;
+					photoEl.style.objectPosition = `${m.foto.config.x || 50}% ${m.foto.config.y || 50}%`;
+				}
+			}
+
+			// Social links
+			const igBtn = document.getElementById("social-ig") as HTMLAnchorElement | null;
+			if (igBtn) {
+				if (m.instagram) {
+					igBtn.href = `https://instagram.com/${m.instagram.replace(/^@/, "")}`;
+					igBtn.style.display = "inline-flex";
+				} else {
+					igBtn.style.display = "none";
+				}
+			}
+
+			const linkedinBtn = document.getElementById("social-linkedin") as HTMLAnchorElement | null;
+			if (linkedinBtn) {
+				if (m.linkedin && m.linkedin.trim() !== "-") {
+					linkedinBtn.href = m.linkedin.startsWith("http") ? m.linkedin : `https://${m.linkedin}`;
+					linkedinBtn.style.display = "inline-flex";
+				} else {
+					linkedinBtn.style.display = "none";
+				}
+			}
+
+			const ghBtn = document.getElementById("social-github") as HTMLAnchorElement | null;
+			if (ghBtn) {
+				if (m.github && m.github.trim() !== "-") {
+					ghBtn.href = m.github.startsWith("http") ? m.github : `https://github.com/${m.github}`;
+					ghBtn.style.display = "inline-flex";
+				} else {
+					ghBtn.style.display = "none";
+				}
+			}
+
+			const lineBtn = document.getElementById("social-line") as HTMLAnchorElement | null;
+			if (lineBtn) {
+				if (m.line && m.line.trim() !== "-") {
+					lineBtn.href = `https://line.me/ti/p/~${m.line}`;
+					lineBtn.style.display = "inline-flex";
+				} else {
+					lineBtn.style.display = "none";
+				}
+			}
+
+			const webBtn = document.getElementById("social-website") as HTMLAnchorElement | null;
+			const rawWeb = (m as unknown as Record<string, unknown>).website as string | undefined;
+			if (webBtn) {
+				if (rawWeb && rawWeb.trim() !== "" && rawWeb.trim() !== "-") {
+					webBtn.href = rawWeb.startsWith("http") ? rawWeb : `https://${rawWeb}`;
+					webBtn.style.display = "inline-flex";
+				} else {
+					webBtn.style.display = "none";
+				}
+			}
+
+			// Niche tags
+			const nicheContainer = document.getElementById("niche-container");
+			if (nicheContainer) {
+				if (m.niche) {
+					const tags = m.niche.split(/[,/]/).map((t) => t.trim()).filter(Boolean);
+					nicheContainer.innerHTML = "";
+					for (const tag of tags) {
+						const span = document.createElement("span");
+						span.textContent = tag;
+						span.style.cssText =
+							"display: inline-flex; align-items: center; padding: 4px 12px; font-size: 13px; font-weight: 500; border-radius: 9999px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;";
+						nicheContainer.appendChild(span);
+					}
+					nicheContainer.style.display = "flex";
+				} else {
+					nicheContainer.style.display = "none";
+				}
+			}
+		});
+	}
+</script>

@@ -14,7 +14,6 @@ updates:
         patterns:
           - "@storybook/*"
           - "storybook"
-          - "@storybook-astro/framework"
       react-ecosystem:
         patterns:
           - "react"
