@@ -1,8 +1,10 @@
 ---
+import {
+	ArrowLeft as ArrowLeftIcon,
+	ArrowRight as ArrowRightIcon,
+} from "lucide-react";
 import type { Member } from "@/types/member";
-import { getMemberSlug, getMajorCode, getMemberPhotoUrl } from "@/util";
-import ArrowLeftIcon from "@/icons/arrow-left.svg";
-import ArrowRightIcon from "@/icons/arrow-right.svg";
+import { getMajorCode, getMemberPhotoUrl, getMemberSlug } from "@/util";
 import IconButton from "./IconButton.astro";
 import styles from "./PeerCarousel.module.css";
 
@@ -21,7 +23,7 @@ const { similar, carouselId = "similar-carousel" } = Astro.props;
 			<IconButton
 				id="scroll-left-btn"
 				size="md"
-				ariaLabel="Scroll left"
+				ariaLabel="Geser ke kiri"
 				class={styles.scroll_btn}
 			>
 				<ArrowLeftIcon width={18} height={18} />
@@ -29,7 +31,7 @@ const { similar, carouselId = "similar-carousel" } = Astro.props;
 			<IconButton
 				id="scroll-right-btn"
 				size="md"
-				ariaLabel="Scroll right"
+				ariaLabel="Geser ke kanan"
 				class={styles.scroll_btn}
 			>
 				<ArrowRightIcon width={18} height={18} />

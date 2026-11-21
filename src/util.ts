@@ -68,22 +68,25 @@ export function getMemberSlug(member: Pick<Member, "name" | "npm">): string {
 	return base || member.npm;
 }
 
+export {
+	getMajorCode,
+	getMajorThemeKey,
+	MAJORS,
+	type MajorCanonicalName,
+	type MajorCode,
+	type MajorThemeKey,
+	resolveMajorParam,
+} from "@/data/majors";
+
 /**
- * Maps major name to standardized short code.
+ * Formats a name string into title case (capitalizing the initial letter of each word).
+ * Handles word boundaries including spaces, hyphens, and periods.
  */
-export function getMajorCode(major: string): string {
-	switch (major) {
-		case "Ilmu Komputer":
-			return "CS";
-		case "Ilmu Komputer KKI":
-			return "CS KKI";
-		case "Sistem Informasi":
-			return "SI";
-		case "Kecerdasan Artifisial":
-			return "AI";
-		default:
-			return major;
-	}
+export function formatTitleCase(text: string): string {
+	if (!text) return "";
+	return text
+		.toLowerCase()
+		.replace(/(?:^|[\s\-/.])[a-z]/g, (char) => char.toUpperCase());
 }
 
 /**
