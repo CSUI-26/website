@@ -9,19 +9,19 @@
   "rewrites": [
     {
       "source": "/studio",
-      "destination": "http://43.173.10.71/studio/"
+      "destination": "https://zenith-stage.vicky.id/studio/"
     },
     {
       "source": "/studio/:path*",
-      "destination": "http://43.173.10.71/studio/:path*"
+      "destination": "https://zenith-stage.vicky.id/studio/:path*"
     },
     {
       "source": "/api/:path*",
-      "destination": "http://43.173.10.71/api/:path*"
+      "destination": "https://zenith-stage.vicky.id/api/:path*"
     },
     {
       "source": "/storage/:path*",
-      "destination": "http://43.173.10.71/storage/:path*"
+      "destination": "https://zenith-stage.vicky.id/storage/:path*"
     }
   ]
 }
