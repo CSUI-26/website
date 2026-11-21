@@ -22,6 +22,7 @@ export interface Member {
 	linkedin: string;
 	deskripsi: string;
 	niche: string;
+	general_niches?: string[];
 	quotes: string;
 	foto: MemberPhoto;
 }

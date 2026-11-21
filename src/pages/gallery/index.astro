@@ -51,7 +51,9 @@ const heroes = getSlides(getHeroes);
 		<section class={styles.hero}>
 			<!-- title -->
 			<div class={styles.top}>
-				<Heading level={1} class={styles.title}>Galeri Zenith</Heading>
+				<Heading level={1} class={styles.title}
+					>Capturing moments,<br />sharing stories</Heading
+				>
 			</div>
 
 			<!-- introduction -->
@@ -108,7 +110,7 @@ const heroes = getSlides(getHeroes);
 
 	<ImageRibbon
 		images={gallery.map(({ image, alt }) => ({ src: image.src, alt }))}
-		speed={40}
+		speed={80}
 		height={180}
 	/>
 </BaseLayout>

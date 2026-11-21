@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "zenith-csui"
+  },
+  "targets": {
+    "zenith-csui": {
+      "hosting": {
+        "main": [
+          "zenith-csui"
+        ],
+        "admin": [
+          "cruda-lumping"
+        ]
+      }
+    }
+  }
+}

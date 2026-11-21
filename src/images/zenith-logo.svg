@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.3.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 400 100" enable-background="new 0 0 400 100" xml:space="preserve" role="img" aria-labelledby="zenith-logo-title">
+<title id="zenith-logo-title">Zenith Logo</title>
+<g>
+	<path fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" d="M128.12,49.71h29.01
+		c0-16.89-13.69-30.59-30.59-30.59c-16.89,0-30.58,13.69-30.58,30.59c0,16.89,13.69,30.58,30.58,30.58c8.57,0,16.31-3.53,21.87-9.19
+		"/>
+	<polyline fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" points="157.13,49.71 128.12,49.71 126.54,49.71 
+		95.97,49.71 	"/>
+	<g>
+		<path fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" d="M182.71,71.33c-5.53-5.54-8.95-13.19-8.95-21.62
+			c0-16.89,13.69-30.59,30.58-30.59v30.59"/>
+		<path fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" d="M204.33,49.71v30.58
+			c16.89,0,30.59-13.69,30.59-30.58c0-8.45-3.43-16.1-8.96-21.62"/>
+		<polyline fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" points="204.33,19.12 204.33,49.71 
+			204.33,80.29 		"/>
+	</g>
+	<line fill="none" stroke="#ED1C24" stroke-width="12" stroke-miterlimit="10" x1="251.55" y1="19.13" x2="251.55" y2="80.29"/>
+	<g>
+		<path fill="none" stroke="#ED1C24" stroke-width="12" stroke-miterlimit="10" d="M268.18,28.08c5.54-5.54,13.19-8.96,21.62-8.96
+			c8.45,0,16.1,3.43,21.62,8.96"/>
+		<polyline fill="none" stroke="#ED1C24" stroke-width="12" stroke-miterlimit="10" points="289.8,19.12 289.8,49.71 289.8,80.29 		
+			"/>
+	</g>
+	<g>
+		<path fill="none" stroke="#ED1C24" stroke-width="12" stroke-miterlimit="10" d="M328.69,75.81c-5.53-5.54-8.95-13.19-8.95-21.62
+			c0-8.45,3.43-16.1,8.95-21.62"/>
+		<path fill="none" stroke="#ED1C24" stroke-width="12" stroke-miterlimit="10" d="M371.95,75.81c5.53-5.54,8.95-13.19,8.95-21.62
+			c0-8.45-3.43-16.1-8.95-21.62"/>
+		<polyline fill="none" stroke="#ED1C24" stroke-width="12" stroke-miterlimit="10" points="319.74,54.18 350.32,54.18 380.9,54.18 
+					"/>
+	</g>
+	<g>
+		<path fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" d="M18.17,49.71c0-16.89,13.69-30.59,30.58-30.59
+			c8.45,0,16.1,3.43,21.62,8.96L48.75,49.71"/>
+		<path fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" d="M48.75,49.71L27.13,71.33
+			c5.54,5.53,13.19,8.95,21.62,8.95c16.89,0,30.59-13.69,30.59-30.58"/>
+		<polyline fill="none" stroke="#2E3192" stroke-width="12" stroke-miterlimit="10" points="27.13,71.33 48.75,49.71 70.38,28.08 		
+			"/>
+	</g>
+</g>
+</svg>

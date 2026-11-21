@@ -1,0 +1,165 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // This security rules file assumes the following data structures:
+    //
+    // Collection: members
+    // Document ID: {memberId} (usually student's NPM, e.g., '2606859093')
+    // Fields:
+    //   - name: string (required, 1-150 chars) - Student's full name
+    //   - npm: string (required, 5-20 digits) - Student Identification Number (NPM)
+    //   - major: string (required, one of 'Ilmu Komputer', 'Sistem Informasi', 'Ilmu Komputer KKI', 'Kecerdasan Artifisial') - Study program
+    //   - email: string (optional, 0-150 chars) - Email address
+    //   - nama_panggilan: string (optional, 0-100 chars) - Nickname
+    //   - instagram: string (optional, 0-100 chars) - Instagram handle
+    //   - line: string (optional, 0-100 chars) - LINE ID
+    //   - github: string (optional, 0-150 chars) - GitHub handle or link
+    //   - linkedin: string (optional, 0-500 chars) - LinkedIn profile URL
+    //   - website: string (optional, 0-500 chars) - Personal website URL
+    //   - niche: string (optional, 0-500 chars) - Interests or areas of focus
+    //   - general_niches: list of strings (optional, up to 30 items) - General niche tags
+    //   - quotes: string (optional, 0-1000 chars) - Favorite quote or motto
+    //   - deskripsi: string (optional, 0-5000 chars) - Biography / self-description
+    //   - foto: map (optional) - Photo object containing:
+    //       * url: string (required if foto present, 1-2000 chars) - Photo URL
+    //       * config: map (optional) - Image crop/zoom configuration:
+    //           - x: number (optional) - X position offset
+    //           - y: number (optional) - Y position offset
+    //           - zoom: number (optional) - Zoom scale factor
+    //           - aspect: string (optional, 1-20 chars) - Aspect ratio string (e.g. '1:1')
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Note: Re-introduce isAuthenticated() when Auth provider is enabled in Firebase Console:
+    // function isAuthenticated() { return request.auth != null; }
+
+    // Validate that all required fields are present in the document
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    // Validate that the document contains only allowed fields (prevents schema pollution)
+    function hasOnlyAllowedFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    // Validate string length within [minLen, maxLen] bounds
+    function validStringLength(data, field, minLen, maxLen) {
+      return (field in data) &&
+        data[field] is string &&
+        data[field].size() >= minLen &&
+        data[field].size() <= maxLen;
+    }
+
+    // Validate optional string: if present, must be string and within [minLen, maxLen] bounds
+    function isValidOptionalString(data, field, minLen, maxLen) {
+      return !(field in data) ||
+        (data[field] is string &&
+         data[field].size() >= minLen &&
+         data[field].size() <= maxLen);
+    }
+
+    // Validate study program against permitted majors
+    function isValidMajor(major) {
+      return major is string &&
+        major in [
+          'Ilmu Komputer',
+          'Sistem Informasi',
+          'Ilmu Komputer KKI',
+          'Kecerdasan Artifisial'
+        ];
+    }
+
+    // Validate NPM: must be 5 to 20 ASCII digits
+    function isValidNpm(npm) {
+      return npm is string && npm.matches('^[0-9]{5,20}$');
+    }
+
+    // Validate the foto config map if present
+    function isValidFotoConfig(config) {
+      return config is map &&
+        config.keys().hasOnly(['x', 'y', 'zoom', 'aspect']) &&
+        (!('x' in config) || config.x is number) &&
+        (!('y' in config) || config.y is number) &&
+        (!('zoom' in config) || config.zoom is number) &&
+        (!('aspect' in config) || (config.aspect is string && config.aspect.size() >= 1 && config.aspect.size() <= 20));
+    }
+
+    // Validate the foto map if present
+    function isValidFoto(foto) {
+      return foto is map &&
+        foto.keys().hasOnly(['url', 'config']) &&
+        ('url' in foto) &&
+        foto.url is string &&
+        foto.url.size() >= 1 &&
+        foto.url.size() <= 2000 &&
+        (!('config' in foto) || isValidFotoConfig(foto.config));
+    }
+
+    // Validate optional general_niches list: if present, must be list and have at most 30 items
+    function isValidGeneralNiches(data) {
+      return !('general_niches' in data) ||
+        (data.general_niches is list && data.general_niches.size() <= 30);
+    }
+
+    // ===============================================================
+    // Domain Validator (Mandatory Validator Function Pattern)
+    // ===============================================================
+
+    // Validates document data structure and constraints on both create and update
+    function isValidMember(data) {
+      return hasRequiredFields(data, ['name', 'npm', 'major']) &&
+        hasOnlyAllowedFields(data, [
+          'npm', 'name', 'major', 'email', 'nama_panggilan',
+          'instagram', 'line', 'github', 'linkedin', 'website',
+          'niche', 'general_niches', 'quotes', 'deskripsi', 'foto'
+        ]) &&
+        validStringLength(data, 'name', 1, 150) &&
+        isValidNpm(data.npm) &&
+        isValidMajor(data.major) &&
+        isValidOptionalString(data, 'email', 0, 150) &&
+        isValidOptionalString(data, 'nama_panggilan', 0, 100) &&
+        isValidOptionalString(data, 'instagram', 0, 100) &&
+        isValidOptionalString(data, 'line', 0, 100) &&
+        isValidOptionalString(data, 'github', 0, 150) &&
+        isValidOptionalString(data, 'linkedin', 0, 500) &&
+        isValidOptionalString(data, 'website', 0, 500) &&
+        isValidOptionalString(data, 'niche', 0, 500) &&
+        isValidGeneralNiches(data) &&
+        isValidOptionalString(data, 'quotes', 0, 1000) &&
+        isValidOptionalString(data, 'deskripsi', 0, 5000) &&
+        (!('foto' in data) || isValidFoto(data.foto));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Members collection
+    match /members/{memberId} {
+      // Public directory read access
+      allow read: if true;
+
+      // Schema validation enforced on create and update (authentication requirement
+      // deferred until Firebase Auth provider is enabled in Firebase Console)
+      allow create: if isValidMember(request.resource.data);
+      allow update: if isValidMember(request.resource.data);
+      allow delete: if true;
+    }
+
+    // Default deny rule for any other collection
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

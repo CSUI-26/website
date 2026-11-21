@@ -1,0 +1,25 @@
+{
+  "hosting": [
+    {
+      "target": "main",
+      "public": "dist",
+      "cleanUrls": true,
+      "trailingSlash": false
+    },
+    {
+      "target": "admin",
+      "public": "admin/dist",
+      "cleanUrls": true,
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ],
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
