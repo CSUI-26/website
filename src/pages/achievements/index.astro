@@ -1,44 +1,61 @@
 ---
 import { ArrowRight, Trophy } from "lucide-react";
+import AchievementsView from "@/components/Achievements/AchievementsView";
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { Strings } from "@/strings";
-import { RootRoutes } from "@/routes";
 import {
 	latestAchievements,
 	yearlyAchievementsByYear,
 } from "@/data/achievements";
-import LatestAchievements from "@/components/Achievements/LatestAchievements.astro";
-import YearlyAchievements from "@/components/Achievements/YearlyAchievements.astro";
+import { RootRoutes } from "@/routes";
+import { Strings } from "@/strings";
 import styles from "./index.module.css";
 
 const title = `${Strings.SlugTitles.Achievements} - ${Strings.SiteTitle}`;
-const yearGroups = yearlyAchievementsByYear.filter(({ items }) => items.length > 0);
-const hasAchievements = latestAchievements.length > 0 || yearGroups.length > 0;
+const activeTab = RootRoutes.get("Achievements");
+const galleryHref = RootRoutes.get("Gallery") ?? "/gallery";
+const initialData = {
+	latestAchievements,
+	yearlyAchievementsByYear: yearlyAchievementsByYear.filter(
+		({ items }) => items.length > 0,
+	),
+};
+const hasInitialAchievements =
+	initialData.latestAchievements.length > 0 ||
+	initialData.yearlyAchievementsByYear.length > 0;
 ---
 
-<BaseLayout title={title} activeTab={RootRoutes.get("Achievements")!}>
+<BaseLayout title={title} {...(activeTab ? { activeTab } : {})}>
 	<div class={styles.achievements_page} lang="id">
-		{hasAchievements ? (
-			<>
-				<h1 class={styles.page_title}>Prestasi</h1>
-				<p class={styles.empty_description}>Lihat hasil lomba dan karya mahasiswa Zenith.</p>
-				{latestAchievements.length > 0 && (
-					<LatestAchievements achievements={latestAchievements} />
-				)}
-				{yearGroups.length > 0 && <YearlyAchievements yearGroups={yearGroups} />}
-			</>
-		) : (
-			<section class={styles.empty_state} aria-labelledby="prestasi-title">
-				<div class={styles.trophy} aria-hidden="true">
-					<Trophy size={40} strokeWidth={1.5} focusable="false" />
-				</div>
-				<p class={styles.eyebrow}>CSUI 2026</p>
-				<h1 class={styles.page_title} id="prestasi-title">Prestasi</h1>
-				<p class={styles.empty_title}>Belum ada prestasi yang ditampilkan.</p>
-				<a class={styles.gallery_link} href={RootRoutes.get("Gallery")}>
-					Lihat Galeri <ArrowRight size={18} aria-hidden="true" focusable="false" />
-				</a>
-			</section>
+		<AchievementsView
+			client:load
+			initialData={initialData}
+			galleryHref={galleryHref}
+		/>
+		{!hasInitialAchievements && (
+			<noscript>
+				<style is:inline>
+					[data-achievements-skeleton] {
+						display: none;
+					}
+				</style>
+				<section
+					class={styles.empty_state}
+					aria-labelledby="prestasi-title-noscript"
+				>
+					<div class={styles.trophy} aria-hidden="true">
+						<Trophy size={40} strokeWidth={1.5} focusable="false" />
+					</div>
+					<p class={styles.eyebrow}>CSUI 2026</p>
+					<h1 class={styles.page_title} id="prestasi-title-noscript">
+						Prestasi
+					</h1>
+					<p class={styles.empty_title}>Belum ada prestasi yang ditampilkan.</p>
+					<a class={styles.gallery_link} href={galleryHref}>
+						Lihat Galeri{" "}
+						<ArrowRight size={18} aria-hidden="true" focusable="false" />
+					</a>
+				</section>
+			</noscript>
 		)}
 	</div>
 </BaseLayout>
