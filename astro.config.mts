@@ -27,7 +27,6 @@ export default defineConfig({
 		react(),
 		compress({
 			CSS: {
-				lightningcss: true,
 				csso: false,
 			},
 			HTML: {
