@@ -109,7 +109,29 @@
 	}
 
 	.header_title {
-		display: none;
+		/* The wordmark moves to a slim bar across the top on phones, where the
+		   nav has already dropped to the bottom. */
+		display: grid;
+		place-items: center;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 90;
+		width: 100%;
+		padding-block: max(0.5rem, env(safe-area-inset-top)) 0.5rem;
+		padding-inline: 1rem;
+		background: linear-gradient(
+			180deg,
+			rgba(0, 0, 0, 0.65) 0%,
+			rgba(0, 0, 0, 0) 100%
+		);
+		pointer-events: none;
+
+		/* The wordmark is a link; only its own area should take taps so the
+		   gradient never swallows the hero beneath it. */
+		a {
+			pointer-events: auto;
+		}
 	}
 
 	.nav {
