@@ -1,15 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
-
 import type { Member } from "@/types/member";
-import { slugify } from "@/util/string";
+
+export type RecordValues<T extends Record<PropertyKey, unknown>> = T[keyof T];
+
+let localPhotosSet: Set<string> | null = null;
 
 /**
  * Returns a Set of cached photo filenames under public/photos/.
  * Memoized across calls during the build / SSG phase.
  */
-let localPhotosSet: Set<string> | null = null;
-
 function getCachedPhotosSet(): Set<string> {
 	if (localPhotosSet !== null) {
 		return localPhotosSet;
@@ -30,11 +30,8 @@ function getCachedPhotosSet(): Set<string> {
 
 /**
  * Resolves the member's photo URL:
- * Returns the local cached asset `/photos/<npm>.<ext>` if present in
- * `public/photos/`, otherwise falls back to the original remote URL.
- *
- * Unlike the API's own `foto.url` values, the local assets are served over the
- * page's own scheme, so this is the preferred source whenever a cache exists.
+ * Returns the local cached asset `/photos/<npm>.<ext>` if present in `public/photos/`,
+ * otherwise falls back to the original remote URL.
  */
 export function getMemberPhotoUrl(
 	member: Pick<Member, "npm" | "foto">,
@@ -52,10 +49,58 @@ export function getMemberPhotoUrl(
 }
 
 /**
+ * Creates a URL-friendly slug from a string.
+ */
+export function slugify(text: string): string {
+	return text
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+}
+
+/**
  * Generates a unique, deterministic slug identifier for a member.
  * Standard format: clean full name slug. If empty, falls back to NPM.
  */
 export function getMemberSlug(member: Pick<Member, "name" | "npm">): string {
 	const base = slugify(member.name);
 	return base || member.npm;
+}
+
+export {
+	getMajorCode,
+	getMajorThemeKey,
+	MAJORS,
+	type MajorCanonicalName,
+	type MajorCode,
+	type MajorThemeKey,
+	resolveMajorParam,
+} from "@/data/majors";
+
+/**
+ * Formats a name string into title case (capitalizing the initial letter of each word).
+ * Handles word boundaries including spaces, hyphens, and periods.
+ */
+export function formatTitleCase(text: string): string {
+	if (!text) return "";
+	return text
+		.toLowerCase()
+		.replace(/(?:^|[\s\-/.])[a-z]/g, (char) => char.toUpperCase());
+}
+
+/**
+ * Shuffles an array in-place using Fisher-Yates and Math.random().
+ */
+export function shuffle<T>(array: T[]): T[] {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		const itemI = array[i];
+		const itemJ = array[j];
+		if (itemI !== undefined && itemJ !== undefined) {
+			array[i] = itemJ;
+			array[j] = itemI;
+		}
+	}
+	return array;
 }

@@ -2,59 +2,44 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import MembersDirectory from "@/components/member-list/MembersDirectory";
 import { parseMemberNiche } from "@/components/member-list/tags";
-import { loadMembers } from "@/data/members-source";
+import rawData from "@/data/members.json";
 import { RootRoutes } from "@/routes";
 import { Strings } from "@/strings";
+import type { Member } from "@/types/member";
 import {
 	getMajorCode,
 	getMajorThemeKey,
 	getMemberPhotoUrl,
 	getMemberSlug,
-	toSecurePhotoUrl,
 } from "@/util";
 import styles from "./index.module.css";
 
+const rawMembers = rawData as Member[];
 const title = `${Strings.SlugTitles.Member} - ${Strings.SiteTitle}`;
 
-const { members: rawMembers, source, reason } = await loadMembers();
-
-if (source === "fallback") {
-	console.warn(
-		`[members] using the committed member snapshot: ${reason ?? "unknown reason"}`,
-	);
-}
-
-/**
- * Normalizes a social handle or URL into an absolute URL.
- *
- * The committed snapshot stores bare handles (`@user`, a LINE id), while the API
- * returns absolute URLs. Accepting both keeps the page independent of which
- * source answered.
- */
-function toSocialUrl(
-	value: string | undefined,
-	kind: "instagram" | "linkedin" | "github" | "line",
-): string | null {
-	const raw = (value ?? "").trim();
-	if (!raw || raw === "-") return null;
-	if (raw.startsWith("http")) return raw;
-
-	switch (kind) {
-		case "instagram":
-			return `https://instagram.com/${raw.replace(/^@/, "")}`;
-		case "github":
-			return `https://github.com/${raw.replace(/^@/, "")}`;
-		case "linkedin":
-			return `https://${raw}`;
-		case "line":
-			return `https://line.me/ti/p/~${raw.replace(/^~/, "")}`;
-	}
-}
-
-// Pre-calculate photo URL, slug, major code, normalized tags, and socials on the
-// server so the client-side React island does not require Node.js fs modules.
+// Pre-calculate photo URL, slug, major code, normalized tags, and socials on the server
+// so the client-side React island does not require Node.js fs modules
 const directoryMembers = rawMembers.map((member) => {
-	const { allTags } = parseMemberNiche(member.niche ?? "");
+	const { allTags } = parseMemberNiche(member.niche);
+	const instagram = member.instagram
+		? `https://instagram.com/${member.instagram.replace(/^@/, "")}`
+		: null;
+	const linkedin =
+		member.linkedin && member.linkedin.trim() !== "-"
+			? member.linkedin.startsWith("http")
+				? member.linkedin
+				: `https://${member.linkedin}`
+			: null;
+	const github =
+		member.github && member.github.trim() !== "-"
+			? member.github.startsWith("http")
+				? member.github
+				: `https://github.com/${member.github}`
+			: null;
+	const line =
+		member.line && member.line.trim() !== "-"
+			? `https://line.me/ti/p/~${member.line}`
+			: null;
 
 	return {
 		npm: member.npm,
@@ -73,13 +58,8 @@ const directoryMembers = rawMembers.map((member) => {
 		tags: allTags,
 		badge: allTags[0] || "Member",
 		slug: getMemberSlug(member),
-		photoUrl: toSecurePhotoUrl(getMemberPhotoUrl(member)),
-		socials: {
-			instagram: toSocialUrl(member.instagram, "instagram"),
-			linkedin: toSocialUrl(member.linkedin, "linkedin"),
-			github: toSocialUrl(member.github, "github"),
-			line: toSocialUrl(member.line, "line"),
-		},
+		photoUrl: getMemberPhotoUrl(member),
+		socials: { instagram, linkedin, github, line },
 	};
 });
 ---
