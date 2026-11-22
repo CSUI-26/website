@@ -1,32 +1,59 @@
 ---
-import styles from "./Header.module.css";
+import AcademicIcon from "@/icons/academic.svg";
+import AchievementsIcon from "@/icons/achievements.svg";
+import GalleryIcon from "@/icons/gallery.svg";
+import HomeIcon from "@/icons/home.svg";
+import MembersIcon from "@/icons/members.svg";
 import { RootRoutes, type RootRoutesValues } from "@/routes";
 import { Strings } from "@/strings";
+import styles from "./Header.module.css";
 
 interface Props {
 	activeTab?: RootRoutesValues | undefined;
 }
 
 const { activeTab } = Astro.props;
+
+const routeIcons = {
+	Home: HomeIcon,
+	Gallery: GalleryIcon,
+	Academic: AcademicIcon,
+	Members: MembersIcon,
+	Achievements: AchievementsIcon,
+};
 ---
 
 <header class={styles.header}>
-	<ul class={styles.header_links}>
-		{
-			Array.from(RootRoutes).map(([page, path]) => (
-				<li
-					class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
-				>
-					<a href={path}>{Strings.SlugTitles[page === "Members" ? "Member" : page]}</a>
-				</li>
-			))
-		}
-	</ul>
+	<nav class={styles.nav_bar} aria-label="Main Navigation">
+		<ul class={styles.header_links}>
+			{
+				Array.from(RootRoutes).map(([page, path]) => {
+					const Icon = routeIcons[page as keyof typeof routeIcons];
+					const label =
+						Strings.SlugTitles[page === "Members" ? "Member" : (page as keyof typeof Strings.SlugTitles)];
+					return (
+						<li
+							class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
+						>
+							<a href={path} aria-label={label}>
+								<span class={styles.link_text}>{label}</span>
+								<span class={styles.link_icon}>
+									{Icon && <Icon width={22} height={22} aria-hidden="true" focusable="false" />}
+								</span>
+							</a>
+						</li>
+					);
+				})
+			}
+		</ul>
+	</nav>
+
 	<div class={styles.header_title}>
 		<a
 			data-text={Strings.SiteTitle.toUpperCase()}
 			href={RootRoutes.get("Home")}
 			class={styles.header_title_text}
+			aria-label={Strings.SiteTitle}
 		>
 			{Strings.SiteTitle.toUpperCase()}
 		</a>
