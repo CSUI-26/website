@@ -1,77 +1,34 @@
 ---
-import AcademicIcon from "@/icons/academic.svg";
-import AchievementsIcon from "@/icons/achievements.svg";
-import GalleryIcon from "@/icons/gallery.svg";
-import HomeIcon from "@/icons/home.svg";
-import MembersIcon from "@/icons/members.svg";
-import ZenithLogo from "@/images/zenith-logo.svg";
+import styles from "./Header.module.css";
 import { RootRoutes, type RootRoutesValues } from "@/routes";
 import { Strings } from "@/strings";
-import styles from "./Header.module.css";
 
 interface Props {
-	activeTab?: RootRoutesValues;
+	activeTab?: RootRoutesValues | undefined;
 }
 
 const { activeTab } = Astro.props;
-
-const routeIcons = {
-	Home: HomeIcon,
-	Gallery: GalleryIcon,
-	Academic: AcademicIcon,
-	Members: MembersIcon,
-	Achievements: AchievementsIcon,
-};
-const isMembersPage =
-	activeTab === RootRoutes.get("Members") || activeTab === "/members";
 ---
 
 <header class={styles.header}>
-	<!-- Navigation Links (Desktop: top pill links; Mobile: fixed bottom icon bar) -->
-	<nav class={styles.nav_bar} aria-label="Main Navigation">
-		<ul class={styles.header_links}>
-			{
-				Array.from(RootRoutes).map(([title, path]) => {
-					const Icon = routeIcons[title as keyof typeof routeIcons];
-					const isActive = activeTab === path;
-					return (
-						<li
-							title={title}
-							class={`${styles.header_links_items} ${isActive ? styles.header_links_items__active : ""}`}
-						>
-							<a href={path} aria-label={title}>
-								<span class={styles.link_text}>{title.toLowerCase()}</span>
-								<span class={styles.link_icon}>
-									{Icon && <Icon width={22} height={22} />}
-								</span>
-							</a>
-						</li>
-					);
-				})
-			}
-			{
-				isMembersPage && (
-					<li
-						title="Boardwall"
-						class={`${styles.header_links_items} ${styles.boardwall_mobile_item}`}
-					>
-						<a href="/boardwall" aria-label="Boardwall">
-							<span class={styles.boardwall_mobile_text}>boardwall</span>
-						</a>
-					</li>
-				)
-			}
-		</ul>
-	</nav>
-
-	<!-- Zenith Logo (Desktop: right side of top navbar; Mobile: fixed alone at top center) -->
-	<div class={styles.header_logo_wrapper}>
+	<ul class={styles.header_links}>
+		{
+			Array.from(RootRoutes).map(([page, path]) => (
+				<li
+					class={`${styles.header_links_items} ${activeTab === path ? styles.header_links_items__active : ""}`}
+				>
+					<a href={path}>{Strings.SlugTitles[page === "Members" ? "Member" : page]}</a>
+				</li>
+			))
+		}
+	</ul>
+	<div class={styles.header_title}>
 		<a
+			data-text={Strings.SiteTitle.toUpperCase()}
 			href={RootRoutes.get("Home")}
-			class={styles.header_title_link}
-			aria-label={Strings.SiteTitle}
+			class={styles.header_title_text}
 		>
-			<ZenithLogo class={styles.header_logo} />
+			{Strings.SiteTitle.toUpperCase()}
 		</a>
 	</div>
 </header>

@@ -6,12 +6,8 @@
 	scroll-padding-block: 25vh;
 	scroll-behavior: smooth;
 	--blur-radius: 7.35px;
-	--glass-bg: rgba(14, 18, 30, 0.75);
-	--glass-border: 1px solid rgba(255, 255, 255, 0.15);
-	--glass-blur: 16px;
-	--glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 	font-family: var(--fontface-inter);
-	font-size: var(--font-base-size-normal);
+	font-size: min(4vw, var(--font-base-size-normal));
 	font-weight: var(--font-base-weight-normal);
 	letter-spacing: var(--font-base-letterspacing);
 	color: white;
@@ -24,7 +20,7 @@ body {
 	overflow-x: hidden;
 	display: flex;
 	flex-direction: column;
-	margin: 0;
+  	margin: 0;
 }
 
 body {
@@ -37,17 +33,11 @@ body {
 		will-change: transform;
 
 		background:
-			linear-gradient(
-				to bottom,
+			linear-gradient(to bottom,
 				var(--bg-grad-overlay-start),
-				var(--bg-grad-overlay-end)
-			),
+				var(--bg-grad-overlay-end)),
 			radial-gradient(circle at bottom left, var(--accent-red), transparent 75%),
-			radial-gradient(
-				circle at bottom right,
-				var(--accent-blue),
-				transparent 75%
-			),
+			radial-gradient(circle at bottom right, var(--accent-blue), transparent 75%),
 			black;
 		background-repeat: no-repeat;
 		background-size: cover;
@@ -74,6 +64,7 @@ body {
 }
 
 @media (prefers-contrast: more) {
+
 	header,
 	p,
 	h2,

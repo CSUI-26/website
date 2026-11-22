@@ -1,15 +1,15 @@
 :root {
 	--highlight-scroll-boundary: -1010px;
-	--highlight-scroll-speed: 35s;
+	--highlight-scroll-speed: 5s
 }
 
 @keyframes scroll-carousel {
 	from {
-		translate: var(--highlight-scroll-boundary);
+		translate: var(--highlight-scroll-boundary)
 	}
 
 	to {
-		translate: calc(var(--highlight-scroll-boundary) * 2);
+		translate: calc(var(--highlight-scroll-boundary) * 2)
 	}
 }
 

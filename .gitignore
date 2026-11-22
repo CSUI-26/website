@@ -1,6 +1,3 @@
-# firebase cache
-.firebase/
-
 # build output
 dist/
 # generated types

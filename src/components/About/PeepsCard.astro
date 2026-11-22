@@ -1,18 +1,30 @@
 ---
 import Styles from "./PeepsCard.module.css";
 import { GraduationCap } from "lucide-react";
-import memberData from "@/data.json";
+import memberData from "@/data/members.json";
 
-// Calculate real student counts per major from data.json
-const counts = memberData.reduce<Record<string, number>>((acc, member) => {
-	acc[member.major] = (acc[member.major] || 0) + 1;
-	return acc;
-}, {});
+type Majors =
+	| "Sistem Informasi"
+	| "Ilmu Komputer"
+	| "Ilmu Komputer KKI"
+	| "Kecerdasan Artifisial";
 
-const csCount = counts["Ilmu Komputer"] ?? 219;
-const isCount = counts["Sistem Informasi"] ?? 229;
-const aiCount = counts["Kecerdasan Artifisial"] ?? 61;
-const kkiCount = counts["Ilmu Komputer KKI"] ?? 37;
+function getProdiCount(): Record<Majors, number> {
+	const result: Record<Majors, number> = {
+		"Ilmu Komputer": 0,
+		"Ilmu Komputer KKI": 0,
+		"Kecerdasan Artifisial": 0,
+		"Sistem Informasi": 0,
+	};
+
+	(memberData as { major: Majors }[]).forEach((member) => {
+		result[member.major]++;
+	});
+
+	return result;
+}
+
+const ProdiCount = getProdiCount();
 ---
 
 <div class={Styles.peeps_card}>
@@ -20,7 +32,7 @@ const kkiCount = counts["Ilmu Komputer KKI"] ?? 37;
 		<div class={Styles.prodi_card}>
 			<GraduationCap size={64} className={Styles.prodi_icon} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} data-count-major="Ilmu Komputer">{csCount}</div>
+				<div class={Styles.prodi_card_count_num} >{ProdiCount["Ilmu Komputer"]}</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Ilmu Komputer</div>
@@ -29,7 +41,7 @@ const kkiCount = counts["Ilmu Komputer KKI"] ?? 37;
 		<div class={Styles.prodi_card}>
 			<GraduationCap size={64} className={Styles.prodi_icon} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} data-count-major="Sistem Informasi">{isCount}</div>
+				<div class={Styles.prodi_card_count_num} >{ProdiCount["Sistem Informasi"]}</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Sistem Informasi</div>
@@ -38,7 +50,7 @@ const kkiCount = counts["Ilmu Komputer KKI"] ?? 37;
 		<div class={Styles.prodi_card}>
 			<GraduationCap size={64} className={Styles.prodi_icon} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} data-count-major="Kecerdasan Artifisial">{aiCount}</div>
+				<div class={Styles.prodi_card_count_num} >{ProdiCount["Kecerdasan Artifisial"]}</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Kecerdasan Artifisial</div>
@@ -47,7 +59,7 @@ const kkiCount = counts["Ilmu Komputer KKI"] ?? 37;
 		<div class={Styles.prodi_card}>
 			<GraduationCap size={64} className={Styles.prodi_icon} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} data-count-major="Ilmu Komputer KKI">{kkiCount}</div>
+				<div class={Styles.prodi_card_count_num} >{ProdiCount["Ilmu Komputer KKI"]}</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Ilmu Komputer KKI</div>
@@ -61,37 +73,3 @@ const kkiCount = counts["Ilmu Komputer KKI"] ?? 37;
 		<a href="/members" class={Styles.members_btn}>Buka direktori anggota ↗</a>
 	</div>
 </div>
-
-<script>
-	import { collection, onSnapshot } from "firebase/firestore";
-	import { db } from "@/lib/firebase";
-
-	const csEl = document.querySelector<HTMLElement>("[data-count-major='Ilmu Komputer']");
-	const isEl = document.querySelector<HTMLElement>("[data-count-major='Sistem Informasi']");
-	const aiEl = document.querySelector<HTMLElement>("[data-count-major='Kecerdasan Artifisial']");
-	const kkiEl = document.querySelector<HTMLElement>("[data-count-major='Ilmu Komputer KKI']");
-
-	if (csEl || isEl || aiEl || kkiEl) {
-		const membersRef = collection(db, "members");
-		onSnapshot(membersRef, (snapshot) => {
-			if (snapshot.empty) return;
-			let cs = 0;
-			let isCount = 0;
-			let ai = 0;
-			let kki = 0;
-
-			snapshot.forEach((docSnap) => {
-				const m = docSnap.data();
-				if (m.major === "Ilmu Komputer") cs++;
-				else if (m.major === "Sistem Informasi") isCount++;
-				else if (m.major === "Kecerdasan Artifisial") ai++;
-				else if (m.major === "Ilmu Komputer KKI") kki++;
-			});
-
-			if (csEl && cs > 0) csEl.textContent = cs.toString();
-			if (isEl && isCount > 0) isEl.textContent = isCount.toString();
-			if (aiEl && ai > 0) aiEl.textContent = ai.toString();
-			if (kkiEl && kki > 0) kkiEl.textContent = kki.toString();
-		});
-	}
-</script>

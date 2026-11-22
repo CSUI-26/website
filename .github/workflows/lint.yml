@@ -1,21 +1,24 @@
 name: Lint
 
 on:
-    pull_request:
+  pull_request:
 
 jobs:
-    test:
-        runs-on: ubuntu-slim
-        steps:
-            - name: Setup bun
-              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+  test:
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
 
-            - name: Checkout
-              uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+    steps:
+      - name: Setup bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
 
-            - name: Install deps
-              run: bun install
+      - name: Checkout
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
 
-            - name: Lint project
-              continue-on-error: true
-              run: bun run lint
+      - name: Install deps
+        run: bun install
+
+      - name: Report lint errors
+        continue-on-error: true
+        run: bun run lint --reporter=github

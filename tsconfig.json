@@ -3,9 +3,9 @@
 	"include": [
 		// ! Hanya akan di-generate setelah sync/build
 		".astro/types.d.ts",
-		"src/**/*"
+		"**/*"
 	],
-	"exclude": ["dist", "admin"],
+	"exclude": ["dist"],
 	"compilerOptions": {
 		// bundler mode
 		"noEmit": true,

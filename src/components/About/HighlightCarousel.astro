@@ -4,18 +4,11 @@ import Highlight1 from "@images/about/highlight1.png";
 import Highlight2 from "@images/about/highlight2.png";
 import { Picture } from "astro:assets";
 
-const carouselImages: [ImageMetadata, string][] = [
-	[Highlight1, "Lorem"],
-	[Highlight2, "Ipsum"],
-	[Highlight1, "Lorem"],
-	[Highlight2, "Ipsum"],
-	[Highlight1, "Lorem"],
-	[Highlight2, "Ipsum"],
-	[Highlight1, "Lorem"],
-	[Highlight2, "Ipsum"],
-	[Highlight1, "Lorem"],
-	[Highlight2, "Ipsum"],
+const highlights = [
+	{ src: Highlight1, alt: "Mahasiswa Zenith berkemeja putih berfoto bersama di depan gedung Rektorat UI." },
+	{ src: Highlight2, alt: "Mahasiswa Zenith berjaket kuning UI berfoto bersama di lapangan depan gedung Rektorat UI." },
 ];
+const carouselImages = Array.from({ length: 5 }, () => highlights).flat();
 ---
 
 <div
@@ -24,11 +17,11 @@ const carouselImages: [ImageMetadata, string][] = [
 	data-anim-class={Styles.carousel_paused}
 >
 	{
-		carouselImages.map((data) => (
+		carouselImages.map(({ src, alt }, index) => (
 			<Picture
 				class={Styles.carousel_image}
-				src={data[0]}
-				alt={data[1]}
+				src={src}
+				alt={index < highlights.length ? alt : ""}
 				loading={"lazy"}
 				decoding={"async"}
 			/>

@@ -2,13 +2,11 @@
 	overflow: hidden;
 	width: 100%;
 	/* optional soft fade on both edges */
-	mask-image: linear-gradient(
-		to right,
-		transparent,
-		#000 8%,
-		#000 92%,
-		transparent
-	);
+	mask-image: linear-gradient(to right,
+			transparent,
+			#000 8%,
+			#000 92%,
+			transparent);
 }
 
 .track {
