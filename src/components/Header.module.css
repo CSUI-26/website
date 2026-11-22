@@ -118,7 +118,7 @@
 		left: 0;
 		z-index: 90;
 		width: 100%;
-		padding-block: max(0.5rem, env(safe-area-inset-top)) 0.5rem;
+		padding-block: max(1.35rem, calc(env(safe-area-inset-top) + 0.75rem)) 0.5rem;
 		padding-inline: 1rem;
 		background: linear-gradient(
 			180deg,
@@ -126,11 +126,26 @@
 			rgba(0, 0, 0, 0) 100%
 		);
 		pointer-events: none;
+		transition:
+			translate 0.25s ease,
+			opacity 0.25s ease;
 
 		/* The wordmark is a link; only its own area should take taps so the
 		   gradient never swallows the hero beneath it. */
 		a {
 			pointer-events: auto;
+		}
+	}
+
+	/* Driven by the header script while scrolling down. */
+	.header_title_hidden {
+		translate: 0 -120%;
+		opacity: 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.header_title {
+			transition: none;
 		}
 	}
 

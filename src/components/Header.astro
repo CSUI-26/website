@@ -22,7 +22,7 @@ const routeIcons = {
 };
 ---
 
-<header class={styles.header}>
+<header class={styles.header} data-hidden-class={styles.header_title_hidden}>
 	<nav class={styles.nav} aria-label="Main navigation">
 	<ul class={styles.header_links}>
 		{
@@ -58,3 +58,84 @@ const routeIcons = {
 		</a>
 	</div>
 </header>
+
+<script>
+	const header = document.querySelector("header");
+	const hiddenClass = header?.dataset.hiddenClass;
+	const title = header?.querySelector<HTMLElement>('[class*="header_title"]');
+	const mobileQuery = window.matchMedia("(max-width: 900px)");
+
+	if (header && title && hiddenClass) {
+		let lastY = window.scrollY;
+		let lastMove = 0;
+		let hideTimer: number | undefined;
+		const threshold = 6;
+		// The wordmark leaves once the reader has been heading down for a moment.
+		// The countdown starts on the first downward step and is not restarted by
+		// the scrolling that follows, so a long swipe still clears it.
+		const hideDelay = 300;
+		// A finger that pauses mid-swipe is still scrolling, not stopped. Gaps
+		// between scroll events run past 120 ms for momentum scrolling and jerky
+		// flicks, so only a longer silence counts as having come to rest.
+		const quietWindow = 120;
+
+		const applyHidden = (hidden: boolean) => {
+			title.classList.toggle(hiddenClass, hidden && mobileQuery.matches);
+		};
+
+		const cancelHide = () => {
+			window.clearTimeout(hideTimer);
+			hideTimer = undefined;
+		};
+
+		const reveal = () => {
+			cancelHide();
+			applyHidden(false);
+		};
+
+		// Whether the reader stopped is decided at the deadline rather than
+		// during the swipe: a scroll event newer than quietWindow proves the
+		// gesture is still going, a longer silence means it ended, and a reader
+		// who stopped keeps the wordmark where it is.
+		const startHideCountdown = () => {
+			if (hideTimer !== undefined || title.classList.contains(hiddenClass)) return;
+
+			hideTimer = window.setTimeout(() => {
+				hideTimer = undefined;
+				if (performance.now() - lastMove < quietWindow) applyHidden(true);
+			}, hideDelay);
+		};
+
+		reveal();
+
+		window.addEventListener(
+			"scroll",
+			() => {
+				const y = window.scrollY;
+				const delta = y - lastY;
+				const now = performance.now();
+				lastY = y;
+
+				// The wordmark belongs on screen at the very top, whichever way the
+				// page was last heading, and scrolling up always brings it back.
+				if (y <= 0 || delta < -threshold) {
+					lastMove = now;
+					reveal();
+					return;
+				}
+
+				if (delta > threshold) {
+					lastMove = now;
+					startHideCountdown();
+				}
+			},
+			{ passive: true },
+		);
+
+		mobileQuery.addEventListener("change", () => {
+			lastY = window.scrollY;
+			lastMove = 0;
+			reveal();
+		});
+	}
+</script>
