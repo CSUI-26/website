@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig, fontProviders } from "astro/config";
 import compress from "astro-compress";
+import { loadVercelDevProxy } from "./src/lib/api/vercel-proxy.ts";
 
 // https://astro.build/config
 export default defineConfig({
@@ -41,6 +42,9 @@ export default defineConfig({
 	vite: {
 		build: {
 			minify: "terser",
+		},
+		server: {
+			proxy: loadVercelDevProxy(undefined, process.env.API_PROXY_TARGET),
 		},
 	},
 });
