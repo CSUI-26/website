@@ -29,47 +29,51 @@ const ProdiCount = getProdiCount();
 
 <div class={Styles.peeps_card}>
 	<div class={Styles.prodi_container}>
-		<div class={Styles.prodi_card}>
-			<GraduationCap size={64} className={Styles.prodi_icon} />
+		<div class={`${Styles.prodi_card} ${Styles.red}`}>
+			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} >{ProdiCount["Ilmu Komputer"]}</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Ilmu Komputer"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Ilmu Komputer</div>
 		</div>
-
-		<div class={Styles.prodi_card}>
-			<GraduationCap size={64} className={Styles.prodi_icon} />
+		<div class={`${Styles.prodi_card} ${Styles.red}`}>
+			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} >{ProdiCount["Sistem Informasi"]}</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Sistem Informasi"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Sistem Informasi</div>
 		</div>
-
-		<div class={Styles.prodi_card}>
-			<GraduationCap size={64} className={Styles.prodi_icon} />
+		<div class={`${Styles.prodi_card} ${Styles.blue}`}>
+			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} >{ProdiCount["Kecerdasan Artifisial"]}</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Kecerdasan Artifisial"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Kecerdasan Artifisial</div>
 		</div>
-
-		<div class={Styles.prodi_card}>
-			<GraduationCap size={64} className={Styles.prodi_icon} />
+		<div class={`${Styles.prodi_card} ${Styles.blue}`}>
+			<GraduationCap size={128} />
 			<div class={Styles.prodi_card_count}>
-				<div class={Styles.prodi_card_count_num} >{ProdiCount["Ilmu Komputer KKI"]}</div>
+				<div class={Styles.prodi_card_count_num}>
+					{ProdiCount["Ilmu Komputer KKI"]}
+				</div>
 				<div class={Styles.prodi_card_count_sub}>mahasiswa</div>
 			</div>
 			<div class={Styles.prodi_name}>Ilmu Komputer KKI</div>
 		</div>
 	</div>
-
 	<div class={Styles.cta}>
 		<div class={Styles.tagline}>
-			Beragam minat, satu angkatan.<br />Kenali teman-teman di balik cerita Zenith.
+			Beragam minat, satu angkatan.<br />Kenali teman-teman di balik cerita kami.
 		</div>
-		<a href="/members" class={Styles.members_btn}>Buka direktori anggota ↗</a>
+		<a href="/members" class={Styles.members_btn}>Lihat anggota Zenith</a>
 	</div>
 </div>
