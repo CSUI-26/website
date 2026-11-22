@@ -19,11 +19,20 @@
  * routes should pass the cookie through `RequestOptions.cookie`.
  */
 
-/** Origin serving the API. Empty means "same origin as the page". */
-const API_ORIGIN = (import.meta.env.PUBLIC_ZENITH_API_URL ?? "").replace(
-	/\/+$/,
-	"",
-);
+/**
+ * Origin serving the API.
+ *
+ * In the browser an empty value means "same origin as the page", which is what
+ * production relies on. The build is different: a relative URL cannot be parsed
+ * by `fetch` in Node, so a build-time call would always fail. `SITE` is the
+ * `site` value from astro.config.mts, so the build falls back to the canonical
+ * origin and reaches the API properly.
+ */
+const API_ORIGIN = (
+	import.meta.env.PUBLIC_ZENITH_API_URL ||
+	(import.meta.env.SSR ? import.meta.env.SITE : "") ||
+	""
+).replace(/\/+$/, "");
 
 /** Prefix every endpoint lives under. */
 const API_BASE = `${API_ORIGIN}/api/v1`;

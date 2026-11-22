@@ -19,6 +19,7 @@ export {
 	type MajorThemeKey,
 	resolveMajorParam,
 } from "@/data/majors";
+export { toSecurePhotoUrl } from "@/util/api";
 export { getMemberPhotoUrl, getMemberSlug } from "@/util/member";
 export {
 	formatTitleCase,
