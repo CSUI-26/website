@@ -1,3 +1,4 @@
+
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
@@ -8,12 +9,16 @@
   },
   "rewrites": [
     {
-      "source": "/studio",
+      "source": "/studio/",
       "destination": "https://zenith-stage.vicky.id/studio/"
     },
     {
-      "source": "/studio/:path*",
-      "destination": "https://zenith-stage.vicky.id/studio/:path*"
+      "source": "/studio/:path+",
+      "destination": "https://zenith-stage.vicky.id/studio/:path+"
+    },
+    {
+      "source": "/studio",
+      "destination": "https://zenith-stage.vicky.id/studio"
     },
     {
       "source": "/api/:path*",
