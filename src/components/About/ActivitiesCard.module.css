@@ -26,6 +26,9 @@
 .date {
 	font-style: italic;
 	font-weight: var(--font-base-weight-heavy);
+	margin-block-start: 0.25rem;
+	letter-spacing: 0.04em;
+	color: color-mix(in oklch, var(--fg-text-normal), transparent 40%);
 }
 
 .description {

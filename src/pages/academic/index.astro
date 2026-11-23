@@ -22,17 +22,20 @@ const title = `${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
 			<nav class={Styles.majors_nav} aria-label="Pilih Program Studi">
 				<ul class={Styles.majors_list}>
 					{
-						programStudies.map((major) => (
-							<li class={Styles.major_item}>
-								<button
-									type="button"
-									class={Styles.major_btn}
-									data-select-prodi={major.id}
-								>
-									{major.name}
-								</button>
-							</li>
-						))
+						programStudies.map((major) => {
+							const isBlue = major.id.includes("ilmu-komputer");
+							return (
+								<li class={Styles.major_item}>
+									<button
+										type="button"
+										class={`${Styles.major_btn} ${isBlue ? Styles.major_btn_blue : Styles.major_btn_red}`}
+										data-select-prodi={major.id}
+									>
+										<span class={Styles.major_name}>{major.name}</span>
+									</button>
+								</li>
+							);
+						})
 					}
 				</ul>
 			</nav>
@@ -118,23 +121,27 @@ const title = `${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
 						<section class={Styles.curriculum_section} aria-label="Materi yang Dipelajari">
 							<h3 class={Styles.curriculum_title}>MATERI YANG DIPELAJARI</h3>
 
-							{/* Semester Pill Tabs */}
-							<div class={Styles.semester_tabs} role="tablist">
-								{prodi.semesters.map((sem, sIdx) => (
-									<button
-										type="button"
-										role="tab"
-										class={`${Styles.semester_tab} ${sIdx === 0 ? Styles.semester_tab_active : ""}`}
-										data-prodi-id={prodi.id}
-										data-semester-idx={sIdx}
-										aria-selected={sIdx === 0 ? "true" : "false"}
-									>
-										{typeof sem.semester === "number"
-											? `SEMESTER ${sem.semester}`
-											: "MATKUL PILIHAN"}
-									</button>
-								))}
-							</div>
+							{/* Semester Choices Navbar: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | Pilihan */}
+							<nav class={Styles.semester_nav} aria-label="Pilih Semester" role="tablist">
+								{prodi.semesters.map((sem, sIdx) => {
+									const label = typeof sem.semester === "number" ? sem.semester : "Pilihan";
+									return (
+										<>
+											{sIdx > 0 && <span class={Styles.semester_nav_divider} aria-hidden="true">|</span>}
+											<button
+												type="button"
+												role="tab"
+												class={`${Styles.semester_nav_item} ${sIdx === 0 ? Styles.semester_nav_item_active : ""}`}
+												data-prodi-id={prodi.id}
+												data-semester-idx={sIdx}
+												aria-selected={sIdx === 0 ? "true" : "false"}
+											>
+												{label}
+											</button>
+										</>
+									);
+								})}
+							</nav>
 
 							{/* Frame 39 (Figma Curriculum Container) */}
 							<div class={Styles.curriculum_frame}>
@@ -153,15 +160,11 @@ const title = `${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
 											</h4>
 										</div>
 
-										{/* Alternating Blue and Red Glowing Cards */}
+										{/* Minimalist Course Dropdowns */}
 										<div class={Styles.course_list}>
-											{sem.courses.map((course, cIdx) => {
-												const isRed = cIdx % 2 === 1;
-												const themeClass = isRed
-													? Styles.course_card_red
-													: Styles.course_card_blue;
+											{sem.courses.map((course) => {
 												return (
-													<details class={`${Styles.course_card} ${themeClass}`}>
+													<details class={Styles.course_card}>
 														<summary class={Styles.course_summary}>
 															<span class={Styles.course_title}>{course.name}</span>
 															<div class={Styles.course_badge_group}>
@@ -316,11 +319,11 @@ const title = `${Strings.SlugTitles.Academic} - ${Strings.SiteTitle}`;
 				for (const t of prodiTabs) {
 					t.setAttribute("aria-selected", "false");
 					t.removeAttribute("data-active");
-					t.classList.remove(
-						// biome-ignore lint/style/noNonNullAssertion: class always exists
-						document.querySelector("[class*='semester_tab_active']")?.classList[1] ||
-							"semester_tab_active",
-					);
+					for (const c of Array.from(t.classList)) {
+						if (c.includes("semester_nav_item_active") || c.includes("semester_tab_active")) {
+							t.classList.remove(c);
+						}
+					}
 				}
 
 				// Activate clicked tab
