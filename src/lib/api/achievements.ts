@@ -11,6 +11,9 @@ import {
 	type FetchApiOptions,
 	fetchApiJson,
 } from "./client.ts";
+import { isRecord, sanitizeImageUrl } from "./sanitize.ts";
+
+export { sanitizeImageUrl } from "./sanitize.ts";
 
 export const ACHIEVEMENTS_GROUPED_ENDPOINT =
 	"/api/v1/achievements?format=grouped";
@@ -25,43 +28,6 @@ export interface FetchAchievementsOptions extends FetchApiOptions {
 	fallbackData?: GroupedAchievements;
 	isDev?: boolean;
 	warn?: (message: string, detail?: unknown) => void;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function hasControlCharacters(value: string): boolean {
-	for (let i = 0; i < value.length; i += 1) {
-		const code = value.charCodeAt(i);
-		if (code <= 31 || code === 127) {
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
- * Extracts and validates an achievement banner URL from either a string or API ImageField.
- */
-export function sanitizeImageUrl(value: unknown): string {
-	const raw =
-		typeof value === "string"
-			? value
-			: isRecord(value) && typeof value.url === "string"
-				? value.url
-				: "";
-
-	const trimmed = raw.trim();
-	if (!trimmed || hasControlCharacters(trimmed)) {
-		return "";
-	}
-
-	if (/^https?:\/\//i.test(trimmed) || /^\/(?![/\\])/.test(trimmed)) {
-		return trimmed;
-	}
-
-	return "";
 }
 
 function normalizeLatestItem(item: unknown): LatestAchievement | null {

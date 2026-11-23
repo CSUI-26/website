@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { fetchApiJson } from "../client.ts";
+import { fetchApiJson, fetchPaginatedApiJson } from "../client.ts";
 
 describe("fetchApiJson", () => {
 	it("returns unwrapped data and sends GET with credentials omit and Accept application/json", async () => {
@@ -191,6 +191,68 @@ describe("fetchApiJson", () => {
 		assert.ok(elapsedMs < 1000, `Expected fast abort, took ${elapsedMs}ms`);
 		if (!outcome.ok) {
 			assert.equal(outcome.error.code, "NETWORK_ERROR");
+		}
+	});
+});
+
+describe("fetchPaginatedApiJson", () => {
+	it("returns items and pagination metadata on valid paginated envelope", async () => {
+		const mockFetch = async () =>
+			new Response(
+				JSON.stringify({
+					data: [{ id: 1, name: "DDP 1" }],
+					total: 12,
+					page: 1,
+					limit: 20,
+					totalPages: 1,
+				}),
+				{ status: 200 },
+			);
+
+		const outcome = await fetchPaginatedApiJson<{ id: number; name: string }>(
+			"/api/v1/courses",
+			{ fetchFn: mockFetch },
+		);
+
+		assert.deepEqual(outcome, {
+			ok: true,
+			data: {
+				items: [{ id: 1, name: "DDP 1" }],
+				total: 12,
+				page: 1,
+				limit: 20,
+				totalPages: 1,
+			},
+		});
+	});
+
+	it("maps missing pagination fields to INVALID_PAYLOAD", async () => {
+		const mockFetch = async () =>
+			new Response(JSON.stringify({ data: [] }), { status: 200 });
+
+		const outcome = await fetchPaginatedApiJson("/api/v1/courses", {
+			fetchFn: mockFetch,
+		});
+
+		assert.equal(outcome.ok, false);
+		if (!outcome.ok) {
+			assert.equal(outcome.error.code, "INVALID_PAYLOAD");
+			assert.equal(outcome.error.status, 200);
+		}
+	});
+
+	it("maps HTTP 500 to HTTP_ERROR", async () => {
+		const mockFetch = async () =>
+			new Response("Server Error", { status: 500 });
+
+		const outcome = await fetchPaginatedApiJson("/api/v1/courses", {
+			fetchFn: mockFetch,
+		});
+
+		assert.equal(outcome.ok, false);
+		if (!outcome.ok) {
+			assert.equal(outcome.error.code, "HTTP_ERROR");
+			assert.equal(outcome.error.status, 500);
 		}
 	});
 });

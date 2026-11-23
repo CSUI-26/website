@@ -3,7 +3,9 @@
 `src/lib/api/` is the shared client-side API layer for fetching public backend JSON endpoints via same-origin `/api/*` paths. It provides:
 
 - A shared HTTP `GET` JSON transport with fail-fast timeouts and standardized errors (`client.ts`)
-- Domain-specific API modules that validate, normalize, and safely fall back to static data (`achievements.ts`, and future modules you add)
+- Reusable client-side TTL / stale-while-revalidate caching with `sessionStorage` persistence and in-flight deduplication (`cache.ts`)
+- Shared runtime type guards and URL sanitization helpers (`sanitize.ts`)
+- Domain-specific API modules that validate, normalize, cache, and safely fall back to static data (`achievements.ts`, `academic.ts`, and future modules you add)
 - Local Vite dev-server proxy resolution synced with `vercel.json` (`vercel-proxy.ts`)
 - Unit tests runnable directly with Node's built-in test runner (`__tests__/`)
 
@@ -39,10 +41,13 @@ Backend JSON { data: ... }
 
 | File / Directory | Purpose | Runtime Environment |
 | --- | --- | --- |
-| `client.ts` | Shared HTTP `GET` JSON client (`fetchApiJson`) and core result/error types. | Browser & Node (tests) |
-| `achievements.ts` | Reference domain module (`fetchGroupedAchievements`, normalizer, URL sanitizer). | Browser & Node (tests) |
+| `client.ts` | Shared HTTP `GET` JSON client (`fetchApiJson`, `fetchPaginatedApiJson`) and core result/error types. | Browser & Node (tests) |
+| `cache.ts` | Reusable in-memory + `sessionStorage` TTL/SWR cache (`createApiCache`) and in-flight deduplication. | Browser & Node (tests) |
+| `sanitize.ts` | Shared runtime type guards (`isRecord`) and URL sanitizers (`sanitizeUrl`, `sanitizeHttpUrl`, `sanitizeImageUrl`). | Browser & Node (tests) |
+| `achievements.ts` | Reference domain module (`fetchGroupedAchievements`, normalizer). | Browser & Node (tests) |
+| `academic.ts` | Study programs & courses module (`fetchPrograms`, `fetchProgramById`, `fetchCourses`) with SWR caching. | Browser & Node (tests) |
 | `vercel-proxy.ts` | Reads `vercel.json` `rewrites` (or `API_PROXY_TARGET`) into Vite proxy config for `astro.config.mts`. | **Node-only** (never import in browser/UI code) |
-| `__tests__/` | Unit tests for `client.ts`, `achievements.ts`, and `vercel-proxy.ts` using `node:test`. | Node (`node --test`) |
+| `__tests__/` | Unit tests for `client.ts`, `cache.ts`, `sanitize.ts`, `achievements.ts`, `academic.ts`, and `vercel-proxy.ts` using `node:test`. | Node (`node --test`) |
 
 ---
 
@@ -73,6 +78,15 @@ export interface ApiFetchResult<T> {
 	data: T;
 	source: "api" | "fallback";
 	error?: ApiClientError;
+	fromCache?: boolean;
+}
+
+export interface PaginatedApiData<T> {
+	items: T[];
+	total: number;
+	page: number;
+	limit: number;
+	totalPages: number;
 }
 
 export type FetchLike = (
@@ -97,7 +111,7 @@ export type RawApiOutcome<T> =
 - **Fail-fast timeout, 0 retries**: Defaults to `5000` ms (`DEFAULT_TIMEOUT_MS`) and never retries failed requests automatically.
 - **Caller cancellation**: Passing `options.signal` (`AbortSignal`) aborts immediately when the caller cancels (for example, on React component unmount) and resolves as `NETWORK_ERROR` without waiting for the timeout.
 - **Never throws**: `fetchApiJson` catches network, abort, HTTP, and JSON parsing failures and returns `RawApiOutcome<T>` (`{ ok: true, data }` or `{ ok: false, error }`).
-- **Envelope check only**: `fetchApiJson` verifies that the response body is a non-null, non-array JSON object containing a `"data"` key (`{ data: ... }`) and unwraps `parsed.data`. **It does not validate the inner fields of `data`** — each domain module must validate `outcome.data` at runtime.
+- **Envelope check only**: `fetchApiJson` verifies that the response body is a non-null, non-array JSON object containing a `"data"` key (`{ data: ... }`) and unwraps `parsed.data`. For paginated endpoints (`{ data, total, page, limit, totalPages }`), use `fetchPaginatedApiJson<T>`. **Neither validates the inner fields of `data`** — each domain module must validate `outcome.data` at runtime.
 - **Testable**: Inject a mock `fetchFn` via `options.fetchFn` in unit tests.
 
 ### Error Codes (`ApiErrorCode`)
@@ -244,16 +258,23 @@ export async function fetchEvents(
 }
 ```
 
-### URL & Media Sanitization
+### URL & Media Sanitization (`sanitize.ts`)
 
-Never place raw API strings directly into `<img src>`, `<a href>`, or similar DOM attributes. `src/lib/api/achievements.ts` implements `sanitizeImageUrl(value: unknown): string`, which:
+Never place raw API strings directly into `<img src>`, `<a href>`, or similar DOM attributes. Import shared helpers from `./sanitize.ts`:
 
-- Accepts either a plain `string` or a CMS `ImageField` object (`{ url: string }`).
-- Trims whitespace and rejects any ASCII control characters (`charCode <= 31` or `127`).
-- Allows only `http://`, `https://`, or single-leading-slash relative paths (`/path`, rejecting protocol-relative `//` and `/\`).
-- Rejects unsafe schemes like `javascript:` and `data:`, returning `""`.
+- `isRecord(value)`: Type guard for plain non-null, non-array objects.
+- `sanitizeUrl(value)`: Allows `http://`, `https://`, or single-leading-slash relative paths (`/path`, rejecting `//` and `/\`), stripping ASCII control characters (`<= 31` or `127`) and blocking `javascript:` / `data:`.
+- `sanitizeHttpUrl(value)`: Allows strictly `http://` or `https://` URLs (useful for external links like `courseMapUrl`, `driveUrl`, `materialUrl`).
+- `sanitizeImageUrl(value)`: Extracts from either a plain `string` or a CMS `ImageField` object (`{ url: string }`) and validates with `sanitizeUrl`.
 
-> **Reuse rule**: Right now `sanitizeImageUrl` lives in `src/lib/api/achievements.ts`. When you add a second API module that needs URL sanitization, extract `sanitizeImageUrl` (and shared helpers like `isRecord`) into a shared module (for example `src/lib/api/sanitize.ts`) and import it from both modules instead of copy-pasting.
+### Client Caching (`cache.ts`)
+
+For public endpoints whose backend returns `Cache-Control: public, max-age=60, stale-while-revalidate=300` (such as `programs` and `courses`), use `createApiCache<T>(namespace)` from `./cache.ts` (see `src/lib/api/academic.ts` for a complete example):
+
+- **Fresh (`<= 60s`, `DEFAULT_CACHE_FRESH_MS`)**: Returns cached data immediately (`fromCache: true`) with zero network calls.
+- **Stale (`60s..300s`, `DEFAULT_CACHE_STALE_MS`)**: Returns stale data immediately (`fromCache: true`) and triggers background revalidation, notifying callers via `onRevalidate`.
+- **Persistence & Safety**: Backs in-memory entries with `sessionStorage`, always re-validates parsed entries through your normalizer before returning, ignores quota/SSR storage errors safely, and exposes `dedupe(key, task)` for concurrent request deduplication.
+- **Public data only**: Never cache authenticated or PII-bearing endpoints.
 
 ---
 
