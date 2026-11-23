@@ -18,7 +18,7 @@
     },
     {
       "source": "/studio",
-      "destination": "https://zenith-stage.vicky.id/studio"
+      "destination": "https://zenith.csui.dev/studio"
     },
     {
       "source": "/api/:path*",
