@@ -6,6 +6,11 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+
+	@media (max-width: 900px) {
+		padding-block-start: 4rem;
+		padding-inline: 1rem;
+	}
 }
 
 .title {
