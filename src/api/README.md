@@ -1,11 +1,10 @@
-# `src/lib/api` — Shared Client API Library
+# `src/api` — Shared Client API Library
 
-`src/lib/api/` is the shared client-side API layer for fetching public backend JSON endpoints via same-origin `/api/*` paths. It provides:
+`src/api/` is the shared client-side API layer for fetching public backend JSON endpoints via same-origin `/api/*` paths. It provides:
 
-- A shared HTTP `GET` JSON transport with fail-fast timeouts and standardized errors (`client.ts`)
-- Reusable client-side TTL / stale-while-revalidate caching with `sessionStorage` persistence and in-flight deduplication (`cache.ts`)
+- A shared HTTP `GET` JSON transport with fail-fast timeouts, standardized errors, and standard browser/CDN HTTP caching (`client.ts`)
 - Shared runtime type guards and URL sanitization helpers (`sanitize.ts`)
-- Domain-specific API modules that validate, normalize, cache, and safely fall back to static data (`achievements.ts`, `academic.ts`, and future modules you add)
+- Domain-specific API modules that validate, normalize, and safely fall back to static data (`achievements.ts`, `academic.ts`, and future modules you add)
 - Local Vite dev-server proxy resolution synced with `vercel.json` (`vercel-proxy.ts`)
 - Unit tests runnable directly with Node's built-in test runner (`__tests__/`)
 
@@ -22,38 +21,38 @@ Astro Page (e.g. src/pages/achievements/index.astro)
 React Island (e.g. src/components/Achievements/AchievementsView.tsx)
   │ useEffect + AbortController
   ▼
-Domain Module (src/lib/api/<resource>.ts)
+Domain Module (src/api/<resource>.ts)
   │ calls fetchApiJson<unknown>(endpoint, options)
   │ validates & normalizes data; falls back to static data on error
   ▼
-Core Client (src/lib/api/client.ts -> fetchApiJson)
+Core Client (src/api/client.ts -> fetchApiJson)
   │ GET, Accept: application/json, credentials: "omit", 5000ms timeout, 0 retries
+  │ default fetch cache mode (honors backend Cache-Control headers)
   │ requires { data: ... } JSON envelope
   ▼
 Same-origin /api/v1/*
-  ├─ Local dev (astro dev): Vite server.proxy via src/lib/api/vercel-proxy.ts
+  ├─ Local dev (astro dev): Vite server.proxy via src/api/vercel-proxy.ts
   └─ Production / Staging: Vercel rewrites in vercel.json
   ▼
 Backend JSON { data: ... }
 ```
 
-### Files in `src/lib/api/`
+### Files in `src/api/`
 
 | File / Directory | Purpose | Runtime Environment |
 | --- | --- | --- |
 | `client.ts` | Shared HTTP `GET` JSON client (`fetchApiJson`, `fetchPaginatedApiJson`) and core result/error types. | Browser & Node (tests) |
-| `cache.ts` | Reusable in-memory + `sessionStorage` TTL/SWR cache (`createApiCache`) and in-flight deduplication. | Browser & Node (tests) |
 | `sanitize.ts` | Shared runtime type guards (`isRecord`) and URL sanitizers (`sanitizeUrl`, `sanitizeHttpUrl`, `sanitizeImageUrl`). | Browser & Node (tests) |
 | `achievements.ts` | Reference domain module (`fetchGroupedAchievements`, normalizer). | Browser & Node (tests) |
-| `academic.ts` | Study programs & courses module (`fetchPrograms`, `fetchProgramById`, `fetchCourses`) with SWR caching. | Browser & Node (tests) |
+| `academic.ts` | Study programs & courses module (`fetchPrograms`, `fetchProgramById`, `fetchCourses`). | Browser & Node (tests) |
 | `vercel-proxy.ts` | Reads `vercel.json` `rewrites` (or `API_PROXY_TARGET`) into Vite proxy config for `astro.config.mts`. | **Node-only** (never import in browser/UI code) |
-| `__tests__/` | Unit tests for `client.ts`, `cache.ts`, `sanitize.ts`, `achievements.ts`, `academic.ts`, and `vercel-proxy.ts` using `node:test`. | Node (`node --test`) |
+| `__tests__/` | Unit tests for `client.ts`, `sanitize.ts`, `achievements.ts`, `academic.ts`, and `vercel-proxy.ts` using `node:test`. | Node (`node --test`) |
 
 ---
 
 ## Core Client Reference (`client.ts`)
 
-`src/lib/api/client.ts` exports `DEFAULT_TIMEOUT_MS` (`5000`), `fetchApiJson`, and the core TypeScript contracts shared by every domain module.
+`src/api/client.ts` exports `DEFAULT_TIMEOUT_MS` (`5000`), `fetchApiJson`, `fetchPaginatedApiJson`, and the core TypeScript contracts shared by every domain module.
 
 ### Exported Types & Constants
 
@@ -78,7 +77,6 @@ export interface ApiFetchResult<T> {
 	data: T;
 	source: "api" | "fallback";
 	error?: ApiClientError;
-	fromCache?: boolean;
 }
 
 export interface PaginatedApiData<T> {
@@ -107,7 +105,7 @@ export type RawApiOutcome<T> =
 
 ### Key Behavioral Guarantees
 
-- **Safe public caching (`credentials: "omit"`)**: Every request uses `method: "GET"`, `Accept: "application/json"`, and `credentials: "omit"`. This prevents same-origin `/studio` session cookies from leaking or disabling shared CDN caching.
+- **Safe public caching (`credentials: "omit"`)**: Every request uses `method: "GET"`, `Accept: "application/json"`, `credentials: "omit"`, and leaves `fetch`'s `cache` option at its default. This prevents same-origin `/studio` session cookies from leaking and allows browser and CDN caches to honor backend `Cache-Control` headers directly.
 - **Fail-fast timeout, 0 retries**: Defaults to `5000` ms (`DEFAULT_TIMEOUT_MS`) and never retries failed requests automatically.
 - **Caller cancellation**: Passing `options.signal` (`AbortSignal`) aborts immediately when the caller cancels (for example, on React component unmount) and resolves as `NETWORK_ERROR` without waiting for the timeout.
 - **Never throws**: `fetchApiJson` catches network, abort, HTTP, and JSON parsing failures and returns `RawApiOutcome<T>` (`{ ok: true, data }` or `{ ok: false, error }`).
@@ -129,7 +127,7 @@ export type RawApiOutcome<T> =
 
 ## How to Add a New API Module
 
-Use `src/lib/api/achievements.ts` as the canonical reference implementation. Every new API module (for example, `src/lib/api/events.ts`) should follow the same 5-part structure:
+Use `src/api/achievements.ts` as the canonical reference implementation. Every new API module (for example, `src/api/events.ts`) should follow the same 5-part structure:
 
 1. **Endpoint constant**: Relative same-origin path (e.g., `"/api/v1/events"`). Never hardcode a domain/origin.
 2. **Options interface**: Extend `FetchApiOptions` with `endpoint?`, `fallbackData?`, `isDev?`, and `warn?` so callers and tests can override defaults cleanly.
@@ -141,21 +139,19 @@ Use `src/lib/api/achievements.ts` as the canonical reference implementation. Eve
    - **Trust valid empty responses**: If the API returns `200 OK` with valid empty arrays (e.g. `{ data: [] }`), return `{ data: normalized, source: "api" }` — do **not** treat empty API results as an error or fall back to static data.
    - Only when `outcome.ok === false` or `normalized === null` should you log a dev-only warning and return `{ data: cloneFallback(fallbackSource), source: "fallback", error }`.
 
-### Reference Blueprint (Illustrative Example: `src/lib/api/events.ts`)
+### Reference Blueprint (Illustrative Example: `src/api/events.ts`)
 
-> **Note**: `src/lib/api/events.ts` does not exist yet — this example shows the exact pattern to copy and adapt when creating a new module.
+> **Note**: `src/api/events.ts` does not exist yet — this example shows the exact pattern to copy and adapt when creating a new module.
 
 ```ts
-import {
-	type EventItem,
-	eventsFallback,
-} from "../../data/events.ts";
+import { type EventItem, eventsFallback } from "../data/events.ts";
 import {
 	type ApiClientError,
 	type ApiFetchResult,
 	type FetchApiOptions,
 	fetchApiJson,
 } from "./client.ts";
+import { isRecord } from "./sanitize.ts";
 
 export const EVENTS_ENDPOINT = "/api/v1/events";
 
@@ -164,10 +160,6 @@ export interface FetchEventsOptions extends FetchApiOptions {
 	fallbackData?: EventItem[];
 	isDev?: boolean;
 	warn?: (message: string, detail?: unknown) => void;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function normalizeEventItem(item: unknown): EventItem | null {
@@ -267,20 +259,19 @@ Never place raw API strings directly into `<img src>`, `<a href>`, or similar DO
 - `sanitizeHttpUrl(value)`: Allows strictly `http://` or `https://` URLs (useful for external links like `courseMapUrl`, `driveUrl`, `materialUrl`).
 - `sanitizeImageUrl(value)`: Extracts from either a plain `string` or a CMS `ImageField` object (`{ url: string }`) and validates with `sanitizeUrl`.
 
-### Client Caching (`cache.ts`)
+### HTTP Caching
 
-For public endpoints whose backend returns `Cache-Control: public, max-age=60, stale-while-revalidate=300` (such as `programs` and `courses`), use `createApiCache<T>(namespace)` from `./cache.ts` (see `src/lib/api/academic.ts` for a complete example):
+Caching for public `GET` endpoints is handled by standard HTTP caching rather than a custom client-side or in-memory cache layer:
 
-- **Fresh (`<= 60s`, `DEFAULT_CACHE_FRESH_MS`)**: Returns cached data immediately (`fromCache: true`) with zero network calls.
-- **Stale (`60s..300s`, `DEFAULT_CACHE_STALE_MS`)**: Returns stale data immediately (`fromCache: true`) and triggers background revalidation, notifying callers via `onRevalidate`.
-- **Persistence & Safety**: Backs in-memory entries with `sessionStorage`, always re-validates parsed entries through your normalizer before returning, ignores quota/SSR storage errors safely, and exposes `dedupe(key, task)` for concurrent request deduplication.
-- **Public data only**: Never cache authenticated or PII-bearing endpoints.
+- **Backend cache policy**: Public endpoints (such as `/api/v1/programs` and `/api/v1/courses`) return `Cache-Control: public, max-age=60, stale-while-revalidate=300`.
+- **Standard `fetch` behavior**: `src/api/client.ts` sends `credentials: "omit"` and leaves `fetch`'s `cache` option at its default (`"default"`), allowing the browser HTTP cache and shared CDN edge caches to serve fresh responses and revalidate stale ones automatically.
+- **Keep domain modules stateless**: Do not add custom in-memory Maps or `sessionStorage` caches in `src/api/` modules — keep them focused on request error handling, response parsing/normalization, URL sanitization, and static fallback cloning.
 
 ---
 
 ## Using an API Module in Astro & React
 
-Pages pass static fallback data from `src/data/` into a React island (`client:load`), and the React component refreshes from the API on mount while guarding against unmounts with `AbortController`. Outside `src/lib/api/`, import via the `@/lib/api/...` alias.
+Pages pass static fallback data from `src/data/` into a React island (`client:load`), and the React component refreshes from the API on mount while guarding against unmounts with `AbortController`. Outside `src/api/`, import via the `@/api/...` alias.
 
 Pattern from `src/pages/achievements/index.astro` and `src/components/Achievements/AchievementsView.tsx`:
 
@@ -297,7 +288,7 @@ import { initialFallbackData } from "@/data/feature";
 ```tsx
 // src/components/Feature/FeatureView.tsx
 import { useEffect, useState } from "react";
-import { fetchFeatureData, type FeatureData } from "@/lib/api/feature";
+import { fetchFeatureData, type FeatureData } from "@/api/feature";
 
 export default function FeatureView({ initialData }: { initialData: FeatureData }) {
 	const [data, setData] = useState<FeatureData>(initialData);
@@ -354,15 +345,15 @@ Notes:
 
 ## Rules & Common Pitfalls
 
-1. **Use relative imports with `.ts` extensions inside `src/lib/api/`**
-   - Inside `src/lib/api/*.ts` and `src/lib/api/__tests__/*.test.ts`, write `"./client.ts"` and `"../../data/<file>.ts"`.
-   - **Do NOT use `@/` path aliases inside `src/lib/api/`**. Tests run directly with `node --test`, which does not resolve `tsconfig.json` `paths` aliases.
+1. **Use relative imports with `.ts` extensions inside `src/api/`**
+   - Inside `src/api/*.ts`, write `"./client.ts"` and `"../data/<file>.ts"`. Inside `src/api/__tests__/*.test.ts`, write `"../<module>.ts"` and `"../../data/<file>.ts"`.
+   - **Do NOT use `@/` path aliases inside `src/api/`**. Tests run directly with `node --test`, which does not resolve `tsconfig.json` `paths` aliases.
 2. **Never import `vercel-proxy.ts` in browser or component code**
    - `vercel-proxy.ts` uses `node:fs` and `node:path`; it is strictly for `astro.config.mts` and Node tests.
 3. **Never hardcode backend origins**
    - Always use relative paths like `"/api/v1/<resource>"`. Never embed `https://zenith-stage.vicky.id` in client code.
 4. **Never remove `credentials: "omit"` from `fetchApiJson`**
-   - Public endpoints must stay cookie-free so CDN caches remain shared. If an authenticated endpoint is ever introduced in the future, create a separate authenticated client helper instead of modifying `fetchApiJson`.
+   - Public endpoints must stay cookie-free so browser and CDN HTTP caches remain shared. If an authenticated endpoint is ever introduced in the future, create a separate authenticated client helper instead of modifying `fetchApiJson`.
 5. **Never trust `outcome.data` without runtime validation**
    - `fetchApiJson<unknown>` only guarantees `{ data: ... }`. Always check types (`typeof`, `Array.isArray`, `Number.isInteger`) in your normalizer.
 6. **Watch `tsconfig.json` strictness (`astro/tsconfigs/strictest`)**
@@ -376,7 +367,7 @@ Notes:
 
 ## Testing Guide & Verification Commands
 
-Unit tests live in `src/lib/api/__tests__/<resource>.test.ts` and use Node's built-in test runner (`node:test` + `node:assert/strict`). No network access is needed because `fetchFn`, `timeoutMs`, `fallbackData`, `isDev`, and `warn` are all injectable.
+Unit tests live in `src/api/__tests__/<resource>.test.ts` and use Node's built-in test runner (`node:test` + `node:assert/strict`). No network access is needed because `fetchFn`, `timeoutMs`, `fallbackData`, `isDev`, and `warn` are all injectable.
 
 > **Important**: Run API tests with `node --test` — the test suite targets Node's native `node:test` and `node:assert/strict` modules.
 
@@ -394,7 +385,7 @@ Run these commands after adding or modifying an API module:
 
 ```bash
 # 1. Run all API unit tests
-node --test src/lib/api/__tests__/*.test.ts
+node --test src/api/__tests__/*.test.ts
 
 # 2. Check Biome lint rules
 bun run lint
@@ -411,10 +402,10 @@ bun run build
 ## New API Module Checklist
 
 - [ ] Static fallback data and types defined in `src/data/<resource>.ts` (if applicable).
-- [ ] Domain module created at `src/lib/api/<resource>.ts` using relative `.ts` imports (`./client.ts`, `../../data/<resource>.ts`).
+- [ ] Domain module created at `src/api/<resource>.ts` using relative `.ts` imports (`./client.ts`, `../data/<resource>.ts`).
 - [ ] Endpoint constant uses a relative `/api/...` path.
 - [ ] `fetchApiJson<unknown>` output is validated at runtime by a `normalize*` function; unsafe URLs are sanitized.
 - [ ] Valid empty `200 OK` responses return `source: "api"` (no fallback).
 - [ ] Error / invalid-payload paths clone `fallbackData` and log via injectable `warn` only when `isDev` is `true`.
-- [ ] Unit tests added in `src/lib/api/__tests__/<resource>.test.ts` covering happy path, empty `200 OK`, normalizer edge cases, fallback error matrix, cloning, and dev-only warnings.
-- [ ] `node --test src/lib/api/__tests__/*.test.ts`, `bun run lint`, `bun run check`, and `bun run build` all pass.
+- [ ] Unit tests added in `src/api/__tests__/<resource>.test.ts` covering happy path, empty `200 OK`, normalizer edge cases, fallback error matrix, cloning, and dev-only warnings.
+- [ ] `node --test src/api/__tests__/*.test.ts`, `bun run lint`, `bun run check`, and `bun run build` all pass.
