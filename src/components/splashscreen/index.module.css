@@ -213,6 +213,8 @@
 	overflow-x: hidden;
 	scrollbar-width: thin;
 	font-family: monospace, var(--fontface-inter);
+	justify-content: flex-end;
+	flex: 1;
 }
 
 .terminal_line {
