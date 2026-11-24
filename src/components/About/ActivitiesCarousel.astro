@@ -2,6 +2,111 @@
 import Styles from "./ActivitiesCarousel.module.css";
 ---
 
-<div class={Styles.carousel_container} id="activitiesCarouselContainer">
+<div
+	class={Styles.carousel_container}
+	id="activitiesCarouselContainer"
+	data-dot-class={Styles.dot}
+	data-dot-active-class={Styles.dot_active}
+>
 	<slot />
 </div>
+<div
+	class={Styles.dots}
+	id="activitiesCarouselDots"
+	role="group"
+	aria-label="Activity navigation"
+></div>
+
+<script>
+	const carouselContainer = document.getElementById(
+		"activitiesCarouselContainer",
+	);
+	const dotsRoot = document.getElementById("activitiesCarouselDots");
+
+	if (carouselContainer && dotsRoot) {
+		const dotClass = carouselContainer.dataset.dotClass!;
+		const activeClass = carouselContainer.dataset.dotActiveClass!;
+		const cards = Array.from(carouselContainer.children) as HTMLElement[];
+
+		/* A card's own offset is unreliable once any ancestor is positioned,
+		   so measure against the container and add the current scroll. */
+		const scrollTargetFor = (card: HTMLElement) => {
+			const cardBox = card.getBoundingClientRect();
+			const containerBox = carouselContainer.getBoundingClientRect();
+			const centered =
+				cardBox.left -
+				containerBox.left +
+				carouselContainer.scrollLeft -
+				(containerBox.width - cardBox.width) / 2;
+			return Math.max(0, centered);
+		};
+
+		const nearestIndex = () => {
+			const containerBox = carouselContainer.getBoundingClientRect();
+			const containerCenter = containerBox.left + containerBox.width / 2;
+			let best = 0;
+			let bestDistance = Number.POSITIVE_INFINITY;
+
+			cards.forEach((card, index) => {
+				const cardBox = card.getBoundingClientRect();
+				const cardCenter = cardBox.left + cardBox.width / 2;
+				const distance = Math.abs(cardCenter - containerCenter);
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = index;
+				}
+			});
+
+			return best;
+		};
+
+		const buttons = cards.map((card, index) => {
+			const button = document.createElement("button");
+			button.type = "button";
+			button.className = dotClass;
+			button.setAttribute(
+				"aria-label",
+				`Show activity ${index + 1} of ${cards.length}`,
+			);
+			button.addEventListener("click", () => {
+				carouselContainer.scrollTo({
+					left: scrollTargetFor(card),
+					behavior: "smooth",
+				});
+			});
+			dotsRoot.append(button);
+			return button;
+		});
+
+		const markActive = (activeIndex: number) => {
+			buttons.forEach((button, index) => {
+				const isActive = index === activeIndex;
+				button.classList.toggle(activeClass, isActive);
+				if (isActive) {
+					button.setAttribute("aria-current", "true");
+				} else {
+					button.removeAttribute("aria-current");
+				}
+			});
+		};
+
+		let ticking = false;
+		const syncActive = () => {
+			ticking = false;
+			markActive(nearestIndex());
+		};
+
+		carouselContainer.addEventListener(
+			"scroll",
+			() => {
+				if (ticking) return;
+				ticking = true;
+				requestAnimationFrame(syncActive);
+			},
+			{ passive: true },
+		);
+		window.addEventListener("resize", syncActive, { passive: true });
+
+		markActive(0);
+	}
+</script>
