@@ -251,6 +251,19 @@
 		color: white;
 		background: rgba(255, 255, 255, 0.14);
 	}
+
+	/* The wordmark bar is fixed, so it sits over the page instead of pushing it
+	   down. Reserve its height on the body to keep page content clear of it.
+	   The formula mirrors the bar's own padding and the heading line box, so it
+	   tracks the bar at every width. The line-height is derived from the heading
+	   token rather than `em`, which would resolve against the body's own font
+	   size and come up short. */
+	:global(body) {
+		padding-block-start: calc(
+			max(1.35rem, calc(env(safe-area-inset-top) + 0.75rem)) +
+			(59 / 48 * var(--font-base-size-heading)) + 0.5rem
+		);
+	}
 }
 
 @media (max-width: 900px) and (prefers-reduced-transparency: reduce) {
