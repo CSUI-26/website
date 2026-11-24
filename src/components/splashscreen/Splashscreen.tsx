@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 
-import surface from "@/components/Members/Surface.module.css";
+import surface from "@/components/member/Surface.module.css";
 import { useFrameTimeline, useStageScale } from "./hooks";
 import styles from "./index.module.css";
 
