@@ -4,7 +4,7 @@ import {
 	fetchGroupedAchievements,
 	type GroupedAchievements,
 	hasAnyAchievements,
-} from "@/lib/api/achievements";
+} from "@/api/achievements";
 import pageStyles from "@/pages/achievements/index.module.css";
 import latestStyles from "./LatestAchievements.module.css";
 import yearlyStyles from "./YearlyAchievements.module.css";

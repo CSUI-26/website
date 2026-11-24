@@ -3,7 +3,7 @@ import {
 	type ProgramStudy,
 	programStudies,
 	type Semester,
-} from "../../data/academic.ts";
+} from "../data/academic.ts";
 import {
 	type ApiClientError,
 	type ApiFetchResult,

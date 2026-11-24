@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { fetchProgramById } from "@/api/academic";
 import type { ProgramStudy } from "@/data/academic";
-import { fetchProgramById } from "@/lib/api/academic";
 import styles from "@/pages/academic/prodi.module.css";
 import ProdiCurriculum from "./ProdiCurriculum";
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { type ProgramStudy, programStudies } from "../../../data/academic.ts";
+import { type ProgramStudy, programStudies } from "../../data/academic.ts";
 import {
 	buildCoursesUrl,
 	COURSES_ENDPOINT,

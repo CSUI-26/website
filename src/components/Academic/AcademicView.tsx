@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
+import { fetchPrograms } from "@/api/academic";
 import type { ProgramStudy } from "@/data/academic";
-import { fetchPrograms } from "@/lib/api/academic";
 import styles from "@/pages/academic/index.module.css";
 import ProdiCurriculum from "./ProdiCurriculum";
 

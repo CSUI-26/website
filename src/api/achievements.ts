@@ -4,7 +4,7 @@ import {
 	type YearGroup,
 	type YearlyAchievement,
 	yearlyAchievementsByYear,
-} from "../../data/achievements.ts";
+} from "../data/achievements.ts";
 import {
 	type ApiClientError,
 	type ApiFetchResult,
