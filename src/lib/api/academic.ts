@@ -5,11 +5,6 @@ import {
 	type Semester,
 } from "../../data/academic.ts";
 import {
-	type CachePolicyOptions,
-	createApiCache,
-	type StorageLike,
-} from "./cache.ts";
-import {
 	type ApiClientError,
 	type ApiFetchResult,
 	type FetchApiOptions,
@@ -35,24 +30,18 @@ export interface CourseRow {
 
 export type PaginatedCourses = PaginatedApiData<CourseRow>;
 
-export interface FetchProgramsOptions
-	extends FetchApiOptions,
-		CachePolicyOptions {
+export interface FetchProgramsOptions extends FetchApiOptions {
 	endpoint?: string;
 	fallbackData?: ProgramStudy[];
 	isDev?: boolean;
 	warn?: (message: string, detail?: unknown) => void;
-	onRevalidate?: (result: ApiFetchResult<ProgramStudy[]>) => void;
 }
 
-export interface FetchProgramByIdOptions
-	extends FetchApiOptions,
-		CachePolicyOptions {
+export interface FetchProgramByIdOptions extends FetchApiOptions {
 	endpoint?: string;
 	fallbackData?: ProgramStudy | null;
 	isDev?: boolean;
 	warn?: (message: string, detail?: unknown) => void;
-	onRevalidate?: (result: ApiFetchResult<ProgramStudy | null>) => void;
 }
 
 export interface FetchCoursesQuery {
@@ -64,14 +53,11 @@ export interface FetchCoursesQuery {
 	limit?: number;
 }
 
-export interface FetchCoursesOptions
-	extends FetchApiOptions,
-		CachePolicyOptions {
+export interface FetchCoursesOptions extends FetchApiOptions {
 	endpoint?: string;
 	fallbackData?: PaginatedCourses;
 	isDev?: boolean;
 	warn?: (message: string, detail?: unknown) => void;
-	onRevalidate?: (result: ApiFetchResult<PaginatedCourses>) => void;
 }
 
 function normalizeSemesterLabel(value: unknown): number | string | null {
@@ -282,55 +268,6 @@ export function normalizeCourseRow(raw: unknown): CourseRow | null {
 	};
 }
 
-function normalizePaginatedCourses(raw: unknown): PaginatedCourses | null {
-	if (!isRecord(raw)) return null;
-	if (!Array.isArray(raw.items)) return null;
-	if (
-		typeof raw.total !== "number" ||
-		!Number.isInteger(raw.total) ||
-		raw.total < 0
-	) {
-		return null;
-	}
-	if (
-		typeof raw.page !== "number" ||
-		!Number.isInteger(raw.page) ||
-		raw.page < 1
-	) {
-		return null;
-	}
-	if (
-		typeof raw.limit !== "number" ||
-		!Number.isInteger(raw.limit) ||
-		raw.limit < 1
-	) {
-		return null;
-	}
-	if (
-		typeof raw.totalPages !== "number" ||
-		!Number.isInteger(raw.totalPages) ||
-		raw.totalPages < 1
-	) {
-		return null;
-	}
-
-	const items: CourseRow[] = [];
-	for (const entry of raw.items) {
-		const normalized = normalizeCourseRow(entry);
-		if (normalized) {
-			items.push(normalized);
-		}
-	}
-
-	return {
-		items,
-		total: raw.total,
-		page: raw.page,
-		limit: raw.limit,
-		totalPages: raw.totalPages,
-	};
-}
-
 function cloneCourse(source: Course): Course {
 	const cloned: Course = {
 		name: source.name,
@@ -390,25 +327,6 @@ function clonePaginatedCourses(source: PaginatedCourses): PaginatedCourses {
 	};
 }
 
-const programsCache = createApiCache<ProgramStudy[]>("zenith:api:v2:programs");
-const programDetailCache = createApiCache<ProgramStudy>(
-	"zenith:api:v2:program",
-);
-const coursesCache = createApiCache<PaginatedCourses>(
-	"zenith:api:v2:courses",
-);
-
-/**
- * Clears all in-memory and sessionStorage academic caches. Intended for tests or manual invalidation.
- */
-export function clearAcademicCache(options?: {
-	storage?: StorageLike | null;
-}): void {
-	programsCache.clear(undefined, options);
-	programDetailCache.clear(undefined, options);
-	coursesCache.clear(undefined, options);
-}
-
 function logDevFallback(
 	scope: string,
 	error: ApiClientError,
@@ -430,7 +348,7 @@ function logDevFallback(
 }
 
 /**
- * Fetches all study programs (with nested semesters and courses) with TTL/SWR caching and static fallback.
+ * Fetches all study programs (with nested semesters and courses) and falls back to static data on failure.
  */
 export async function fetchPrograms(
 	options?: FetchProgramsOptions,
@@ -438,93 +356,36 @@ export async function fetchPrograms(
 	const endpoint = options?.endpoint ?? PROGRAMS_ENDPOINT;
 	const fallbackSource = options?.fallbackData ?? programStudies;
 
-	const cached = programsCache.get(endpoint, normalizePrograms, options);
+	const outcome = await fetchApiJson<unknown>(endpoint, options);
+	let error: ApiClientError;
 
-	const runNetworkFetch = async (
-		fetchOpts: FetchProgramsOptions | undefined,
-		staleData?: ProgramStudy[],
-	): Promise<ApiFetchResult<ProgramStudy[]>> => {
-		const outcome = await fetchApiJson<unknown>(endpoint, fetchOpts);
-		let error: ApiClientError;
-
-		if (outcome.ok) {
-			const normalized = normalizePrograms(outcome.data);
-			if (normalized !== null) {
-				programsCache.set(endpoint, normalized, fetchOpts);
-				return {
-					data: clonePrograms(normalized),
-					source: "api",
-					fromCache: false,
-				};
-			}
-			error = {
-				code: "INVALID_PAYLOAD",
-				message: "Programs payload does not match expected array shape",
-			};
-		} else {
-			error = outcome.error;
-		}
-
-		logDevFallback("academic/programs", error, fetchOpts);
-		if (staleData !== undefined) {
+	if (outcome.ok) {
+		const normalized = normalizePrograms(outcome.data);
+		if (normalized !== null) {
 			return {
-				data: clonePrograms(staleData),
+				data: normalized,
 				source: "api",
-				error,
-				fromCache: true,
 			};
 		}
-
-		return {
-			data: clonePrograms(fallbackSource),
-			source: "fallback",
-			error,
+		error = {
+			code: "INVALID_PAYLOAD",
+			message: "Programs payload does not match expected array shape",
 		};
+	} else {
+		error = outcome.error;
+	}
+
+	logDevFallback("academic/programs", error, options);
+
+	return {
+		data: clonePrograms(fallbackSource),
+		source: "fallback",
+		error,
 	};
-
-	if (cached?.status === "fresh") {
-		return {
-			data: clonePrograms(cached.data),
-			source: "api",
-			fromCache: true,
-		};
-	}
-
-	if (cached?.status === "stale") {
-		const revalidateOpts: FetchProgramsOptions = {
-			...options,
-			bypassCache: true,
-		};
-		void programsCache
-			.dedupe(`revalidate:${endpoint}`, () =>
-				runNetworkFetch(revalidateOpts, cached.data),
-			)
-			.then((fresh) => {
-				if (
-					fresh.source === "api" &&
-					!fresh.fromCache &&
-					!options?.signal?.aborted
-				) {
-					options?.onRevalidate?.(fresh);
-				}
-			});
-
-		return {
-			data: clonePrograms(cached.data),
-			source: "api",
-			fromCache: true,
-		};
-	}
-
-	if (options?.signal) {
-		return runNetworkFetch(options);
-	}
-
-	return programsCache.dedupe(endpoint, () => runNetworkFetch(options));
 }
 
 /**
- * Fetches a single study program by ID, reusing cached list data when available and falling back safely.
+ * Fetches a single study program by ID and falls back to static data on failure.
  */
 export async function fetchProgramById(
 	id: string,
@@ -537,110 +398,32 @@ export async function fetchProgramById(
 			? options.fallbackData
 			: (programStudies.find((p) => p.id === trimmedId) ?? null);
 
-	const runNetworkFetch = async (
-		fetchOpts: FetchProgramByIdOptions | undefined,
-		staleData?: ProgramStudy,
-	): Promise<ApiFetchResult<ProgramStudy | null>> => {
-		const outcome = await fetchApiJson<unknown>(endpoint, fetchOpts);
-		let error: ApiClientError;
+	const outcome = await fetchApiJson<unknown>(endpoint, options);
+	let error: ApiClientError;
 
-		if (outcome.ok) {
-			const normalized = normalizeProgram(outcome.data);
-			if (normalized !== null) {
-				programDetailCache.set(endpoint, normalized, fetchOpts);
-				return {
-					data: cloneProgram(normalized),
-					source: "api",
-					fromCache: false,
-				};
-			}
-			error = {
-				code: "INVALID_PAYLOAD",
-				message: "Program payload does not match expected shape",
-			};
-		} else {
-			error = outcome.error;
-		}
-
-		logDevFallback(`academic/programs/${trimmedId}`, error, fetchOpts);
-		if (staleData !== undefined) {
+	if (outcome.ok) {
+		const normalized = normalizeProgram(outcome.data);
+		if (normalized !== null) {
 			return {
-				data: cloneProgram(staleData),
+				data: normalized,
 				source: "api",
-				error,
-				fromCache: true,
 			};
 		}
-
-		return {
-			data: fallbackSource ? cloneProgram(fallbackSource) : null,
-			source: "fallback",
-			error,
+		error = {
+			code: "INVALID_PAYLOAD",
+			message: "Program payload does not match expected shape",
 		};
+	} else {
+		error = outcome.error;
+	}
+
+	logDevFallback(`academic/programs/${trimmedId}`, error, options);
+
+	return {
+		data: fallbackSource ? cloneProgram(fallbackSource) : null,
+		source: "fallback",
+		error,
 	};
-
-	const triggerStaleRevalidate = (staleEntry: ProgramStudy) => {
-		const revalidateOpts: FetchProgramByIdOptions = {
-			...options,
-			bypassCache: true,
-		};
-		void programDetailCache
-			.dedupe(`revalidate:${endpoint}`, () =>
-				runNetworkFetch(revalidateOpts, staleEntry),
-			)
-			.then((fresh) => {
-				if (
-					fresh.source === "api" &&
-					!fresh.fromCache &&
-					!options?.signal?.aborted
-				) {
-					options?.onRevalidate?.(fresh);
-				}
-			});
-	};
-
-	if (!options?.bypassCache && !options?.endpoint) {
-		const listCached = programsCache.get(
-			PROGRAMS_ENDPOINT,
-			normalizePrograms,
-			options,
-		);
-		const matched = listCached?.data.find((p) => p.id === trimmedId);
-		if (matched) {
-			if (listCached?.status === "stale") {
-				triggerStaleRevalidate(matched);
-			}
-			return {
-				data: cloneProgram(matched),
-				source: "api",
-				fromCache: true,
-			};
-		}
-	}
-
-	const cached = programDetailCache.get(endpoint, normalizeProgram, options);
-	if (cached?.status === "fresh") {
-		return {
-			data: cloneProgram(cached.data),
-			source: "api",
-			fromCache: true,
-		};
-	}
-
-	if (cached?.status === "stale") {
-		triggerStaleRevalidate(cached.data);
-		return {
-			data: cloneProgram(cached.data),
-			source: "api",
-			fromCache: true,
-		};
-	}
-
-	if (options?.signal) {
-		return runNetworkFetch(options);
-	}
-
-	return programDetailCache.dedupe(endpoint, () => runNetworkFetch(options));
 }
 
 /**
@@ -688,7 +471,7 @@ const EMPTY_COURSES_PAGE: PaginatedCourses = {
 };
 
 /**
- * Fetches paginated courses from /api/v1/courses with query caching and safe fallback.
+ * Fetches paginated courses from /api/v1/courses and falls back safely on failure.
  */
 export async function fetchCourses(
 	query?: FetchCoursesQuery,
@@ -697,94 +480,34 @@ export async function fetchCourses(
 	const url = buildCoursesUrl(query, options?.endpoint ?? COURSES_ENDPOINT);
 	const fallbackSource = options?.fallbackData ?? EMPTY_COURSES_PAGE;
 
-	const cached = coursesCache.get(url, normalizePaginatedCourses, options);
+	const outcome = await fetchPaginatedApiJson<unknown>(url, options);
 
-	const runNetworkFetch = async (
-		fetchOpts: FetchCoursesOptions | undefined,
-		staleData?: PaginatedCourses,
-	): Promise<ApiFetchResult<PaginatedCourses>> => {
-		const outcome = await fetchPaginatedApiJson<unknown>(url, fetchOpts);
-		let error: ApiClientError;
-
-		if (outcome.ok) {
-			const items: CourseRow[] = [];
-			for (const row of outcome.data.items) {
-				const normalized = normalizeCourseRow(row);
-				if (normalized) {
-					items.push(normalized);
-				}
+	if (outcome.ok) {
+		const items: CourseRow[] = [];
+		for (const row of outcome.data.items) {
+			const normalized = normalizeCourseRow(row);
+			if (normalized) {
+				items.push(normalized);
 			}
-			const resultData: PaginatedCourses = {
+		}
+
+		return {
+			data: {
 				items,
 				total: outcome.data.total,
 				page: outcome.data.page,
 				limit: outcome.data.limit,
 				totalPages: outcome.data.totalPages,
-			};
-			coursesCache.set(url, resultData, fetchOpts);
-			return {
-				data: clonePaginatedCourses(resultData),
-				source: "api",
-				fromCache: false,
-			};
-		}
-
-		error = outcome.error;
-		logDevFallback("academic/courses", error, fetchOpts);
-
-		if (staleData !== undefined) {
-			return {
-				data: clonePaginatedCourses(staleData),
-				source: "api",
-				error,
-				fromCache: true,
-			};
-		}
-
-		return {
-			data: clonePaginatedCourses(fallbackSource),
-			source: "fallback",
-			error,
+			},
+			source: "api",
 		};
+	}
+
+	logDevFallback("academic/courses", outcome.error, options);
+
+	return {
+		data: clonePaginatedCourses(fallbackSource),
+		source: "fallback",
+		error: outcome.error,
 	};
-
-	if (cached?.status === "fresh") {
-		return {
-			data: clonePaginatedCourses(cached.data),
-			source: "api",
-			fromCache: true,
-		};
-	}
-
-	if (cached?.status === "stale") {
-		const revalidateOpts: FetchCoursesOptions = {
-			...options,
-			bypassCache: true,
-		};
-		void coursesCache
-			.dedupe(`revalidate:${url}`, () =>
-				runNetworkFetch(revalidateOpts, cached.data),
-			)
-			.then((fresh) => {
-				if (
-					fresh.source === "api" &&
-					!fresh.fromCache &&
-					!options?.signal?.aborted
-				) {
-					options?.onRevalidate?.(fresh);
-				}
-			});
-
-		return {
-			data: clonePaginatedCourses(cached.data),
-			source: "api",
-			fromCache: true,
-		};
-	}
-
-	if (options?.signal) {
-		return runNetworkFetch(options);
-	}
-
-	return coursesCache.dedupe(url, () => runNetworkFetch(options));
 }

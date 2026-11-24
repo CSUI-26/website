@@ -28,6 +28,7 @@ describe("fetchApiJson", () => {
 		assert.equal(capturedUrl, "/api/v1/achievements?format=grouped");
 		assert.equal(capturedInit?.method, "GET");
 		assert.equal(capturedInit?.credentials, "omit");
+		assert.equal(capturedInit?.cache, undefined);
 		const headers = new Headers(capturedInit?.headers);
 		assert.equal(headers.get("Accept"), "application/json");
 	});

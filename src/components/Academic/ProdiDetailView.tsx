@@ -23,15 +23,6 @@ export default function ProdiDetailView({
 		void fetchProgramById(prodiId, {
 			signal: controller.signal,
 			fallbackData: initialProdi,
-			onRevalidate: (fresh) => {
-				if (
-					!controller.signal.aborted &&
-					fresh.source === "api" &&
-					fresh.data
-				) {
-					setProdi(fresh.data);
-				}
-			},
 		}).then((result) => {
 			if (controller.signal.aborted || !result.data) {
 				return;

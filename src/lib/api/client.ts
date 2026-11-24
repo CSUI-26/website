@@ -20,7 +20,6 @@ export interface ApiFetchResult<T> {
 	data: T;
 	source: "api" | "fallback";
 	error?: ApiClientError;
-	fromCache?: boolean;
 }
 
 export interface PaginatedApiData<T> {

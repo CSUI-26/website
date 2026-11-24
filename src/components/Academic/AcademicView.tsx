@@ -22,11 +22,6 @@ export default function AcademicView({
 		void fetchPrograms({
 			signal: controller.signal,
 			fallbackData: initialPrograms,
-			onRevalidate: (fresh) => {
-				if (!controller.signal.aborted && fresh.source === "api") {
-					setPrograms(fresh.data);
-				}
-			},
 		}).then((result) => {
 			if (controller.signal.aborted) {
 				return;

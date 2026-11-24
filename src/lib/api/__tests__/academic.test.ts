@@ -1,10 +1,9 @@
 import assert from "node:assert/strict";
-import { beforeEach, describe, it } from "node:test";
+import { describe, it } from "node:test";
 import { type ProgramStudy, programStudies } from "../../../data/academic.ts";
 import {
 	buildCoursesUrl,
 	COURSES_ENDPOINT,
-	clearAcademicCache,
 	fetchCourses,
 	fetchProgramById,
 	fetchPrograms,
@@ -15,20 +14,6 @@ import {
 	PROGRAMS_ENDPOINT,
 	programByIdEndpoint,
 } from "../academic.ts";
-import type { StorageLike } from "../cache.ts";
-
-function createMockStorage(): StorageLike {
-	const store = new Map<string, string>();
-	return {
-		getItem: (key) => store.get(key) ?? null,
-		setItem: (key, value) => {
-			store.set(key, value);
-		},
-		removeItem: (key) => {
-			store.delete(key);
-		},
-	};
-}
 
 const sampleFallback: ProgramStudy[] = [
 	{
@@ -154,7 +139,10 @@ describe("academic normalizers", () => {
 	it("normalizes numeric string semesters to numbers and preserves string labels", () => {
 		const numSem = normalizeSemester({
 			semester: "2",
-			courses: [{ name: "DDP 2", sks: 4 }, { name: "Invalid", sks: 99 }],
+			courses: [
+				{ name: "DDP 2", sks: 4 },
+				{ name: "Invalid", sks: 99 },
+			],
 		});
 		assert.deepEqual(numSem, {
 			semester: 2,
@@ -201,59 +189,50 @@ describe("academic normalizers", () => {
 		assert.equal(normalized?.[0]?.driveUrl, "https://drive.example/si");
 		assert.equal(normalized?.[1]?.id, "ilmu-komputer");
 		assert.equal(normalizePrograms(null), null);
-		assert.equal(normalizeProgram({ id: "x", name: "X", semesters: "bad" }), null);
+		assert.equal(
+			normalizeProgram({ id: "x", name: "X", semesters: "bad" }),
+			null,
+		);
 	});
 });
 
 describe("fetchPrograms", () => {
-	let storage: StorageLike;
-
-	beforeEach(() => {
-		storage = createMockStorage();
-		clearAcademicCache({ storage });
-	});
-
-	it("requests /api/v1/programs and returns source api on valid 200 OK", async () => {
+	it("requests /api/v1/programs directly on each call and returns source api on valid 200 OK", async () => {
 		let requestedUrl = "";
+		let callCount = 0;
 		const mockFetch = async (input: RequestInfo | URL) => {
+			callCount += 1;
 			requestedUrl = String(input);
 			return new Response(JSON.stringify({ data: sampleApiPrograms }), {
 				status: 200,
 			});
 		};
 
-		const result = await fetchPrograms({
+		const first = await fetchPrograms({
 			fetchFn: mockFetch,
 			fallbackData: sampleFallback,
-			storage,
+			isDev: false,
+		});
+		const second = await fetchPrograms({
+			fetchFn: mockFetch,
+			fallbackData: sampleFallback,
 			isDev: false,
 		});
 
+		assert.equal(callCount, 2);
 		assert.equal(requestedUrl, PROGRAMS_ENDPOINT);
-		assert.equal(result.source, "api");
-		assert.equal(result.fromCache, false);
-		assert.equal(result.error, undefined);
+		assert.equal(first.source, "api");
+		assert.equal(first.error, undefined);
+		assert.equal("fromCache" in first, false);
+		assert.equal(second.source, "api");
 		assert.deepEqual(
-			result.data.map((p) => p.id),
+			first.data.map((p) => p.id),
 			["sistem-informasi", "ilmu-komputer"],
 		);
-		const firstCourse = result.data[0]?.semesters[0]?.courses[0];
+		const firstCourse = first.data[0]?.semesters[0]?.courses[0];
 		assert.equal(firstCourse?.category, "Wajib Program Studi");
 		assert.equal(firstCourse?.track, "Sistem Informasi & Aplikasi");
 		assert.deepEqual(firstCourse?.unlocks, ["APSI"]);
-
-		// Mutating returned unlocks must not leak into cached entries
-		firstCourse?.unlocks?.push("Mutated");
-		const cachedAgain = await fetchPrograms({
-			fetchFn: mockFetch,
-			fallbackData: sampleFallback,
-			storage,
-			isDev: false,
-		});
-		assert.deepEqual(
-			cachedAgain.data[0]?.semesters[0]?.courses[0]?.unlocks,
-			["APSI"],
-		);
 	});
 
 	it("trusts valid 200 OK empty array as source api without falling back", async () => {
@@ -263,76 +242,11 @@ describe("fetchPrograms", () => {
 		const result = await fetchPrograms({
 			fetchFn: mockFetch,
 			fallbackData: sampleFallback,
-			storage,
 			isDev: false,
 		});
 
 		assert.equal(result.source, "api");
 		assert.deepEqual(result.data, []);
-	});
-
-	it("serves fresh cache without network call and revalidates stale cache in background", async () => {
-		let clock = 10_000;
-		let fetchCount = 0;
-
-		const mockFetch = async () => {
-			fetchCount += 1;
-			return new Response(
-				JSON.stringify({
-					data:
-						fetchCount === 1
-							? sampleApiPrograms
-							: [sampleApiPrograms[1]],
-				}),
-				{ status: 200 },
-			);
-		};
-
-		// 1. Cold fetch
-		const first = await fetchPrograms({
-			fetchFn: mockFetch,
-			fallbackData: sampleFallback,
-			storage,
-			now: () => clock,
-			isDev: false,
-		});
-		assert.equal(fetchCount, 1);
-		assert.equal(first.fromCache, false);
-		assert.equal(first.data.length, 2);
-
-		// 2. Fresh cache hit (within 60s)
-		clock += 30_000;
-		const second = await fetchPrograms({
-			fetchFn: mockFetch,
-			fallbackData: sampleFallback,
-			storage,
-			now: () => clock,
-			isDev: false,
-		});
-		assert.equal(fetchCount, 1);
-		assert.equal(second.fromCache, true);
-		assert.equal(second.data.length, 2);
-		assert.notEqual(second.data, first.data);
-
-		// 3. Stale cache hit (between 60s and 300s) triggers background revalidation
-		clock += 90_000;
-		let revalidatedIds: string[] = [];
-		const third = await fetchPrograms({
-			fetchFn: mockFetch,
-			fallbackData: sampleFallback,
-			storage,
-			now: () => clock,
-			isDev: false,
-			onRevalidate: (fresh) => {
-				revalidatedIds = fresh.data.map((p) => p.id);
-			},
-		});
-		assert.equal(third.fromCache, true);
-		assert.equal(third.data.length, 2);
-
-		await new Promise((resolve) => setTimeout(resolve, 15));
-		assert.equal(fetchCount, 2);
-		assert.deepEqual(revalidatedIds, ["ilmu-komputer"]);
 	});
 
 	it("falls back to cloned fallbackData across error cases and logs only when isDev is true", async () => {
@@ -356,11 +270,9 @@ describe("fetchPrograms", () => {
 		];
 
 		for (const fetchFn of errorCases) {
-			clearAcademicCache({ storage });
 			const res = await fetchPrograms({
 				fetchFn,
 				fallbackData: sampleFallback,
-				storage,
 				timeoutMs: 15,
 				isDev: false,
 				warn: (msg) => warnings.push(msg),
@@ -368,14 +280,17 @@ describe("fetchPrograms", () => {
 			assert.equal(res.source, "fallback");
 			assert.deepEqual(res.data, sampleFallback);
 			assert.notEqual(res.data, sampleFallback);
+			res.data[0]?.semesters[0]?.courses[0]?.prerequisites?.push("Mutated");
+			assert.deepEqual(
+				sampleFallback[0]?.semesters[0]?.courses[0]?.prerequisites,
+				["DDP 2"],
+			);
 		}
 		assert.equal(warnings.length, 0);
 
-		clearAcademicCache({ storage });
 		await fetchPrograms({
 			fetchFn: async () => new Response("Server Error", { status: 500 }),
 			fallbackData: sampleFallback,
-			storage,
 			isDev: true,
 			warn: (msg) => warnings.push(msg),
 		});
@@ -384,36 +299,7 @@ describe("fetchPrograms", () => {
 });
 
 describe("fetchProgramById", () => {
-	let storage: StorageLike;
-
-	beforeEach(() => {
-		storage = createMockStorage();
-		clearAcademicCache({ storage });
-	});
-
-	it("reuses fresh fetchPrograms cache without an extra network call", async () => {
-		let fetchCount = 0;
-		const mockFetch = async () => {
-			fetchCount += 1;
-			return new Response(JSON.stringify({ data: sampleApiPrograms }), {
-				status: 200,
-			});
-		};
-
-		await fetchPrograms({ fetchFn: mockFetch, storage, isDev: false });
-		const detail = await fetchProgramById("ilmu-komputer", {
-			fetchFn: mockFetch,
-			storage,
-			isDev: false,
-		});
-
-		assert.equal(fetchCount, 1);
-		assert.equal(detail.source, "api");
-		assert.equal(detail.fromCache, true);
-		assert.equal(detail.data?.id, "ilmu-komputer");
-	});
-
-	it("fetches /api/v1/programs/:id on cache miss and falls back on 404", async () => {
+	it("fetches /api/v1/programs/:id directly, trims and encodes id, and falls back on error", async () => {
 		let requestedUrl = "";
 		const okFetch = async (input: RequestInfo | URL) => {
 			requestedUrl = String(input);
@@ -422,36 +308,45 @@ describe("fetchProgramById", () => {
 			});
 		};
 
-		const ok = await fetchProgramById("sistem-informasi", {
+		const ok = await fetchProgramById(" sistem-informasi ", {
 			fetchFn: okFetch,
-			storage,
 			isDev: false,
 		});
 		assert.equal(requestedUrl, programByIdEndpoint("sistem-informasi"));
 		assert.equal(ok.source, "api");
+		assert.equal("fromCache" in ok, false);
 		assert.equal(ok.data?.name, "Sistem Informasi");
 
-		clearAcademicCache({ storage });
+		const fallbackItem = sampleFallback[0];
+		assert.ok(fallbackItem);
 		const notFound = await fetchProgramById("ilmu-komputer", {
 			fetchFn: async () => new Response("Not Found", { status: 404 }),
-			fallbackData: sampleFallback[0] ?? null,
-			storage,
+			fallbackData: fallbackItem,
 			isDev: false,
 		});
 		assert.equal(notFound.source, "fallback");
 		assert.equal(notFound.error?.code, "NOT_FOUND");
 		assert.equal(notFound.data?.id, "ilmu-komputer");
+		assert.notEqual(notFound.data?.careers, fallbackItem.careers);
+		assert.notEqual(notFound.data?.semesters, fallbackItem.semesters);
+
+		let unknownRequestedUrl = "";
+		const unknownNotFound = await fetchProgramById(" unknown prodi ", {
+			fetchFn: async (input: RequestInfo | URL) => {
+				unknownRequestedUrl = String(input);
+				return new Response("Not Found", { status: 404 });
+			},
+			isDev: false,
+		});
+		assert.equal(unknownRequestedUrl, "/api/v1/programs/unknown%20prodi");
+		assert.equal(unknownNotFound.source, "fallback");
+		assert.equal(unknownNotFound.data, null);
+		assert.equal(unknownNotFound.error?.code, "NOT_FOUND");
+		assert.equal(unknownNotFound.error?.status, 404);
 	});
 });
 
 describe("buildCoursesUrl and fetchCourses", () => {
-	let storage: StorageLike;
-
-	beforeEach(() => {
-		storage = createMockStorage();
-		clearAcademicCache({ storage });
-	});
-
 	it("builds deterministic query strings", () => {
 		assert.equal(buildCoursesUrl(), COURSES_ENDPOINT);
 		assert.equal(
@@ -467,7 +362,7 @@ describe("buildCoursesUrl and fetchCourses", () => {
 		);
 	});
 
-	it("fetches, normalizes, and caches paginated courses, falling back on error", async () => {
+	it("fetches and normalizes paginated courses directly, returning cloned fallback on error", async () => {
 		let calls = 0;
 		const mockFetch = async () => {
 			calls += 1;
@@ -492,30 +387,43 @@ describe("buildCoursesUrl and fetchCourses", () => {
 
 		const first = await fetchCourses(
 			{ program: "ilmu-komputer" },
-			{ fetchFn: mockFetch, storage, isDev: false },
+			{ fetchFn: mockFetch, isDev: false },
 		);
+		const second = await fetchCourses(
+			{ program: "ilmu-komputer" },
+			{ fetchFn: mockFetch, isDev: false },
+		);
+
+		assert.equal(calls, 2);
 		assert.equal(first.source, "api");
-		assert.equal(first.fromCache, false);
+		assert.equal("fromCache" in first, false);
 		assert.equal(first.data.items.length, 1);
 		assert.equal(first.data.total, 1);
+		assert.equal(second.source, "api");
 
-		const cached = await fetchCourses(
-			{ program: "ilmu-komputer" },
-			{ fetchFn: mockFetch, storage, isDev: false },
-		);
-		assert.equal(calls, 1);
-		assert.equal(cached.fromCache, true);
-
-		clearAcademicCache({ storage });
 		const fallback = await fetchCourses(
 			{ search: "unknown" },
 			{
 				fetchFn: async () => new Response("Error", { status: 500 }),
-				storage,
 				isDev: false,
 			},
 		);
 		assert.equal(fallback.source, "fallback");
-		assert.deepEqual(fallback.data.items, []);
+		assert.equal(fallback.data.items.length, 0);
+		fallback.data.items.push({
+			programId: "mutated",
+			programName: "Mutated",
+			semester: 1,
+			course: { name: "Mutated", sks: 3 },
+		});
+
+		const fallbackAgain = await fetchCourses(
+			{ search: "unknown" },
+			{
+				fetchFn: async () => new Response("Error", { status: 500 }),
+				isDev: false,
+			},
+		);
+		assert.deepEqual(fallbackAgain.data.items, []);
 	});
 });
