@@ -288,6 +288,20 @@ describe("fetchPrograms", () => {
 		}
 		assert.equal(warnings.length, 0);
 
+		const abortController = new AbortController();
+		abortController.abort();
+		const aborted = await fetchPrograms({
+			fetchFn: async () =>
+				new Response(JSON.stringify({ data: sampleApiPrograms }), {
+					status: 200,
+				}),
+			fallbackData: sampleFallback,
+			signal: abortController.signal,
+			isDev: false,
+		});
+		assert.equal(aborted.source, "fallback");
+		assert.equal(aborted.error?.code, "NETWORK_ERROR");
+
 		await fetchPrograms({
 			fetchFn: async () => new Response("Server Error", { status: 500 }),
 			fallbackData: sampleFallback,
@@ -300,8 +314,10 @@ describe("fetchPrograms", () => {
 
 describe("fetchProgramById", () => {
 	it("fetches /api/v1/programs/:id directly, trims and encodes id, and falls back on error", async () => {
+		let callCount = 0;
 		let requestedUrl = "";
 		const okFetch = async (input: RequestInfo | URL) => {
+			callCount += 1;
 			requestedUrl = String(input);
 			return new Response(JSON.stringify({ data: sampleApiPrograms[0] }), {
 				status: 200,
@@ -312,10 +328,16 @@ describe("fetchProgramById", () => {
 			fetchFn: okFetch,
 			isDev: false,
 		});
+		const secondOk = await fetchProgramById("sistem-informasi", {
+			fetchFn: okFetch,
+			isDev: false,
+		});
+		assert.equal(callCount, 2);
 		assert.equal(requestedUrl, programByIdEndpoint("sistem-informasi"));
 		assert.equal(ok.source, "api");
 		assert.equal("fromCache" in ok, false);
 		assert.equal(ok.data?.name, "Sistem Informasi");
+		assert.equal(secondOk.source, "api");
 
 		const fallbackItem = sampleFallback[0];
 		assert.ok(fallbackItem);

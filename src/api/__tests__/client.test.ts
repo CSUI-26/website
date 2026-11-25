@@ -198,8 +198,13 @@ describe("fetchApiJson", () => {
 
 describe("fetchPaginatedApiJson", () => {
 	it("returns items and pagination metadata on valid paginated envelope", async () => {
-		const mockFetch = async () =>
-			new Response(
+		let capturedInit: RequestInit | undefined;
+		const mockFetch = async (
+			_input: RequestInfo | URL,
+			init?: RequestInit,
+		) => {
+			capturedInit = init;
+			return new Response(
 				JSON.stringify({
 					data: [{ id: 1, name: "DDP 1" }],
 					total: 12,
@@ -209,12 +214,16 @@ describe("fetchPaginatedApiJson", () => {
 				}),
 				{ status: 200 },
 			);
+		};
 
 		const outcome = await fetchPaginatedApiJson<{ id: number; name: string }>(
 			"/api/v1/courses",
 			{ fetchFn: mockFetch },
 		);
 
+		assert.equal(capturedInit?.method, "GET");
+		assert.equal(capturedInit?.credentials, "omit");
+		assert.equal(capturedInit?.cache, undefined);
 		assert.deepEqual(outcome, {
 			ok: true,
 			data: {
