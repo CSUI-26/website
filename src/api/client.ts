@@ -1,3 +1,5 @@
+import { isRecord } from "./sanitize.ts";
+
 export const DEFAULT_TIMEOUT_MS = 5000;
 
 export type ApiErrorCode =
@@ -18,6 +20,14 @@ export interface ApiFetchResult<T> {
 	data: T;
 	source: "api" | "fallback";
 	error?: ApiClientError;
+}
+
+export interface PaginatedApiData<T> {
+	items: T[];
+	total: number;
+	page: number;
+	limit: number;
+	totalPages: number;
 }
 
 export type FetchLike = (
@@ -42,21 +52,42 @@ function mapHttpStatusToErrorCode(status: number): ApiErrorCode {
 }
 
 function isEnvelopeRecord(value: unknown): value is { data: unknown } {
+	return isRecord(value) && "data" in value;
+}
+
+function isNonNegativeInt(value: unknown): value is number {
+	return typeof value === "number" && Number.isInteger(value) && value >= 0;
+}
+
+function isPositiveInt(value: unknown): value is number {
+	return typeof value === "number" && Number.isInteger(value) && value >= 1;
+}
+
+function isPaginatedEnvelope(value: unknown): value is {
+	data: unknown[];
+	total: number;
+	page: number;
+	limit: number;
+	totalPages: number;
+} {
 	return (
-		typeof value === "object" &&
-		value !== null &&
-		!Array.isArray(value) &&
-		"data" in value
+		isRecord(value) &&
+		Array.isArray(value.data) &&
+		isNonNegativeInt(value.total) &&
+		isPositiveInt(value.page) &&
+		isPositiveInt(value.limit) &&
+		isPositiveInt(value.totalPages)
 	);
 }
 
-/**
- * Fetches a public JSON endpoint using GET with cookies omitted and a fail-fast timeout.
- */
-export async function fetchApiJson<T>(
+type RawJsonOutcome =
+	| { ok: true; status: number; body: unknown }
+	| { ok: false; error: ApiClientError };
+
+async function fetchRawJson(
 	url: string,
 	options?: FetchApiOptions,
-): Promise<RawApiOutcome<T>> {
+): Promise<RawJsonOutcome> {
 	const callerSignal = options?.signal;
 	if (callerSignal?.aborted) {
 		return {
@@ -119,20 +150,10 @@ export async function fetchApiJson<T>(
 			};
 		}
 
-		if (!isEnvelopeRecord(parsed)) {
-			return {
-				ok: false,
-				error: {
-					code: "INVALID_PAYLOAD",
-					status: response.status,
-					message: "Response JSON does not match { data } envelope",
-				},
-			};
-		}
-
 		return {
 			ok: true,
-			data: parsed.data as T,
+			status: response.status,
+			body: parsed,
 		};
 	} catch (err) {
 		if (didTimeout) {
@@ -156,4 +177,69 @@ export async function fetchApiJson<T>(
 		clearTimeout(timeoutId);
 		callerSignal?.removeEventListener("abort", onCallerAbort);
 	}
+}
+
+/**
+ * Fetches a public JSON endpoint using GET with cookies omitted and a fail-fast timeout.
+ */
+export async function fetchApiJson<T>(
+	url: string,
+	options?: FetchApiOptions,
+): Promise<RawApiOutcome<T>> {
+	const raw = await fetchRawJson(url, options);
+	if (!raw.ok) {
+		return raw;
+	}
+
+	if (!isEnvelopeRecord(raw.body)) {
+		return {
+			ok: false,
+			error: {
+				code: "INVALID_PAYLOAD",
+				status: raw.status,
+				message: "Response JSON does not match { data } envelope",
+			},
+		};
+	}
+
+	return {
+		ok: true,
+		data: raw.body.data as T,
+	};
+}
+
+/**
+ * Fetches a public paginated JSON endpoint using GET with cookies omitted and a fail-fast timeout.
+ */
+export async function fetchPaginatedApiJson<T>(
+	url: string,
+	options?: FetchApiOptions,
+): Promise<RawApiOutcome<PaginatedApiData<T>>> {
+	const raw = await fetchRawJson(url, options);
+	if (!raw.ok) {
+		return raw;
+	}
+
+	if (!isPaginatedEnvelope(raw.body)) {
+		return {
+			ok: false,
+			error: {
+				code: "INVALID_PAYLOAD",
+				status: raw.status,
+				message:
+					"Response JSON does not match paginated { data, total, page, limit, totalPages } envelope",
+			},
+		};
+	}
+
+	return {
+		ok: true,
+		data: {
+			items: raw.body.data as T[],
+			total: raw.body.total,
+			page: raw.body.page,
+			limit: raw.body.limit,
+			totalPages: raw.body.totalPages,
+		},
+	};
 }
