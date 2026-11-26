@@ -31,6 +31,8 @@ const { title, activeTab } = Astro.props;
 		{/* The site has no light theme; claim dark only so browser UI such as
 		    scrollbars and the Android navigation bar render dark too. */}
 		<meta name="color-scheme" content="dark" />
+		{/* Escape hatch head slot */}
+		<slot name="head" />
 	</head>
 	<body>
 		<Header activeTab={activeTab} />
