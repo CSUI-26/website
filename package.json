@@ -23,7 +23,7 @@
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
 		"@vercel/speed-insights": "^2.1.0",
-		"astro": "^7.4.12",
+		"astro": "^7.4.13",
 		"astro-compress": "^2.4.3",
 		"lucide-react": "^1.61.0",
 		"react": "19.3.1",
